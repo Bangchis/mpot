@@ -1,0 +1,5 @@
+task_id,serial_seed,mpi_seed,serial_rank,mpi_rank,serial_best_cost,mpi_best_cost,cost_difference,seed_match,cost_close,present_in_serial,present_in_mpi,passed
+0,20260617,20260617,0,0,0.009058685973286629,0.009058685973286629,0.0,True,True,True,True,True
+1,20260618,20260618,0,1,0.009140013717114925,0.009140013717114925,0.0,True,True,True,True,True
+2,20260619,20260619,0,2,0.009229829534888268,0.009229829534888268,0.0,True,True,True,True,True
+3,20260620,20260620,0,3,0.008748095482587814,0.008748095482587814,0.0,True,True,True,True,True

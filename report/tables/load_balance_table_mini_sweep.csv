@@ -1,0 +1,3 @@
+run_id,rank,processes,hostname,num_tasks,compute_time_s,communication_time_s,total_time_s,idle_time_s,idle_fraction_of_slowest_rank,best_cost,source_rank_timings
+mpi-mini_sweep-N2-P2,0,2,Phams-MacBook-Air.local,1,0.5365082089556381,0.0008812082232907414,0.5374052079860121,4.087504930794239e-05,7.60542324117304e-05,0.009058685973286629,results/mpi-mini_sweep-N2-P2/rank_timings.csv
+mpi-mini_sweep-N2-P2,1,2,Phams-MacBook-Air.local,1,0.536736375070177,0.0007022920763120055,0.53744608303532,0.0,0.0,0.009140013717114925,results/mpi-mini_sweep-N2-P2/rank_timings.csv

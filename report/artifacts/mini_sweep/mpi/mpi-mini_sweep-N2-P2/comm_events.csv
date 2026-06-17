@@ -1,0 +1,13 @@
+run_id,rank,size,hostname,event_index,event,collective,root,blocking,duration_s,payload_count
+mpi-mini_sweep-N2-P2,0,2,Phams-MacBook-Air.local,0,bcast_config,bcast,0,True,6.987503729760647e-05,
+mpi-mini_sweep-N2-P2,0,2,Phams-MacBook-Air.local,1,bcast_run_id,bcast,0,True,2.9579969123005867e-06,
+mpi-mini_sweep-N2-P2,0,2,Phams-MacBook-Air.local,2,bcast_assignment,bcast,0,True,3.250082954764366e-06,2
+mpi-mini_sweep-N2-P2,0,2,Phams-MacBook-Air.local,3,scatter_tasks,scatter,0,True,1.3333046808838844e-05,1
+mpi-mini_sweep-N2-P2,0,2,Phams-MacBook-Air.local,4,gather_results,gather,0,True,0.0007917920593172312,1
+mpi-mini_sweep-N2-P2,0,2,Phams-MacBook-Air.local,5,gather_rank_timings,gather,0,True,3.208301495760679e-05,1
+mpi-mini_sweep-N2-P2,1,2,Phams-MacBook-Air.local,0,bcast_config,bcast,0,True,0.00013579195365309715,
+mpi-mini_sweep-N2-P2,1,2,Phams-MacBook-Air.local,1,bcast_run_id,bcast,0,True,4.334026016294956e-06,
+mpi-mini_sweep-N2-P2,1,2,Phams-MacBook-Air.local,2,bcast_assignment,bcast,0,True,3.00002284348011e-06,2
+mpi-mini_sweep-N2-P2,1,2,Phams-MacBook-Air.local,3,scatter_tasks,scatter,0,True,1.3875076547265053e-05,1
+mpi-mini_sweep-N2-P2,1,2,Phams-MacBook-Air.local,4,gather_results,gather,0,True,0.0005452909972518682,1
+mpi-mini_sweep-N2-P2,1,2,Phams-MacBook-Air.local,5,gather_rank_timings,gather,0,True,7.6669966802001e-06,1

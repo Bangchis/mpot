@@ -159,3 +159,7 @@ cython_debug/
 #  option (not recommended) you can uncomment the following to ignore the entire idea folder.
 #.idea/
 data/
+results/
+submission/
+configs/cluster_hosts.local.json
+configs/hostfile_ubuntu.txt

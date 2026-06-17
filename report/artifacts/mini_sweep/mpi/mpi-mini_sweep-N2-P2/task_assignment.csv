@@ -1,0 +1,3 @@
+run_id,process_count,rank,local_index,task_id,mapping_rule
+mpi-mini_sweep-N2-P2,2,0,0,0,task_id mod process_count
+mpi-mini_sweep-N2-P2,2,1,0,1,task_id mod process_count

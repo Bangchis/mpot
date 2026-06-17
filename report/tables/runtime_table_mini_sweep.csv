@@ -1,0 +1,4 @@
+run_id,mode,input_size_n,processes,runtime_with_communication_s,runtime_without_communication_s,communication_overhead_s,best_cost,balanced_under_25_percent,source_summary
+mpi-mini_sweep-N2-P1,mpi,2,1,0.4849481249693781,0.48467129201162606,0.00027683295775204897,0.009058685973286629,True,results/mpi-mini_sweep-N2-P1/summary.json
+serial-mini_sweep-N2,serial,2,1,0.9383412080351263,0.9383412080351263,0.0,0.009058685973286629,,results/serial-mini_sweep-N2/summary.json
+mpi-mini_sweep-N2-P2,mpi,2,2,0.53744608303532,0.536736375070177,0.0007097079651430249,0.009058685973286629,True,results/mpi-mini_sweep-N2-P2/summary.json

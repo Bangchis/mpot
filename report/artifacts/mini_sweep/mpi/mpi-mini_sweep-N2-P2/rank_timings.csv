@@ -1,0 +1,3 @@
+run_id,rank,size,hostname,num_tasks,compute_time_s,communication_time_s,total_time_s,best_cost
+mpi-mini_sweep-N2-P2,0,2,Phams-MacBook-Air.local,1,0.5365082089556381,0.0008812082232907414,0.5374052079860121,0.009058685973286629
+mpi-mini_sweep-N2-P2,1,2,Phams-MacBook-Air.local,1,0.536736375070177,0.0007022920763120055,0.53744608303532,0.009140013717114925

@@ -1,0 +1,261 @@
+{
+  "created_at": "2026-06-17 07:24:05 +0700",
+  "discovered_runs": [
+    {
+      "input_size_n": 208,
+      "mode": "mpi",
+      "processes": 1,
+      "run_id": "mpi-final_macbook_air_2d-N208-P1",
+      "summary_json": "results/mpi-final_macbook_air_2d-N208-P1/summary.json"
+    },
+    {
+      "input_size_n": 208,
+      "mode": "serial",
+      "processes": 1,
+      "run_id": "serial-final_macbook_air_2d-N208",
+      "summary_json": "results/serial-final_macbook_air_2d-N208/summary.json"
+    },
+    {
+      "input_size_n": 208,
+      "mode": "mpi",
+      "processes": 2,
+      "run_id": "mpi-final_macbook_air_2d-N208-P2",
+      "summary_json": "results/mpi-final_macbook_air_2d-N208-P2/summary.json"
+    },
+    {
+      "input_size_n": 208,
+      "mode": "mpi",
+      "processes": 4,
+      "run_id": "mpi-final_macbook_air_2d-N208-P4",
+      "summary_json": "results/mpi-final_macbook_air_2d-N208-P4/summary.json"
+    },
+    {
+      "input_size_n": 412,
+      "mode": "mpi",
+      "processes": 1,
+      "run_id": "mpi-final_macbook_air_2d-N412-P1",
+      "summary_json": "results/mpi-final_macbook_air_2d-N412-P1/summary.json"
+    },
+    {
+      "input_size_n": 412,
+      "mode": "serial",
+      "processes": 1,
+      "run_id": "serial-final_macbook_air_2d-N412",
+      "summary_json": "results/serial-final_macbook_air_2d-N412/summary.json"
+    },
+    {
+      "input_size_n": 412,
+      "mode": "mpi",
+      "processes": 2,
+      "run_id": "mpi-final_macbook_air_2d-N412-P2",
+      "summary_json": "results/mpi-final_macbook_air_2d-N412-P2/summary.json"
+    },
+    {
+      "input_size_n": 412,
+      "mode": "mpi",
+      "processes": 4,
+      "run_id": "mpi-final_macbook_air_2d-N412-P4",
+      "summary_json": "results/mpi-final_macbook_air_2d-N412-P4/summary.json"
+    },
+    {
+      "input_size_n": 824,
+      "mode": "mpi",
+      "processes": 1,
+      "run_id": "mpi-final_macbook_air_2d-N824-P1",
+      "summary_json": "results/mpi-final_macbook_air_2d-N824-P1/summary.json"
+    },
+    {
+      "input_size_n": 824,
+      "mode": "serial",
+      "processes": 1,
+      "run_id": "serial-final_macbook_air_2d-N824",
+      "summary_json": "results/serial-final_macbook_air_2d-N824/summary.json"
+    },
+    {
+      "input_size_n": 824,
+      "mode": "mpi",
+      "processes": 2,
+      "run_id": "mpi-final_macbook_air_2d-N824-P2",
+      "summary_json": "results/mpi-final_macbook_air_2d-N824-P2/summary.json"
+    },
+    {
+      "input_size_n": 824,
+      "mode": "mpi",
+      "processes": 4,
+      "run_id": "mpi-final_macbook_air_2d-N824-P4",
+      "summary_json": "results/mpi-final_macbook_air_2d-N824-P4/summary.json"
+    }
+  ],
+  "final_processes": 4,
+  "final_ready": true,
+  "important_artifacts": {
+    "benchmark_plan": "report/BENCHMARK_PLAN.json",
+    "bundle_manifest": "report/artifacts/final_macbook_air_2d/manifest.json",
+    "comm_events_csv": "results/mpi-final_macbook_air_2d-N824-P4/comm_events.csv",
+    "communication_report": "results/communication-final_macbook_air_2d-N824-P4.json",
+    "correctness_report": "results/compare-final_macbook_air_2d-N824-P4/correctness_report.json",
+    "defense_guide": "report/MEMBER_DEFENSE_GUIDE.json",
+    "environment_json": "results/environment-final_macbook_air_2d.json",
+    "experiment_index": "report/EXPERIMENT_INDEX_final_macbook_air_2d.json",
+    "granularity_report": "results/granularity-final_macbook_air_2d-N412-P4.json",
+    "ownership_report": "report/TEAM_OWNERSHIP_REPORT.json",
+    "rank_time_breakdown_figure": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png",
+    "results_summary": "report/RESULTS_SUMMARY_final_macbook_air_2d.json",
+    "runtime_figure": "report/figures/runtime_vs_input_size_final_macbook_air_2d.png",
+    "solution_quality_report": "results/solution-quality-final_macbook_air_2d-N824-P4.json",
+    "speedup_figure": "report/figures/speedup_final_macbook_air_2d.png",
+    "tables_manifest": "report/tables/tables_manifest_final_macbook_air_2d.json",
+    "task_assignment_csv": "results/mpi-final_macbook_air_2d-N824-P4/task_assignment.csv",
+    "validation_report": "results/validation-final_macbook_air_2d-N824-P4.json"
+  },
+  "input_sizes": [
+    208,
+    412,
+    824
+  ],
+  "items": [
+    {
+      "detail": "count=3",
+      "name": "serial summaries exist",
+      "passed": true
+    },
+    {
+      "detail": "count=9",
+      "name": "MPI summaries exist",
+      "passed": true
+    },
+    {
+      "detail": "expected=[208, 412, 824], found_for_P4=[208, 412, 824]",
+      "name": "runtime-vs-N input sizes are present at final process count",
+      "passed": true
+    },
+    {
+      "detail": "expected=[208, 412, 824]",
+      "name": "serial baselines are present for expected input sizes",
+      "passed": true
+    },
+    {
+      "detail": "N=824, expected=[1, 2, 4], found=[1, 2, 4]",
+      "name": "speedup input size has requested process counts",
+      "passed": true
+    },
+    {
+      "detail": "N=824, found=[1, 2, 4]",
+      "name": "speedup has P=1 MPI baseline",
+      "passed": true
+    },
+    {
+      "detail": "N=824",
+      "name": "correctness serial run exists",
+      "passed": true
+    },
+    {
+      "detail": "N=824, P=4",
+      "name": "correctness MPI run exists",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, task_level=True",
+      "name": "serial/MPI correctness passed",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, num_failed=0, goal_error=3.371747884011707e-08, hard_collision_fraction=0.0",
+      "name": "solution quality passed",
+      "passed": true
+    },
+    {
+      "detail": "results/mpi-final_macbook_air_2d-N824-P4/comm_events.csv",
+      "name": "MPI communication events CSV exists",
+      "passed": true
+    },
+    {
+      "detail": "has_expected_collectives=True, all_events_blocking=True, observed=['bcast', 'gather', 'scatter']",
+      "name": "communication analysis passed",
+      "passed": true
+    },
+    {
+      "detail": "results/mpi-final_macbook_air_2d-N824-P4/task_assignment.csv",
+      "name": "MPI task assignment CSV exists",
+      "passed": true
+    },
+    {
+      "detail": "idle_fraction=0.007050277842431597, threshold=0.25",
+      "name": "granularity under 25 percent threshold",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/runtime_vs_input_size_final_macbook_air_2d.png",
+      "name": "runtime-vs-N figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/speedup_final_macbook_air_2d.png",
+      "name": "speedup figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png",
+      "name": "rank time breakdown figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/artifacts/final_macbook_air_2d/manifest.json",
+      "name": "report artifact bundle manifest exists",
+      "passed": true
+    },
+    {
+      "detail": "{'num_runtime_rows': 12, 'num_speedup_rows': 3, 'num_load_balance_rows': 4}",
+      "name": "result tables have rows",
+      "passed": true
+    },
+    {
+      "detail": "report/RESULTS_SUMMARY_final_macbook_air_2d.json",
+      "name": "results summary exists",
+      "passed": true
+    },
+    {
+      "detail": "results/environment-final_macbook_air_2d.json",
+      "name": "environment capture exists",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, num_members=4, minimum=250, recommended_max=700, member_lines={'Member A': 663, 'Member B': 519, 'Member C': 496, 'Member D': 665}",
+      "name": "team ownership report passed",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, num_members=4, member_files=[7, 5, 5, 5]",
+      "name": "member defense guide passed",
+      "passed": true
+    },
+    {
+      "detail": "report/EXPERIMENT_INDEX_final_macbook_air_2d.json",
+      "name": "experiment index exists",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, num_failed=0",
+      "name": "pipeline validation passed",
+      "passed": true
+    },
+    {
+      "detail": "report/BENCHMARK_PLAN.json",
+      "name": "benchmark plan exists",
+      "passed": true
+    }
+  ],
+  "label": "final_macbook_air_2d",
+  "n": 412,
+  "note": "Final-ready means required artifact structure exists and checks pass. It does not invent or modify results.",
+  "num_failed": 0,
+  "num_items": 26,
+  "process_counts": [
+    1,
+    2,
+    4
+  ],
+  "report_dir": "report",
+  "results_dir": "results",
+  "speedup_n": 824
+}

@@ -1,0 +1,277 @@
+{
+  "communication_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/communication-final_macbook_air_2d-N824-P4.json",
+      "run_id": "mpi-final_macbook_air_2d-N824-P4"
+    }
+  ],
+  "correctness_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/compare-final_macbook_air_2d-N824-P4/correctness_report.json",
+      "run_id": "compare-final_macbook_air_2d-N824-P4"
+    }
+  ],
+  "counts": {
+    "communication_reports": 1,
+    "correctness_reports": 1,
+    "defense_guides": 1,
+    "environment_reports": 1,
+    "granularity_reports": 1,
+    "mpi_runs": 9,
+    "ownership_reports": 1,
+    "report_manifests": 1,
+    "runs": 12,
+    "serial_runs": 3,
+    "solution_quality_reports": 1,
+    "table_manifests": 1,
+    "validation_reports": 0
+  },
+  "created_at": "2026-06-17 07:24:05 +0700",
+  "defense_guides": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "report/MEMBER_DEFENSE_GUIDE.json",
+      "run_id": "report"
+    }
+  ],
+  "environment_reports": [
+    {
+      "label": "final_macbook_air_2d",
+      "passed": "",
+      "path": "results/environment-final_macbook_air_2d.json",
+      "run_id": "results"
+    }
+  ],
+  "granularity_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/granularity-final_macbook_air_2d-N412-P4.json",
+      "run_id": "mpi-final_macbook_air_2d-N412-P4"
+    }
+  ],
+  "label": "final_macbook_air_2d",
+  "note": "Index only lists discovered artifacts. It does not create benchmark results.",
+  "ownership_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "report/TEAM_OWNERSHIP_REPORT.json",
+      "run_id": "report"
+    }
+  ],
+  "report_dir": "report",
+  "report_manifests": [
+    {
+      "label": "final_macbook_air_2d",
+      "passed": "",
+      "path": "report/artifacts/final_macbook_air_2d/manifest.json",
+      "run_id": "final_macbook_air_2d"
+    }
+  ],
+  "results_dir": "results",
+  "runs": [
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 208,
+      "mode": "mpi",
+      "processes": 1,
+      "run_dir": "results/mpi-final_macbook_air_2d-N208-P1",
+      "run_id": "mpi-final_macbook_air_2d-N208-P1",
+      "runtime_with_communication_s": 7.715117791085504,
+      "runtime_without_communication_s": 7.69082354195416,
+      "summary_json": "results/mpi-final_macbook_air_2d-N208-P1/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": false,
+      "has_rank_timings": false,
+      "has_task_assignment": false,
+      "input_size_n": 208,
+      "mode": "serial",
+      "processes": 1,
+      "run_dir": "results/serial-final_macbook_air_2d-N208",
+      "run_id": "serial-final_macbook_air_2d-N208",
+      "runtime_with_communication_s": 7.790780790965073,
+      "runtime_without_communication_s": 7.790780790965073,
+      "summary_json": "results/serial-final_macbook_air_2d-N208/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 208,
+      "mode": "mpi",
+      "processes": 2,
+      "run_dir": "results/mpi-final_macbook_air_2d-N208-P2",
+      "run_id": "mpi-final_macbook_air_2d-N208-P2",
+      "runtime_with_communication_s": 4.320453083026223,
+      "runtime_without_communication_s": 4.317594374995679,
+      "summary_json": "results/mpi-final_macbook_air_2d-N208-P2/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 208,
+      "mode": "mpi",
+      "processes": 4,
+      "run_dir": "results/mpi-final_macbook_air_2d-N208-P4",
+      "run_id": "mpi-final_macbook_air_2d-N208-P4",
+      "runtime_with_communication_s": 2.862703041988425,
+      "runtime_without_communication_s": 2.858614084077999,
+      "summary_json": "results/mpi-final_macbook_air_2d-N208-P4/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 412,
+      "mode": "mpi",
+      "processes": 1,
+      "run_dir": "results/mpi-final_macbook_air_2d-N412-P1",
+      "run_id": "mpi-final_macbook_air_2d-N412-P1",
+      "runtime_with_communication_s": 14.46072600001935,
+      "runtime_without_communication_s": 14.4576579160057,
+      "summary_json": "results/mpi-final_macbook_air_2d-N412-P1/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": false,
+      "has_rank_timings": false,
+      "has_task_assignment": false,
+      "input_size_n": 412,
+      "mode": "serial",
+      "processes": 1,
+      "run_dir": "results/serial-final_macbook_air_2d-N412",
+      "run_id": "serial-final_macbook_air_2d-N412",
+      "runtime_with_communication_s": 14.643057332956232,
+      "runtime_without_communication_s": 14.643057332956232,
+      "summary_json": "results/serial-final_macbook_air_2d-N412/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 412,
+      "mode": "mpi",
+      "processes": 2,
+      "run_dir": "results/mpi-final_macbook_air_2d-N412-P2",
+      "run_id": "mpi-final_macbook_air_2d-N412-P2",
+      "runtime_with_communication_s": 7.8305160839809105,
+      "runtime_without_communication_s": 7.803611291921698,
+      "summary_json": "results/mpi-final_macbook_air_2d-N412-P2/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 412,
+      "mode": "mpi",
+      "processes": 4,
+      "run_dir": "results/mpi-final_macbook_air_2d-N412-P4",
+      "run_id": "mpi-final_macbook_air_2d-N412-P4",
+      "runtime_with_communication_s": 4.915072249947116,
+      "runtime_without_communication_s": 4.878560125012882,
+      "summary_json": "results/mpi-final_macbook_air_2d-N412-P4/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 824,
+      "mode": "mpi",
+      "processes": 1,
+      "run_dir": "results/mpi-final_macbook_air_2d-N824-P1",
+      "run_id": "mpi-final_macbook_air_2d-N824-P1",
+      "runtime_with_communication_s": 27.90284570795484,
+      "runtime_without_communication_s": 27.896630415925756,
+      "summary_json": "results/mpi-final_macbook_air_2d-N824-P1/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": false,
+      "has_rank_timings": false,
+      "has_task_assignment": false,
+      "input_size_n": 824,
+      "mode": "serial",
+      "processes": 1,
+      "run_dir": "results/serial-final_macbook_air_2d-N824",
+      "run_id": "serial-final_macbook_air_2d-N824",
+      "runtime_with_communication_s": 27.869286707951687,
+      "runtime_without_communication_s": 27.869286707951687,
+      "summary_json": "results/serial-final_macbook_air_2d-N824/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 824,
+      "mode": "mpi",
+      "processes": 2,
+      "run_dir": "results/mpi-final_macbook_air_2d-N824-P2",
+      "run_id": "mpi-final_macbook_air_2d-N824-P2",
+      "runtime_with_communication_s": 14.754297000006773,
+      "runtime_without_communication_s": 14.747223583050072,
+      "summary_json": "results/mpi-final_macbook_air_2d-N824-P2/summary.json"
+    },
+    {
+      "best_cost": 0.00520870927721262,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 824,
+      "mode": "mpi",
+      "processes": 4,
+      "run_dir": "results/mpi-final_macbook_air_2d-N824-P4",
+      "run_id": "mpi-final_macbook_air_2d-N824-P4",
+      "runtime_with_communication_s": 9.315078041050583,
+      "runtime_without_communication_s": 9.277035874896683,
+      "summary_json": "results/mpi-final_macbook_air_2d-N824-P4/summary.json"
+    }
+  ],
+  "solution_quality_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/solution-quality-final_macbook_air_2d-N824-P4.json",
+      "run_id": "mpi-final_macbook_air_2d-N824-P4"
+    }
+  ],
+  "table_manifests": [
+    {
+      "label": "final_macbook_air_2d",
+      "passed": "",
+      "path": "report/tables/tables_manifest_final_macbook_air_2d.json",
+      "run_id": "tables"
+    }
+  ],
+  "validation_reports": []
+}

@@ -1,0 +1,19 @@
+{
+  "fixed_size": null,
+  "input_size": 824,
+  "label": "final_macbook_air_2d",
+  "load_balance_run": "results/mpi-final_macbook_air_2d-N412-P4",
+  "note": "Tables are derived from real benchmark artifacts only.",
+  "num_load_balance_rows": 4,
+  "num_runtime_rows": 12,
+  "num_speedup_rows": 3,
+  "output_dir": "report/tables",
+  "paths": {
+    "load_balance_csv": "report/tables/load_balance_table_final_macbook_air_2d.csv",
+    "manifest_json": "report/tables/tables_manifest_final_macbook_air_2d.json",
+    "markdown": "report/tables/RESULTS_TABLES_final_macbook_air_2d.md",
+    "runtime_csv": "report/tables/runtime_table_final_macbook_air_2d.csv",
+    "speedup_csv": "report/tables/speedup_table_final_macbook_air_2d.csv"
+  },
+  "results_dir": "results"
+}

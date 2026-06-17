@@ -1,0 +1,149 @@
+{
+  "communication_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/communication-mini_sweep-N2-P2.json",
+      "run_id": "mpi-mini_sweep-N2-P2"
+    }
+  ],
+  "correctness_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/compare-mini_sweep-N2-P2/correctness_report.json",
+      "run_id": "compare-mini_sweep-N2-P2"
+    }
+  ],
+  "counts": {
+    "communication_reports": 1,
+    "correctness_reports": 1,
+    "defense_guides": 1,
+    "environment_reports": 1,
+    "granularity_reports": 1,
+    "mpi_runs": 2,
+    "ownership_reports": 1,
+    "report_manifests": 1,
+    "runs": 3,
+    "serial_runs": 1,
+    "solution_quality_reports": 1,
+    "table_manifests": 1,
+    "validation_reports": 1
+  },
+  "created_at": "2026-06-17 06:48:27 +0700",
+  "defense_guides": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "report/MEMBER_DEFENSE_GUIDE.json",
+      "run_id": "report"
+    }
+  ],
+  "environment_reports": [
+    {
+      "label": "mini_sweep",
+      "passed": "",
+      "path": "results/environment-mini_sweep.json",
+      "run_id": "results"
+    }
+  ],
+  "granularity_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/granularity-mini_sweep-N2-P2.json",
+      "run_id": "mpi-mini_sweep-N2-P2"
+    }
+  ],
+  "label": "mini_sweep",
+  "note": "Index only lists discovered artifacts. It does not create benchmark results.",
+  "ownership_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "report/TEAM_OWNERSHIP_REPORT.json",
+      "run_id": "report"
+    }
+  ],
+  "report_dir": "report",
+  "report_manifests": [
+    {
+      "label": "mini_sweep",
+      "passed": "",
+      "path": "report/artifacts/mini_sweep/manifest.json",
+      "run_id": "mini_sweep"
+    }
+  ],
+  "results_dir": "results",
+  "runs": [
+    {
+      "best_cost": 0.009058685973286629,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 2,
+      "mode": "mpi",
+      "processes": 1,
+      "run_dir": "results/mpi-mini_sweep-N2-P1",
+      "run_id": "mpi-mini_sweep-N2-P1",
+      "runtime_with_communication_s": 0.4849481249693781,
+      "runtime_without_communication_s": 0.48467129201162606,
+      "summary_json": "results/mpi-mini_sweep-N2-P1/summary.json"
+    },
+    {
+      "best_cost": 0.009058685973286629,
+      "has_best_path": true,
+      "has_comm_events": false,
+      "has_rank_timings": false,
+      "has_task_assignment": false,
+      "input_size_n": 2,
+      "mode": "serial",
+      "processes": 1,
+      "run_dir": "results/serial-mini_sweep-N2",
+      "run_id": "serial-mini_sweep-N2",
+      "runtime_with_communication_s": 0.9383412080351263,
+      "runtime_without_communication_s": 0.9383412080351263,
+      "summary_json": "results/serial-mini_sweep-N2/summary.json"
+    },
+    {
+      "best_cost": 0.009058685973286629,
+      "has_best_path": true,
+      "has_comm_events": true,
+      "has_rank_timings": true,
+      "has_task_assignment": true,
+      "input_size_n": 2,
+      "mode": "mpi",
+      "processes": 2,
+      "run_dir": "results/mpi-mini_sweep-N2-P2",
+      "run_id": "mpi-mini_sweep-N2-P2",
+      "runtime_with_communication_s": 0.53744608303532,
+      "runtime_without_communication_s": 0.536736375070177,
+      "summary_json": "results/mpi-mini_sweep-N2-P2/summary.json"
+    }
+  ],
+  "solution_quality_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/solution-quality-mini_sweep-N2-P2.json",
+      "run_id": "mpi-mini_sweep-N2-P2"
+    }
+  ],
+  "table_manifests": [
+    {
+      "label": "mini_sweep",
+      "passed": "",
+      "path": "report/tables/tables_manifest_mini_sweep.json",
+      "run_id": "tables"
+    }
+  ],
+  "validation_reports": [
+    {
+      "label": "",
+      "passed": true,
+      "path": "results/validation-mini_sweep-N2-P2.json",
+      "run_id": "results"
+    }
+  ]
+}

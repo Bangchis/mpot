@@ -1,0 +1,83 @@
+{
+  "base_seed": 20260617,
+  "cost": {
+    "boundary_weight": 20.0,
+    "goal_weight": 8.0,
+    "obstacle_weight": 25.0,
+    "smoothness_weight": 0.03,
+    "velocity_weight": 0.002
+  },
+  "device": "cpu",
+  "dtype": "float32",
+  "experiment_name": "mini_sweep_N2",
+  "optimizer": {
+    "ent_epsilon_target": 0.02,
+    "epsilon_target": 0.01,
+    "max_inner_iters": 20,
+    "max_outer_iters": 8,
+    "min_outer_iters": 3,
+    "num_particles": 6,
+    "num_probe": 2,
+    "outer_threshold": 0.0001,
+    "polytope": "orthoplex",
+    "probe_radius": 0.14,
+    "sigma_goal_init": 0.001,
+    "sigma_gp_init": 0.7,
+    "sigma_start_init": 0.001,
+    "sinkhorn_threshold": 1e-05,
+    "step_radius": 0.1
+  },
+  "output_dir": "results",
+  "problem": {
+    "dt": 0.05,
+    "goal": [
+      0.85,
+      0.85,
+      0.0,
+      0.0
+    ],
+    "obstacles": [
+      {
+        "center": [
+          -0.2,
+          -0.05
+        ],
+        "radius": 0.22,
+        "safety_margin": 0.05
+      },
+      {
+        "center": [
+          0.28,
+          0.18
+        ],
+        "radius": 0.2,
+        "safety_margin": 0.05
+      }
+    ],
+    "pos_limits": [
+      -1.0,
+      1.0
+    ],
+    "start": [
+      -0.85,
+      -0.85,
+      0.0,
+      0.0
+    ],
+    "traj_len": 24,
+    "vel_limits": [
+      -3.0,
+      3.0
+    ],
+    "workspace_max": [
+      1.0,
+      1.0
+    ],
+    "workspace_min": [
+      -1.0,
+      -1.0
+    ]
+  },
+  "torch_num_threads": 1,
+  "total_tasks": 2
+}

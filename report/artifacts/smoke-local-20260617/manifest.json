@@ -1,0 +1,250 @@
+{
+  "artifacts_dir": "report/artifacts/smoke-local-20260617",
+  "bundle_name": "smoke-local-20260617",
+  "clean_existing": true,
+  "correctness_reports": [
+    {
+      "report": "report/artifacts/smoke-local-20260617/correctness_report/compare-20260617-032727/correctness_report.json",
+      "task_comparison_csv": "report/artifacts/smoke-local-20260617/correctness_report/compare-20260617-032727/task_comparison.csv"
+    }
+  ],
+  "created_at": "2026-06-17 03:29:22 +0700",
+  "dry_run": false,
+  "entries": [
+    {
+      "bytes": 1454,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/serial/serial-smoke-local-v2/config.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-smoke-local-v2/config.json"
+    },
+    {
+      "bytes": 2850,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/serial/serial-smoke-local-v2/summary.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-smoke-local-v2/summary.json"
+    },
+    {
+      "bytes": 452,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/serial/serial-smoke-local-v2/task_results.csv",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-smoke-local-v2/task_results.csv"
+    },
+    {
+      "bytes": 13204,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/serial/serial-smoke-local-v2/task_results.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-smoke-local-v2/task_results.json"
+    },
+    {
+      "bytes": 896,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/serial/serial-smoke-local-v2/best_trajectory.npy",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-smoke-local-v2/best_trajectory.npy"
+    },
+    {
+      "bytes": 71117,
+      "copied": true,
+      "destination": "report/figures/smoke-local-20260617_serial_serial-smoke-local-v2_best_path.png",
+      "exists": true,
+      "note": "",
+      "role": "serial figure",
+      "source": "results/serial-smoke-local-v2/best_path.png"
+    },
+    {
+      "bytes": 40838,
+      "copied": true,
+      "destination": "report/figures/smoke-local-20260617_serial_serial-smoke-local-v2_cost_by_task.png",
+      "exists": true,
+      "note": "",
+      "role": "serial figure",
+      "source": "results/serial-smoke-local-v2/cost_by_task.png"
+    },
+    {
+      "bytes": 1454,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/mpi/mpi-smoke-local-np4/config.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-smoke-local-np4/config.json"
+    },
+    {
+      "bytes": 3370,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/mpi/mpi-smoke-local-np4/summary.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-smoke-local-np4/summary.json"
+    },
+    {
+      "bytes": 438,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/mpi/mpi-smoke-local-np4/task_results.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-smoke-local-np4/task_results.csv"
+    },
+    {
+      "bytes": 13198,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/mpi/mpi-smoke-local-np4/task_results.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-smoke-local-np4/task_results.json"
+    },
+    {
+      "bytes": 896,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/mpi/mpi-smoke-local-np4/best_trajectory.npy",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-smoke-local-np4/best_trajectory.npy"
+    },
+    {
+      "bytes": 620,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/mpi/mpi-smoke-local-np4/rank_timings.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi timing data",
+      "source": "results/mpi-smoke-local-np4/rank_timings.csv"
+    },
+    {
+      "bytes": 71117,
+      "copied": true,
+      "destination": "report/figures/smoke-local-20260617_mpi_mpi-smoke-local-np4_best_path.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-smoke-local-np4/best_path.png"
+    },
+    {
+      "bytes": 40838,
+      "copied": true,
+      "destination": "report/figures/smoke-local-20260617_mpi_mpi-smoke-local-np4_cost_by_task.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-smoke-local-np4/cost_by_task.png"
+    },
+    {
+      "bytes": 34621,
+      "copied": true,
+      "destination": "report/figures/smoke-local-20260617_mpi_mpi-smoke-local-np4_rank_time_breakdown.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-smoke-local-np4/rank_time_breakdown.png"
+    },
+    {
+      "bytes": 987,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/correctness_report/compare-20260617-032727/correctness_report.json",
+      "exists": true,
+      "note": "",
+      "role": "correctness report",
+      "source": "results/compare-20260617-032727/correctness_report.json"
+    },
+    {
+      "bytes": 544,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/correctness_report/compare-20260617-032727/task_comparison.csv",
+      "exists": true,
+      "note": "",
+      "role": "correctness task comparison",
+      "source": "results/compare-20260617-032727/task_comparison.csv"
+    },
+    {
+      "bytes": 4078,
+      "copied": true,
+      "destination": "report/artifacts/smoke-local-20260617/validation_report/results/smoke_validation_report.json",
+      "exists": true,
+      "note": "",
+      "role": "validation report",
+      "source": "results/smoke_validation_report.json"
+    },
+    {
+      "bytes": 33430,
+      "copied": false,
+      "destination": "report/figures/runtime_vs_input_size_mini_sweep.png",
+      "exists": true,
+      "note": "generated directly into report/figures from result summaries",
+      "role": "aggregate runtime figure",
+      "source": "generated from results"
+    },
+    {
+      "bytes": 40217,
+      "copied": false,
+      "destination": "report/figures/speedup_mini_sweep.png",
+      "exists": true,
+      "note": "generated directly into report/figures from result summaries",
+      "role": "aggregate speedup figure",
+      "source": "generated from results"
+    }
+  ],
+  "figures_dir": "report/figures",
+  "fixed_size": null,
+  "generated_plots": [
+    "report/figures/runtime_vs_input_size_mini_sweep.png",
+    "report/figures/speedup_mini_sweep.png"
+  ],
+  "input_size": 2,
+  "label": "mini_sweep",
+  "manifest_path": "report/artifacts/smoke-local-20260617/manifest.json",
+  "markdown_path": "report/ARTIFACT_MANIFEST.md",
+  "note": "Use only listed real artifacts for report Results. Do not invent numbers.",
+  "report_dir": "report",
+  "results_dir": "results",
+  "runs": [
+    {
+      "artifact_dir": "report/artifacts/smoke-local-20260617/serial/serial-smoke-local-v2",
+      "figures": [
+        "report/figures/smoke-local-20260617_serial_serial-smoke-local-v2_best_path.png",
+        "report/figures/smoke-local-20260617_serial_serial-smoke-local-v2_cost_by_task.png"
+      ],
+      "mode": "serial",
+      "run_dir": "results/serial-smoke-local-v2",
+      "run_id": "serial-smoke-local-v2",
+      "run_kind": "serial",
+      "size": 1,
+      "total_tasks": 4
+    },
+    {
+      "artifact_dir": "report/artifacts/smoke-local-20260617/mpi/mpi-smoke-local-np4",
+      "figures": [
+        "report/figures/smoke-local-20260617_mpi_mpi-smoke-local-np4_best_path.png",
+        "report/figures/smoke-local-20260617_mpi_mpi-smoke-local-np4_cost_by_task.png",
+        "report/figures/smoke-local-20260617_mpi_mpi-smoke-local-np4_rank_time_breakdown.png"
+      ],
+      "mode": "mpi",
+      "run_dir": "results/mpi-smoke-local-np4",
+      "run_id": "mpi-smoke-local-np4",
+      "run_kind": "mpi",
+      "size": 4,
+      "total_tasks": 4
+    }
+  ],
+  "strict": true,
+  "validation_reports": [
+    "report/artifacts/smoke-local-20260617/validation_report/results/smoke_validation_report.json"
+  ]
+}

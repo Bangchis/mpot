@@ -1,0 +1,313 @@
+{
+  "created_at": "2026-06-17 15:22:46 +0700",
+  "duplicate_files": [],
+  "members": [
+    {
+      "area": "2D planning problem and configuration",
+      "counted_files": 7,
+      "files": [
+        {
+          "blank_lines": 69,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 272,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/problem_2d.py",
+          "suffix": ".py",
+          "total_lines": 341
+        },
+        {
+          "blank_lines": 50,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 150,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/config.py",
+          "suffix": ".py",
+          "total_lines": 200
+        },
+        {
+          "blank_lines": 1,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 47,
+          "note": "json nonblank config lines",
+          "path": "configs/local_smoke.json",
+          "suffix": ".json",
+          "total_lines": 48
+        },
+        {
+          "blank_lines": 1,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 48,
+          "note": "json nonblank config lines",
+          "path": "configs/local_benchmark.json",
+          "suffix": ".json",
+          "total_lines": 49
+        },
+        {
+          "blank_lines": 0,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 46,
+          "note": "json nonblank config lines",
+          "path": "configs/variant_open_2d.json",
+          "suffix": ".json",
+          "total_lines": 46
+        },
+        {
+          "blank_lines": 0,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 49,
+          "note": "json nonblank config lines",
+          "path": "configs/variant_narrow_passage_2d.json",
+          "suffix": ".json",
+          "total_lines": 49
+        },
+        {
+          "blank_lines": 0,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 51,
+          "note": "json nonblank config lines",
+          "path": "configs/variant_cluttered_2d.json",
+          "suffix": ".json",
+          "total_lines": 51
+        }
+      ],
+      "meaningful_lines": 663,
+      "member": "Member A",
+      "minimum_lines": 250,
+      "missing_files": 0,
+      "passed": true,
+      "recommended_max_lines": 700,
+      "total_lines": 784,
+      "within_recommended_size": true
+    },
+    {
+      "area": "Local optimizer, serial baseline, and correctness",
+      "counted_files": 5,
+      "files": [
+        {
+          "blank_lines": 37,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 160,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/local_runner.py",
+          "suffix": ".py",
+          "total_lines": 197
+        },
+        {
+          "blank_lines": 26,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 96,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/reduction.py",
+          "suffix": ".py",
+          "total_lines": 122
+        },
+        {
+          "blank_lines": 28,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 177,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/correctness.py",
+          "suffix": ".py",
+          "total_lines": 205
+        },
+        {
+          "blank_lines": 14,
+          "comment_lines": 1,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 51,
+          "note": "python nonblank noncomment lines",
+          "path": "scripts/run_serial.py",
+          "suffix": ".py",
+          "total_lines": 66
+        },
+        {
+          "blank_lines": 12,
+          "comment_lines": 1,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 35,
+          "note": "python nonblank noncomment lines",
+          "path": "scripts/compare_serial_mpi.py",
+          "suffix": ".py",
+          "total_lines": 48
+        }
+      ],
+      "meaningful_lines": 519,
+      "member": "Member B",
+      "minimum_lines": 250,
+      "missing_files": 0,
+      "passed": true,
+      "recommended_max_lines": 700,
+      "total_lines": 638,
+      "within_recommended_size": true
+    },
+    {
+      "area": "MPI parallelization, mapping, rank behavior, and communication trace",
+      "counted_files": 5,
+      "files": [
+        {
+          "blank_lines": 22,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 47,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/mpi_scheduler.py",
+          "suffix": ".py",
+          "total_lines": 69
+        },
+        {
+          "blank_lines": 25,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 230,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/mpi_runner.py",
+          "suffix": ".py",
+          "total_lines": 255
+        },
+        {
+          "blank_lines": 29,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 152,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/communication.py",
+          "suffix": ".py",
+          "total_lines": 181
+        },
+        {
+          "blank_lines": 11,
+          "comment_lines": 1,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 28,
+          "note": "python nonblank noncomment lines",
+          "path": "scripts/run_mpi.py",
+          "suffix": ".py",
+          "total_lines": 40
+        },
+        {
+          "blank_lines": 12,
+          "comment_lines": 1,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 39,
+          "note": "python nonblank noncomment lines",
+          "path": "scripts/analyze_communication.py",
+          "suffix": ".py",
+          "total_lines": 52
+        }
+      ],
+      "meaningful_lines": 496,
+      "member": "Member C",
+      "minimum_lines": 250,
+      "missing_files": 0,
+      "passed": true,
+      "recommended_max_lines": 700,
+      "total_lines": 597,
+      "within_recommended_size": true
+    },
+    {
+      "area": "Metrics, plots, result tables, and load-balance evidence",
+      "counted_files": 5,
+      "files": [
+        {
+          "blank_lines": 26,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 59,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/metrics.py",
+          "suffix": ".py",
+          "total_lines": 85
+        },
+        {
+          "blank_lines": 36,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 192,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/plots.py",
+          "suffix": ".py",
+          "total_lines": 228
+        },
+        {
+          "blank_lines": 51,
+          "comment_lines": 0,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 330,
+          "note": "python nonblank noncomment lines",
+          "path": "mpot/benchmarks/result_tables.py",
+          "suffix": ".py",
+          "total_lines": 381
+        },
+        {
+          "blank_lines": 12,
+          "comment_lines": 1,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 40,
+          "note": "python nonblank noncomment lines",
+          "path": "scripts/analyze_granularity.py",
+          "suffix": ".py",
+          "total_lines": 53
+        },
+        {
+          "blank_lines": 12,
+          "comment_lines": 1,
+          "counted": true,
+          "exists": true,
+          "meaningful_lines": 44,
+          "note": "python nonblank noncomment lines",
+          "path": "scripts/plot_results.py",
+          "suffix": ".py",
+          "total_lines": 57
+        }
+      ],
+      "meaningful_lines": 665,
+      "member": "Member D",
+      "minimum_lines": 250,
+      "missing_files": 0,
+      "passed": true,
+      "recommended_max_lines": 700,
+      "total_lines": 804,
+      "within_recommended_size": true
+    }
+  ],
+  "minimum_lines_per_member": 250,
+  "minimum_total_lines": 1000,
+  "note": "Counts cover the compact primary defense set for each member. They exclude blank Python lines, Python comment-only lines, docs, slides, results, report text, and shared support modules that no single member has to defend in full.",
+  "num_failed_members": 0,
+  "num_members": 4,
+  "passed": true,
+  "recommended_max_lines_per_member": 700,
+  "repo_root": "/Users/bangbang/Desktop/code python/mpot",
+  "total_meaningful_lines": 2343
+}

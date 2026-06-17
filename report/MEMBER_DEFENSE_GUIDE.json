@@ -1,0 +1,909 @@
+{
+  "created_at": "2026-06-17 15:22:46 +0700",
+  "max_symbols_per_file": 12,
+  "members": [
+    {
+      "area": "2D planning problem and configuration",
+      "demo_commands": [
+        "python scripts/run_serial.py --config configs/local_smoke.json"
+      ],
+      "files": [
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 272,
+          "path": "mpot/benchmarks/problem_2d.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "Import torch lazily so docs/check scripts can run before deps are installed.",
+              "kind": "function",
+              "line": 17,
+              "name": "require_torch"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 30,
+              "name": "torch_dtype"
+            },
+            {
+              "doc": "Circular obstacle in the 2D workspace.",
+              "kind": "class",
+              "line": 40,
+              "name": "CircleObstacle"
+            },
+            {
+              "doc": "Complete 2D point-robot problem used by one experiment config.",
+              "kind": "class",
+              "line": 49,
+              "name": "PlanningProblem2D"
+            },
+            {
+              "doc": "Objective function called by ``SinkhornStep`` during local optimization.",
+              "kind": "class",
+              "line": 184,
+              "name": "MPOTObjective2D"
+            },
+            {
+              "doc": "Return a JSON-friendly problem summary for run artifacts.",
+              "kind": "function",
+              "line": 296,
+              "name": "summarize_problem"
+            },
+            {
+              "doc": "Return a simple start-to-goal trajectory useful for explanations.",
+              "kind": "function",
+              "line": 318,
+              "name": "straight_line_reference"
+            },
+            {
+              "doc": "Compute geometric path length from a trajectory list.",
+              "kind": "function",
+              "line": 332,
+              "name": "euclidean_path_length"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 150,
+          "path": "mpot/benchmarks/config.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "Circle obstacle used by the 2D point-robot benchmark.",
+              "kind": "class",
+              "line": 19,
+              "name": "ObstacleConfig"
+            },
+            {
+              "doc": "Geometry and trajectory settings for the benchmark problem.",
+              "kind": "class",
+              "line": 28,
+              "name": "ProblemConfig"
+            },
+            {
+              "doc": "Weights used to score complete trajectories and local probes.",
+              "kind": "class",
+              "line": 48,
+              "name": "CostConfig"
+            },
+            {
+              "doc": "MPOT/Sinkhorn parameters for each local planning task.",
+              "kind": "class",
+              "line": 59,
+              "name": "OptimizerConfig"
+            },
+            {
+              "doc": "Top-level config loaded by serial and MPI entrypoints.",
+              "kind": "class",
+              "line": 80,
+              "name": "ExperimentConfig"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 111,
+              "name": "_coerce_obstacle"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 119,
+              "name": "_coerce_problem"
+            },
+            {
+              "doc": "Build an ExperimentConfig from a nested dictionary.",
+              "kind": "function",
+              "line": 125,
+              "name": "config_from_dict"
+            },
+            {
+              "doc": "Convert a config dataclass tree into plain JSON data.",
+              "kind": "function",
+              "line": 144,
+              "name": "config_to_dict"
+            },
+            {
+              "doc": "Return a stable short hash for a plain config dictionary.",
+              "kind": "function",
+              "line": 150,
+              "name": "config_hash_from_dict"
+            },
+            {
+              "doc": "Return a stable short hash for an ExperimentConfig.",
+              "kind": "function",
+              "line": 157,
+              "name": "config_hash"
+            },
+            {
+              "doc": "Load and validate a JSON experiment config.",
+              "kind": "function",
+              "line": 163,
+              "name": "load_config"
+            }
+          ]
+        },
+        {
+          "config_keys": [
+            "experiment_name",
+            "output_dir",
+            "base_seed",
+            "total_tasks",
+            "torch_num_threads",
+            "device",
+            "dtype",
+            "problem",
+            "cost",
+            "optimizer"
+          ],
+          "exists": true,
+          "meaningful_lines": 47,
+          "path": "configs/local_smoke.json",
+          "suffix": ".json",
+          "symbols": []
+        },
+        {
+          "config_keys": [
+            "experiment_name",
+            "output_dir",
+            "base_seed",
+            "total_tasks",
+            "torch_num_threads",
+            "device",
+            "dtype",
+            "problem",
+            "cost",
+            "optimizer"
+          ],
+          "exists": true,
+          "meaningful_lines": 48,
+          "path": "configs/local_benchmark.json",
+          "suffix": ".json",
+          "symbols": []
+        },
+        {
+          "config_keys": [
+            "experiment_name",
+            "output_dir",
+            "base_seed",
+            "total_tasks",
+            "torch_num_threads",
+            "device",
+            "dtype",
+            "problem",
+            "cost",
+            "optimizer"
+          ],
+          "exists": true,
+          "meaningful_lines": 46,
+          "path": "configs/variant_open_2d.json",
+          "suffix": ".json",
+          "symbols": []
+        },
+        {
+          "config_keys": [
+            "experiment_name",
+            "output_dir",
+            "base_seed",
+            "total_tasks",
+            "torch_num_threads",
+            "device",
+            "dtype",
+            "problem",
+            "cost",
+            "optimizer"
+          ],
+          "exists": true,
+          "meaningful_lines": 49,
+          "path": "configs/variant_narrow_passage_2d.json",
+          "suffix": ".json",
+          "symbols": []
+        },
+        {
+          "config_keys": [
+            "experiment_name",
+            "output_dir",
+            "base_seed",
+            "total_tasks",
+            "torch_num_threads",
+            "device",
+            "dtype",
+            "problem",
+            "cost",
+            "optimizer"
+          ],
+          "exists": true,
+          "meaningful_lines": 51,
+          "path": "configs/variant_cluttered_2d.json",
+          "suffix": ".json",
+          "symbols": []
+        }
+      ],
+      "meaningful_lines": 663,
+      "member": "Member A",
+      "practice_questions": [
+        "What is the robot state in this benchmark?",
+        "How are circular obstacles represented?",
+        "Which terms are included in the trajectory cost?",
+        "Why is a 2D point robot acceptable for this parallel-programming demo?"
+      ]
+    },
+    {
+      "area": "Local optimizer, serial baseline, and correctness",
+      "demo_commands": [
+        "python scripts/run_serial.py --config configs/local_smoke.json",
+        "python scripts/compare_serial_mpi.py --serial results/serial-mini_sweep-N2 --mpi results/mpi-mini_sweep-N2-P2"
+      ],
+      "files": [
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 160,
+          "path": "mpot/benchmarks/local_runner.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "Seed Python and PyTorch for repeatable task-level experiments.",
+              "kind": "function",
+              "line": 14,
+              "name": "_fix_local_seed"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 22,
+              "name": "_make_tensor_args"
+            },
+            {
+              "doc": "Construct the original MPOT planner for one local task.",
+              "kind": "function",
+              "line": 28,
+              "name": "build_planner"
+            },
+            {
+              "doc": "Run one task/seed and return its best trajectory.",
+              "kind": "function",
+              "line": 82,
+              "name": "run_task"
+            },
+            {
+              "doc": "Fix start/goal in trace frames before scoring or plotting.",
+              "kind": "function",
+              "line": 122,
+              "name": "_fix_trace_endpoints"
+            },
+            {
+              "doc": "Build one JSON-friendly algorithm trace frame.",
+              "kind": "function",
+              "line": 134,
+              "name": "_trace_frame"
+            },
+            {
+              "doc": "Rerun one task with MPOT history enabled for algorithm visualization.",
+              "kind": "function",
+              "line": 153,
+              "name": "run_task_trace"
+            },
+            {
+              "doc": "Run all tasks sequentially and return all results, best result, total time.",
+              "kind": "function",
+              "line": 191,
+              "name": "run_tasks_serial"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 96,
+          "path": "mpot/benchmarks/reduction.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "Best trajectory summary produced by one task/seed.",
+              "kind": "class",
+              "line": 11,
+              "name": "TaskResult"
+            },
+            {
+              "doc": "Per-rank timing summary gathered by rank 0.",
+              "kind": "class",
+              "line": 46,
+              "name": "RankTiming"
+            },
+            {
+              "doc": "Sort key used by both serial and MPI result reduction.",
+              "kind": "function",
+              "line": 72,
+              "name": "result_key"
+            },
+            {
+              "doc": "Return the deterministic best result from a non-empty iterable.",
+              "kind": "function",
+              "line": 86,
+              "name": "choose_best"
+            },
+            {
+              "doc": "Flatten gathered per-rank result lists into one task-result list.",
+              "kind": "function",
+              "line": 95,
+              "name": "flatten_result_groups"
+            },
+            {
+              "doc": "Rebuild TaskResult objects from JSON data.",
+              "kind": "function",
+              "line": 104,
+              "name": "task_results_from_json"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 177,
+          "path": "mpot/benchmarks/correctness.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "One row comparing a serial task result with the MPI task result.",
+              "kind": "class",
+              "line": 21,
+              "name": "TaskComparison"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 73,
+              "name": "_close"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 77,
+              "name": "_task_index"
+            },
+            {
+              "doc": "Compare serial and MPI task-level outputs.",
+              "kind": "function",
+              "line": 89,
+              "name": "compare_task_results"
+            },
+            {
+              "doc": "Load task results from a standard run directory.",
+              "kind": "function",
+              "line": 160,
+              "name": "load_run_task_results"
+            },
+            {
+              "doc": "Compare two standard run directories and return report payload plus rows.",
+              "kind": "function",
+              "line": 166,
+              "name": "compare_run_directories"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 51,
+          "path": "scripts/run_serial.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 24,
+              "name": "parse_args"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 33,
+              "name": "main"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 35,
+          "path": "scripts/compare_serial_mpi.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 21,
+              "name": "parse_args"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 31,
+              "name": "main"
+            }
+          ]
+        }
+      ],
+      "meaningful_lines": 519,
+      "member": "Member B",
+      "practice_questions": [
+        "What is one planning task?",
+        "Why do we need a serial baseline?",
+        "How does deterministic best-result reduction work?",
+        "What does task_comparison.csv prove?"
+      ]
+    },
+    {
+      "area": "MPI parallelization, mapping, rank behavior, and communication trace",
+      "demo_commands": [
+        "mpirun -np 4 python scripts/run_mpi.py --config configs/local_smoke.json",
+        "python scripts/analyze_communication.py --run-dir results/mpi-mini_sweep-N2-P2 --output results/communication-mini_sweep-N2-P2.json --markdown report/COMMUNICATION_mini_sweep.md --label mini_sweep"
+      ],
+      "files": [
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 47,
+          "path": "mpot/benchmarks/mpi_scheduler.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "Minimal task description that can be sent to an MPI worker.",
+              "kind": "class",
+              "line": 13,
+              "name": "TaskSpec"
+            },
+            {
+              "doc": "Create deterministic tasks in task-id order.",
+              "kind": "function",
+              "line": 20,
+              "name": "build_tasks"
+            },
+            {
+              "doc": "Return the rank that owns one task under 1D cyclic mapping.",
+              "kind": "function",
+              "line": 28,
+              "name": "cyclic_owner"
+            },
+            {
+              "doc": "Split tasks into one chunk per rank using cyclic mapping.",
+              "kind": "function",
+              "line": 38,
+              "name": "cyclic_chunks"
+            },
+            {
+              "doc": "Check that every task appears exactly once in the chunk list.",
+              "kind": "function",
+              "line": 49,
+              "name": "validate_assignment"
+            },
+            {
+              "doc": "Return a readable summary for logs and JSON output.",
+              "kind": "function",
+              "line": 58,
+              "name": "describe_chunks"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 230,
+          "path": "mpot/benchmarks/mpi_runner.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 18,
+              "name": "require_mpi4py"
+            },
+            {
+              "doc": "Record one blocking MPI communication event and return its duration.",
+              "kind": "function",
+              "line": 26,
+              "name": "_record_comm_event"
+            },
+            {
+              "doc": "Run the MPI benchmark.",
+              "kind": "function",
+              "line": 58,
+              "name": "run_mpi_benchmark"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 152,
+          "path": "mpot/benchmarks/communication.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 15,
+              "name": "_read_comm_events"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 20,
+              "name": "_as_bool"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 24,
+              "name": "_as_float"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 29,
+              "name": "_as_int_or_none"
+            },
+            {
+              "doc": "Analyze blocking collectives recorded by one MPI run.",
+              "kind": "function",
+              "line": 34,
+              "name": "analyze_communication"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 105,
+              "name": "_fmt"
+            },
+            {
+              "doc": "Render communication analysis as Markdown.",
+              "kind": "function",
+              "line": 115,
+              "name": "communication_markdown"
+            },
+            {
+              "doc": "Write communication analysis JSON and Markdown files.",
+              "kind": "function",
+              "line": 168,
+              "name": "write_communication_analysis"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 28,
+          "path": "scripts/run_mpi.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 20,
+              "name": "parse_args"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 29,
+              "name": "main"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 39,
+          "path": "scripts/analyze_communication.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 18,
+              "name": "parse_args"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 27,
+              "name": "main"
+            }
+          ]
+        }
+      ],
+      "meaningful_lines": 496,
+      "member": "Member C",
+      "practice_questions": [
+        "What level of parallelism does the project use?",
+        "How does task i -> rank i mod P work?",
+        "Which blocking MPI collectives are used?",
+        "What do comm_events.csv and task_assignment.csv prove?"
+      ]
+    },
+    {
+      "area": "Metrics, plots, result tables, and load-balance evidence",
+      "demo_commands": [
+        "python scripts/generate_ownership_report.py",
+        "python scripts/analyze_granularity.py --run-dir results/mpi-mini_sweep-N2-P2 --output results/granularity-mini_sweep-N2-P2.json --markdown report/GRANULARITY_mini_sweep.md --label mini_sweep",
+        "python scripts/plot_results.py --results results --output report/figures --label mini_sweep --input-size 2"
+      ],
+      "files": [
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 59,
+          "path": "mpot/benchmarks/metrics.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "Compact load-balance result for report and JSON output.",
+              "kind": "class",
+              "line": 13,
+              "name": "LoadBalanceSummary"
+            },
+            {
+              "doc": "Program runtime is the slowest rank's total time.",
+              "kind": "function",
+              "line": 30,
+              "name": "runtime_with_communication"
+            },
+            {
+              "doc": "Compute-only runtime is the slowest rank's compute time.",
+              "kind": "function",
+              "line": 39,
+              "name": "runtime_without_communication"
+            },
+            {
+              "doc": "Return S(P) = T(1) / T(P).",
+              "kind": "function",
+              "line": 48,
+              "name": "compute_speedup"
+            },
+            {
+              "doc": "Return E(P) = S(P) / P.",
+              "kind": "function",
+              "line": 56,
+              "name": "compute_efficiency"
+            },
+            {
+              "doc": "Check the 25% imbalance rule requested by the instructor.",
+              "kind": "function",
+              "line": 64,
+              "name": "summarize_load_balance"
+            },
+            {
+              "doc": "Convert rank timings to serializable rows.",
+              "kind": "function",
+              "line": 81,
+              "name": "rank_timing_records"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 192,
+          "path": "mpot/benchmarks/plots.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 16,
+              "name": "_require_matplotlib"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 24,
+              "name": "_read_csv"
+            },
+            {
+              "doc": "Load the best trajectory and 2D problem summary for one run.",
+              "kind": "function",
+              "line": 29,
+              "name": "_best_trajectory_and_problem"
+            },
+            {
+              "doc": "Draw the best trajectory and circular obstacles for one run.",
+              "kind": "function",
+              "line": 41,
+              "name": "plot_best_path"
+            },
+            {
+              "doc": "Create the stacked compute/communication bar chart required by the report.",
+              "kind": "function",
+              "line": 83,
+              "name": "plot_rank_time_breakdown"
+            },
+            {
+              "doc": "Plot task cost to make stochastic search behavior visible.",
+              "kind": "function",
+              "line": 107,
+              "name": "plot_cost_by_task"
+            },
+            {
+              "doc": "Read every summary.json under a results directory.",
+              "kind": "function",
+              "line": 128,
+              "name": "collect_summaries"
+            },
+            {
+              "doc": "Plot runtime against total_tasks for all discovered summaries.",
+              "kind": "function",
+              "line": 150,
+              "name": "plot_runtime_vs_input_size"
+            },
+            {
+              "doc": "Plot speedup for summaries that share the largest input size.",
+              "kind": "function",
+              "line": 188,
+              "name": "plot_speedup"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 330,
+          "path": "mpot/benchmarks/result_tables.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "Output paths written by export_result_tables.",
+              "kind": "class",
+              "line": 64,
+              "name": "ResultTablePaths"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 83,
+              "name": "_finite_or_blank"
+            },
+            {
+              "doc": "Format values compactly for Markdown without hiding the raw CSV values.",
+              "kind": "function",
+              "line": 87,
+              "name": "_fmt"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 101,
+              "name": "_read_rank_timing_rows"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 106,
+              "name": "_summary_source"
+            },
+            {
+              "doc": "Build runtime-vs-N rows from summary.json files.",
+              "kind": "function",
+              "line": 111,
+              "name": "build_runtime_rows"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 149,
+              "name": "_select_speedup_summaries"
+            },
+            {
+              "doc": "Build speedup rows from MPI summary.json files.",
+              "kind": "function",
+              "line": 168,
+              "name": "build_speedup_rows"
+            },
+            {
+              "doc": "Choose the largest matching MPI run for the load-balance table.",
+              "kind": "function",
+              "line": 205,
+              "name": "choose_default_load_balance_run"
+            },
+            {
+              "doc": "Build per-rank timing rows for one MPI run directory.",
+              "kind": "function",
+              "line": 222,
+              "name": "build_load_balance_rows"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 256,
+              "name": "_markdown_table"
+            },
+            {
+              "doc": "Build a Markdown snippet that can be copied into the living report.",
+              "kind": "function",
+              "line": 273,
+              "name": "build_results_markdown"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 40,
+          "path": "scripts/analyze_granularity.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 18,
+              "name": "parse_args"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 28,
+              "name": "main"
+            }
+          ]
+        },
+        {
+          "config_keys": [],
+          "exists": true,
+          "meaningful_lines": 44,
+          "path": "scripts/plot_results.py",
+          "suffix": ".py",
+          "symbols": [
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 18,
+              "name": "parse_args"
+            },
+            {
+              "doc": "",
+              "kind": "function",
+              "line": 28,
+              "name": "main"
+            }
+          ]
+        }
+      ],
+      "meaningful_lines": 665,
+      "member": "Member D",
+      "practice_questions": [
+        "How is speedup calculated?",
+        "How do we separate runtime with and without communication?",
+        "How is the 25 percent load-imbalance threshold checked?",
+        "Which tables and figures are generated from real artifacts?"
+      ]
+    }
+  ],
+  "missing_files": [],
+  "note": "Generated from the compact primary defense set. Shared support modules are intentionally summarized elsewhere.",
+  "num_members": 4,
+  "passed": true,
+  "repo_root": "/Users/bangbang/Desktop/code python/mpot"
+}

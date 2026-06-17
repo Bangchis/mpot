@@ -1,0 +1,4 @@
+run_id,input_size_n,processes,runtime_with_communication_s,runtime_without_communication_s,speedup_with_communication,speedup_without_communication,efficiency_with_communication,efficiency_without_communication,source_summary
+mpi-final_macbook_air_2d-N824-P1,824,1,27.90284570795484,27.896630415925756,1.0,1.0,1.0,1.0,results/mpi-final_macbook_air_2d-N824-P1/summary.json
+mpi-final_macbook_air_2d-N824-P2,824,2,14.754297000006773,14.747223583050072,1.8911674143432269,1.8916530463394574,0.9455837071716134,0.9458265231697287,results/mpi-final_macbook_air_2d-N824-P2/summary.json
+mpi-final_macbook_air_2d-N824-P4,824,4,9.315078041050583,9.277035874896683,2.9954494836210594,3.007062901568917,0.7488623709052649,0.7517657253922293,results/mpi-final_macbook_air_2d-N824-P4/summary.json

@@ -1,0 +1,19 @@
+{
+  "fixed_size": null,
+  "input_size": 2,
+  "label": "mini_sweep",
+  "load_balance_run": "results/mpi-mini_sweep-N2-P2",
+  "note": "Tables are derived from real benchmark artifacts only.",
+  "num_load_balance_rows": 2,
+  "num_runtime_rows": 3,
+  "num_speedup_rows": 2,
+  "output_dir": "report/tables",
+  "paths": {
+    "load_balance_csv": "report/tables/load_balance_table_mini_sweep.csv",
+    "manifest_json": "report/tables/tables_manifest_mini_sweep.json",
+    "markdown": "report/tables/RESULTS_TABLES_mini_sweep.md",
+    "runtime_csv": "report/tables/runtime_table_mini_sweep.csv",
+    "speedup_csv": "report/tables/speedup_table_mini_sweep.csv"
+  },
+  "results_dir": "results"
+}

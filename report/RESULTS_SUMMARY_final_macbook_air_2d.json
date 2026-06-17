@@ -1,0 +1,203 @@
+{
+  "benchmark_budget": {
+    "estimated_total_minutes": 32.33604574516047,
+    "note": "This is only a pre-run budget estimate. Do not copy these estimates into the Results section as measured runtime or speedup data.",
+    "present": true
+  },
+  "checks": [
+    {
+      "detail": "results/serial-final_macbook_air_2d-N824/summary.json",
+      "name": "serial summary exists",
+      "passed": true
+    },
+    {
+      "detail": "results/mpi-final_macbook_air_2d-N824-P4/summary.json",
+      "name": "MPI summary exists",
+      "passed": true
+    },
+    {
+      "detail": "passed=True",
+      "name": "correctness passed",
+      "passed": true
+    },
+    {
+      "detail": "tasks_passed=True",
+      "name": "task-level correctness passed",
+      "passed": true
+    },
+    {
+      "detail": "passed=True",
+      "name": "solution quality passed",
+      "passed": true
+    },
+    {
+      "detail": "collectives=['bcast', 'gather', 'scatter'], blocking=True",
+      "name": "communication analysis passed",
+      "passed": true
+    },
+    {
+      "detail": "idle_fraction=0.007050277842431597",
+      "name": "granularity under threshold",
+      "passed": true
+    },
+    {
+      "detail": "runtime=12, speedup=3, load_balance=4",
+      "name": "result tables have rows",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/runtime_vs_input_size_final_macbook_air_2d.png",
+      "name": "figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/speedup_final_macbook_air_2d.png",
+      "name": "figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png",
+      "name": "figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/trajectory_final_macbook_air_2d.gif",
+      "name": "figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/algorithm_trace_final_macbook_air_2d.gif",
+      "name": "figure exists",
+      "passed": true
+    }
+  ],
+  "communication": {
+    "all_events_blocking": true,
+    "num_event_rows": 24,
+    "observed_collectives": [
+      "bcast",
+      "gather",
+      "scatter"
+    ],
+    "strategy": "blocking collectives: bcast, scatter, gather",
+    "topology": "SPMD with rank 0 coordinator, logical star topology"
+  },
+  "correctness": {
+    "best_cost_difference": 0.0,
+    "num_compared_tasks": 824,
+    "passed": true,
+    "same_best_seed": true,
+    "same_best_task": true
+  },
+  "created_at": "2026-06-17 07:24:05 +0700",
+  "granularity": {
+    "balanced_under_threshold": true,
+    "communication_fraction_of_slowest_rank": 0.01103262824660725,
+    "idle_fraction": 0.007050277842431597,
+    "recommendation": "Load balance is within the 25% threshold. The current granularity is acceptable for this run, so no adjustment is required before using the result in the report."
+  },
+  "label": "final_macbook_air_2d",
+  "mpi": {
+    "best_cost": 0.00520870927721262,
+    "best_seed": 20260801,
+    "best_task_id": 184,
+    "input_size_n": 824,
+    "processes": 4,
+    "run_id": "mpi-final_macbook_air_2d-N824-P4",
+    "runtime_with_communication_s": 9.315078041050583,
+    "runtime_without_communication_s": 9.277035874896683
+  },
+  "note": "Generated only from existing benchmark artifacts. Do not use this file to invent missing results.",
+  "num_failed": 0,
+  "passed": true,
+  "serial": {
+    "best_cost": 0.00520870927721262,
+    "best_seed": 20260801,
+    "best_task_id": 184,
+    "input_size_n": 824,
+    "run_id": "serial-final_macbook_air_2d-N824",
+    "runtime_with_communication_s": 27.869286707951687
+  },
+  "solution_quality": {
+    "goal_error": 3.371747884011707e-08,
+    "hard_collision_fraction": 0.0,
+    "max_bounds_violation": 0.0,
+    "passed": true
+  },
+  "sources": {
+    "benchmark_budget": {
+      "exists": true,
+      "path": "report/BENCHMARK_BUDGET_final_macbook_air_2d.json"
+    },
+    "communication_report": {
+      "exists": true,
+      "path": "results/communication-final_macbook_air_2d-N824-P4.json"
+    },
+    "correctness_report": {
+      "exists": true,
+      "path": "results/compare-final_macbook_air_2d-N824-P4/correctness_report.json"
+    },
+    "figures": [
+      {
+        "exists": true,
+        "path": "report/figures/runtime_vs_input_size_final_macbook_air_2d.png"
+      },
+      {
+        "exists": true,
+        "path": "report/figures/speedup_final_macbook_air_2d.png"
+      },
+      {
+        "exists": true,
+        "path": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png"
+      },
+      {
+        "exists": true,
+        "path": "report/figures/trajectory_final_macbook_air_2d.gif"
+      },
+      {
+        "exists": true,
+        "path": "report/figures/algorithm_trace_final_macbook_air_2d.gif"
+      }
+    ],
+    "granularity_report": {
+      "exists": true,
+      "path": "results/granularity-final_macbook_air_2d-N412-P4.json"
+    },
+    "load_balance_csv": {
+      "exists": true,
+      "path": "report/tables/load_balance_table_final_macbook_air_2d.csv"
+    },
+    "mpi_summary": {
+      "exists": true,
+      "path": "results/mpi-final_macbook_air_2d-N824-P4/summary.json"
+    },
+    "runtime_csv": {
+      "exists": true,
+      "path": "report/tables/runtime_table_final_macbook_air_2d.csv"
+    },
+    "serial_summary": {
+      "exists": true,
+      "path": "results/serial-final_macbook_air_2d-N824/summary.json"
+    },
+    "solution_quality_report": {
+      "exists": true,
+      "path": "results/solution-quality-final_macbook_air_2d-N824-P4.json"
+    },
+    "speedup_csv": {
+      "exists": true,
+      "path": "report/tables/speedup_table_final_macbook_air_2d.csv"
+    },
+    "tables_manifest": {
+      "exists": true,
+      "path": "report/tables/tables_manifest_final_macbook_air_2d.json"
+    }
+  },
+  "tables": {
+    "load_balance_csv_rows": 4,
+    "num_load_balance_rows": 4,
+    "num_runtime_rows": 12,
+    "num_speedup_rows": 3,
+    "runtime_csv_rows": 12,
+    "speedup_csv_rows": 3
+  }
+}

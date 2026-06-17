@@ -1,0 +1,257 @@
+{
+  "artifacts_dir": "report/artifacts/mini_sweep",
+  "bundle_name": "mini_sweep",
+  "clean_existing": true,
+  "correctness_reports": [
+    {
+      "report": "report/artifacts/mini_sweep/correctness_report/compare-mini_sweep-N2-P2/correctness_report.json",
+      "task_comparison_csv": "report/artifacts/mini_sweep/correctness_report/compare-mini_sweep-N2-P2/task_comparison.csv"
+    }
+  ],
+  "created_at": "2026-06-17 06:48:27 +0700",
+  "dry_run": false,
+  "entries": [
+    {
+      "bytes": 1456,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/serial/serial-mini_sweep-N2/config.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-mini_sweep-N2/config.json"
+    },
+    {
+      "bytes": 2885,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/serial/serial-mini_sweep-N2/summary.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-mini_sweep-N2/summary.json"
+    },
+    {
+      "bytes": 272,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/serial/serial-mini_sweep-N2/task_results.csv",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-mini_sweep-N2/task_results.csv"
+    },
+    {
+      "bytes": 6598,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/serial/serial-mini_sweep-N2/task_results.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-mini_sweep-N2/task_results.json"
+    },
+    {
+      "bytes": 896,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/serial/serial-mini_sweep-N2/best_trajectory.npy",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-mini_sweep-N2/best_trajectory.npy"
+    },
+    {
+      "bytes": 71239,
+      "copied": true,
+      "destination": "report/figures/mini_sweep_serial_serial-mini_sweep-N2_best_path.png",
+      "exists": true,
+      "note": "",
+      "role": "serial figure",
+      "source": "results/serial-mini_sweep-N2/best_path.png"
+    },
+    {
+      "bytes": 45143,
+      "copied": true,
+      "destination": "report/figures/mini_sweep_serial_serial-mini_sweep-N2_cost_by_task.png",
+      "exists": true,
+      "note": "",
+      "role": "serial figure",
+      "source": "results/serial-mini_sweep-N2/cost_by_task.png"
+    },
+    {
+      "bytes": 1456,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2/config.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-mini_sweep-N2-P2/config.json"
+    },
+    {
+      "bytes": 3222,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2/summary.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-mini_sweep-N2-P2/summary.json"
+    },
+    {
+      "bytes": 270,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2/task_results.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-mini_sweep-N2-P2/task_results.csv"
+    },
+    {
+      "bytes": 6596,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2/task_results.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-mini_sweep-N2-P2/task_results.json"
+    },
+    {
+      "bytes": 896,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2/best_trajectory.npy",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-mini_sweep-N2-P2/best_trajectory.npy"
+    },
+    {
+      "bytes": 359,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2/rank_timings.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi timing data",
+      "source": "results/mpi-mini_sweep-N2-P2/rank_timings.csv"
+    },
+    {
+      "bytes": 1352,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2/comm_events.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi communication data",
+      "source": "results/mpi-mini_sweep-N2-P2/comm_events.csv"
+    },
+    {
+      "bytes": 172,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2/task_assignment.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi assignment data",
+      "source": "results/mpi-mini_sweep-N2-P2/task_assignment.csv"
+    },
+    {
+      "bytes": 71239,
+      "copied": true,
+      "destination": "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_best_path.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-mini_sweep-N2-P2/best_path.png"
+    },
+    {
+      "bytes": 45143,
+      "copied": true,
+      "destination": "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_cost_by_task.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-mini_sweep-N2-P2/cost_by_task.png"
+    },
+    {
+      "bytes": 31785,
+      "copied": true,
+      "destination": "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_rank_time_breakdown.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-mini_sweep-N2-P2/rank_time_breakdown.png"
+    },
+    {
+      "bytes": 989,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/correctness_report/compare-mini_sweep-N2-P2/correctness_report.json",
+      "exists": true,
+      "note": "",
+      "role": "correctness report",
+      "source": "results/compare-mini_sweep-N2-P2/correctness_report.json"
+    },
+    {
+      "bytes": 352,
+      "copied": true,
+      "destination": "report/artifacts/mini_sweep/correctness_report/compare-mini_sweep-N2-P2/task_comparison.csv",
+      "exists": true,
+      "note": "",
+      "role": "correctness task comparison",
+      "source": "results/compare-mini_sweep-N2-P2/task_comparison.csv"
+    },
+    {
+      "bytes": 35479,
+      "copied": false,
+      "destination": "report/figures/runtime_vs_input_size_mini_sweep.png",
+      "exists": true,
+      "note": "generated directly into report/figures from result summaries",
+      "role": "aggregate runtime figure",
+      "source": "generated from results"
+    },
+    {
+      "bytes": 41424,
+      "copied": false,
+      "destination": "report/figures/speedup_mini_sweep.png",
+      "exists": true,
+      "note": "generated directly into report/figures from result summaries",
+      "role": "aggregate speedup figure",
+      "source": "generated from results"
+    }
+  ],
+  "figures_dir": "report/figures",
+  "fixed_size": null,
+  "generated_plots": [
+    "report/figures/runtime_vs_input_size_mini_sweep.png",
+    "report/figures/speedup_mini_sweep.png"
+  ],
+  "input_size": 2,
+  "label": "mini_sweep",
+  "manifest_path": "report/artifacts/mini_sweep/manifest.json",
+  "markdown_path": "report/ARTIFACT_MANIFEST.md",
+  "note": "Use only listed real artifacts for report Results. Do not invent numbers.",
+  "report_dir": "report",
+  "results_dir": "results",
+  "runs": [
+    {
+      "artifact_dir": "report/artifacts/mini_sweep/serial/serial-mini_sweep-N2",
+      "figures": [
+        "report/figures/mini_sweep_serial_serial-mini_sweep-N2_best_path.png",
+        "report/figures/mini_sweep_serial_serial-mini_sweep-N2_cost_by_task.png"
+      ],
+      "mode": "serial",
+      "run_dir": "results/serial-mini_sweep-N2",
+      "run_id": "serial-mini_sweep-N2",
+      "run_kind": "serial",
+      "size": 1,
+      "total_tasks": 2
+    },
+    {
+      "artifact_dir": "report/artifacts/mini_sweep/mpi/mpi-mini_sweep-N2-P2",
+      "figures": [
+        "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_best_path.png",
+        "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_cost_by_task.png",
+        "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_rank_time_breakdown.png"
+      ],
+      "mode": "mpi",
+      "run_dir": "results/mpi-mini_sweep-N2-P2",
+      "run_id": "mpi-mini_sweep-N2-P2",
+      "run_kind": "mpi",
+      "size": 2,
+      "total_tasks": 2
+    }
+  ],
+  "strict": true,
+  "validation_reports": []
+}

@@ -1,0 +1,203 @@
+{
+  "benchmark_budget": {
+    "estimated_total_minutes": 32.33604574516047,
+    "note": "This is only a pre-run budget estimate. Do not copy these estimates into the Results section as measured runtime or speedup data.",
+    "present": true
+  },
+  "checks": [
+    {
+      "detail": "results/serial-mini_sweep-N2/summary.json",
+      "name": "serial summary exists",
+      "passed": true
+    },
+    {
+      "detail": "results/mpi-mini_sweep-N2-P2/summary.json",
+      "name": "MPI summary exists",
+      "passed": true
+    },
+    {
+      "detail": "passed=True",
+      "name": "correctness passed",
+      "passed": true
+    },
+    {
+      "detail": "tasks_passed=True",
+      "name": "task-level correctness passed",
+      "passed": true
+    },
+    {
+      "detail": "passed=True",
+      "name": "solution quality passed",
+      "passed": true
+    },
+    {
+      "detail": "collectives=['bcast', 'gather', 'scatter'], blocking=True",
+      "name": "communication analysis passed",
+      "passed": true
+    },
+    {
+      "detail": "idle_fraction=7.60542324117304e-05",
+      "name": "granularity under threshold",
+      "passed": true
+    },
+    {
+      "detail": "runtime=3, speedup=2, load_balance=2",
+      "name": "result tables have rows",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/runtime_vs_input_size_mini_sweep.png",
+      "name": "figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/speedup_mini_sweep.png",
+      "name": "figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_rank_time_breakdown.png",
+      "name": "figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/trajectory_mini_sweep.gif",
+      "name": "figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/algorithm_trace_mini_sweep.gif",
+      "name": "figure exists",
+      "passed": true
+    }
+  ],
+  "communication": {
+    "all_events_blocking": true,
+    "num_event_rows": 12,
+    "observed_collectives": [
+      "bcast",
+      "gather",
+      "scatter"
+    ],
+    "strategy": "blocking collectives: bcast, scatter, gather",
+    "topology": "SPMD with rank 0 coordinator, logical star topology"
+  },
+  "correctness": {
+    "best_cost_difference": 0.0,
+    "num_compared_tasks": 2,
+    "passed": true,
+    "same_best_seed": true,
+    "same_best_task": true
+  },
+  "created_at": "2026-06-17 06:48:27 +0700",
+  "granularity": {
+    "balanced_under_threshold": true,
+    "communication_fraction_of_slowest_rank": 0.0016396216310926763,
+    "idle_fraction": 7.60542324117304e-05,
+    "recommendation": "Load balance is within the 25% threshold. The current granularity is acceptable for this run, so no adjustment is required before using the result in the report."
+  },
+  "label": "mini_sweep",
+  "mpi": {
+    "best_cost": 0.009058685973286629,
+    "best_seed": 20260617,
+    "best_task_id": 0,
+    "input_size_n": 2,
+    "processes": 2,
+    "run_id": "mpi-mini_sweep-N2-P2",
+    "runtime_with_communication_s": 0.53744608303532,
+    "runtime_without_communication_s": 0.536736375070177
+  },
+  "note": "Generated only from existing benchmark artifacts. Do not use this file to invent missing results.",
+  "num_failed": 0,
+  "passed": true,
+  "serial": {
+    "best_cost": 0.009058685973286629,
+    "best_seed": 20260617,
+    "best_task_id": 0,
+    "input_size_n": 2,
+    "run_id": "serial-mini_sweep-N2",
+    "runtime_with_communication_s": 0.9383412080351263
+  },
+  "solution_quality": {
+    "goal_error": 3.371747884011707e-08,
+    "hard_collision_fraction": 0.0,
+    "max_bounds_violation": 0.0,
+    "passed": true
+  },
+  "sources": {
+    "benchmark_budget": {
+      "exists": true,
+      "path": "report/BENCHMARK_BUDGET_mini_sweep.json"
+    },
+    "communication_report": {
+      "exists": true,
+      "path": "results/communication-mini_sweep-N2-P2.json"
+    },
+    "correctness_report": {
+      "exists": true,
+      "path": "results/compare-mini_sweep-N2-P2/correctness_report.json"
+    },
+    "figures": [
+      {
+        "exists": true,
+        "path": "report/figures/runtime_vs_input_size_mini_sweep.png"
+      },
+      {
+        "exists": true,
+        "path": "report/figures/speedup_mini_sweep.png"
+      },
+      {
+        "exists": true,
+        "path": "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_rank_time_breakdown.png"
+      },
+      {
+        "exists": true,
+        "path": "report/figures/trajectory_mini_sweep.gif"
+      },
+      {
+        "exists": true,
+        "path": "report/figures/algorithm_trace_mini_sweep.gif"
+      }
+    ],
+    "granularity_report": {
+      "exists": true,
+      "path": "results/granularity-mini_sweep-N2-P2.json"
+    },
+    "load_balance_csv": {
+      "exists": true,
+      "path": "report/tables/load_balance_table_mini_sweep.csv"
+    },
+    "mpi_summary": {
+      "exists": true,
+      "path": "results/mpi-mini_sweep-N2-P2/summary.json"
+    },
+    "runtime_csv": {
+      "exists": true,
+      "path": "report/tables/runtime_table_mini_sweep.csv"
+    },
+    "serial_summary": {
+      "exists": true,
+      "path": "results/serial-mini_sweep-N2/summary.json"
+    },
+    "solution_quality_report": {
+      "exists": true,
+      "path": "results/solution-quality-mini_sweep-N2-P2.json"
+    },
+    "speedup_csv": {
+      "exists": true,
+      "path": "report/tables/speedup_table_mini_sweep.csv"
+    },
+    "tables_manifest": {
+      "exists": true,
+      "path": "report/tables/tables_manifest_mini_sweep.json"
+    }
+  },
+  "tables": {
+    "load_balance_csv_rows": 2,
+    "num_load_balance_rows": 2,
+    "num_runtime_rows": 3,
+    "num_speedup_rows": 2,
+    "runtime_csv_rows": 3,
+    "speedup_csv_rows": 2
+  }
+}

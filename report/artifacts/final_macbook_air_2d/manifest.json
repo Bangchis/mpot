@@ -1,0 +1,370 @@
+{
+  "artifacts_dir": "report/artifacts/final_macbook_air_2d",
+  "bundle_name": "final_macbook_air_2d",
+  "clean_existing": true,
+  "correctness_reports": [
+    {
+      "report": "report/artifacts/final_macbook_air_2d/correctness_report/compare-final_macbook_air_2d-N824-P4/correctness_report.json",
+      "task_comparison_csv": "report/artifacts/final_macbook_air_2d/correctness_report/compare-final_macbook_air_2d-N824-P4/task_comparison.csv"
+    }
+  ],
+  "created_at": "2026-06-17 07:24:05 +0700",
+  "dry_run": false,
+  "entries": [
+    {
+      "bytes": 1607,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/serial/serial-final_macbook_air_2d-N824/config.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-final_macbook_air_2d-N824/config.json"
+    },
+    {
+      "bytes": 3302,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/serial/serial-final_macbook_air_2d-N824/summary.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-final_macbook_air_2d-N824/summary.json"
+    },
+    {
+      "bytes": 85092,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/serial/serial-final_macbook_air_2d-N824/task_results.csv",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-final_macbook_air_2d-N824/task_results.csv"
+    },
+    {
+      "bytes": 3572314,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/serial/serial-final_macbook_air_2d-N824/task_results.json",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-final_macbook_air_2d-N824/task_results.json"
+    },
+    {
+      "bytes": 1152,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/serial/serial-final_macbook_air_2d-N824/best_trajectory.npy",
+      "exists": true,
+      "note": "",
+      "role": "serial data",
+      "source": "results/serial-final_macbook_air_2d-N824/best_trajectory.npy"
+    },
+    {
+      "bytes": 81280,
+      "copied": true,
+      "destination": "report/figures/final_macbook_air_2d_serial_serial-final_macbook_air_2d-N824_best_path.png",
+      "exists": true,
+      "note": "",
+      "role": "serial figure",
+      "source": "results/serial-final_macbook_air_2d-N824/best_path.png"
+    },
+    {
+      "bytes": 126542,
+      "copied": true,
+      "destination": "report/figures/final_macbook_air_2d_serial_serial-final_macbook_air_2d-N824_cost_by_task.png",
+      "exists": true,
+      "note": "",
+      "role": "serial figure",
+      "source": "results/serial-final_macbook_air_2d-N824/cost_by_task.png"
+    },
+    {
+      "bytes": 1607,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4/config.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/config.json"
+    },
+    {
+      "bytes": 14388,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4/summary.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/summary.json"
+    },
+    {
+      "bytes": 85059,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4/task_results.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/task_results.csv"
+    },
+    {
+      "bytes": 3572281,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4/task_results.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/task_results.json"
+    },
+    {
+      "bytes": 1152,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4/best_trajectory.npy",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/best_trajectory.npy"
+    },
+    {
+      "bytes": 670,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4/rank_timings.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi timing data",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/rank_timings.csv"
+    },
+    {
+      "bytes": 2912,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4/comm_events.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi communication data",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/comm_events.csv"
+    },
+    {
+      "bytes": 58838,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4/task_assignment.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi assignment data",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/task_assignment.csv"
+    },
+    {
+      "bytes": 81280,
+      "copied": true,
+      "destination": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/best_path.png"
+    },
+    {
+      "bytes": 126542,
+      "copied": true,
+      "destination": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_cost_by_task.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/cost_by_task.png"
+    },
+    {
+      "bytes": 30420,
+      "copied": true,
+      "destination": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_rank_time_breakdown.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-final_macbook_air_2d-N824-P4/rank_time_breakdown.png"
+    },
+    {
+      "bytes": 1607,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4/config.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/config.json"
+    },
+    {
+      "bytes": 9031,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4/summary.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/summary.json"
+    },
+    {
+      "bytes": 42529,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4/task_results.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/task_results.csv"
+    },
+    {
+      "bytes": 1786006,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4/task_results.json",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/task_results.json"
+    },
+    {
+      "bytes": 1152,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4/best_trajectory.npy",
+      "exists": true,
+      "note": "",
+      "role": "mpi data",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/best_trajectory.npy"
+    },
+    {
+      "bytes": 667,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4/rank_timings.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi timing data",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/rank_timings.csv"
+    },
+    {
+      "bytes": 2916,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4/comm_events.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi communication data",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/comm_events.csv"
+    },
+    {
+      "bytes": 29174,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4/task_assignment.csv",
+      "exists": true,
+      "note": "",
+      "role": "mpi assignment data",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/task_assignment.csv"
+    },
+    {
+      "bytes": 81280,
+      "copied": true,
+      "destination": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_best_path.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/best_path.png"
+    },
+    {
+      "bytes": 131389,
+      "copied": true,
+      "destination": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_cost_by_task.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/cost_by_task.png"
+    },
+    {
+      "bytes": 30376,
+      "copied": true,
+      "destination": "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png",
+      "exists": true,
+      "note": "",
+      "role": "mpi figure",
+      "source": "results/mpi-final_macbook_air_2d-N412-P4/rank_time_breakdown.png"
+    },
+    {
+      "bytes": 1071,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/correctness_report/compare-final_macbook_air_2d-N824-P4/correctness_report.json",
+      "exists": true,
+      "note": "",
+      "role": "correctness report",
+      "source": "results/compare-final_macbook_air_2d-N824-P4/correctness_report.json"
+    },
+    {
+      "bytes": 80856,
+      "copied": true,
+      "destination": "report/artifacts/final_macbook_air_2d/correctness_report/compare-final_macbook_air_2d-N824-P4/task_comparison.csv",
+      "exists": true,
+      "note": "",
+      "role": "correctness task comparison",
+      "source": "results/compare-final_macbook_air_2d-N824-P4/task_comparison.csv"
+    },
+    {
+      "bytes": 49198,
+      "copied": false,
+      "destination": "report/figures/runtime_vs_input_size_final_macbook_air_2d.png",
+      "exists": true,
+      "note": "generated directly into report/figures from result summaries",
+      "role": "aggregate runtime figure",
+      "source": "generated from results"
+    },
+    {
+      "bytes": 51087,
+      "copied": false,
+      "destination": "report/figures/speedup_final_macbook_air_2d.png",
+      "exists": true,
+      "note": "generated directly into report/figures from result summaries",
+      "role": "aggregate speedup figure",
+      "source": "generated from results"
+    }
+  ],
+  "figures_dir": "report/figures",
+  "fixed_size": null,
+  "generated_plots": [
+    "report/figures/runtime_vs_input_size_final_macbook_air_2d.png",
+    "report/figures/speedup_final_macbook_air_2d.png"
+  ],
+  "input_size": 824,
+  "label": "final_macbook_air_2d",
+  "manifest_path": "report/artifacts/final_macbook_air_2d/manifest.json",
+  "markdown_path": "report/ARTIFACT_MANIFEST.md",
+  "note": "Use only listed real artifacts for report Results. Do not invent numbers.",
+  "report_dir": "report",
+  "results_dir": "results",
+  "runs": [
+    {
+      "artifact_dir": "report/artifacts/final_macbook_air_2d/serial/serial-final_macbook_air_2d-N824",
+      "figures": [
+        "report/figures/final_macbook_air_2d_serial_serial-final_macbook_air_2d-N824_best_path.png",
+        "report/figures/final_macbook_air_2d_serial_serial-final_macbook_air_2d-N824_cost_by_task.png"
+      ],
+      "mode": "serial",
+      "run_dir": "results/serial-final_macbook_air_2d-N824",
+      "run_id": "serial-final_macbook_air_2d-N824",
+      "run_kind": "serial",
+      "size": 1,
+      "total_tasks": 824
+    },
+    {
+      "artifact_dir": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N824-P4",
+      "figures": [
+        "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png",
+        "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_cost_by_task.png",
+        "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_rank_time_breakdown.png"
+      ],
+      "mode": "mpi",
+      "run_dir": "results/mpi-final_macbook_air_2d-N824-P4",
+      "run_id": "mpi-final_macbook_air_2d-N824-P4",
+      "run_kind": "mpi",
+      "size": 4,
+      "total_tasks": 824
+    },
+    {
+      "artifact_dir": "report/artifacts/final_macbook_air_2d/mpi/mpi-final_macbook_air_2d-N412-P4",
+      "figures": [
+        "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_best_path.png",
+        "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_cost_by_task.png",
+        "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png"
+      ],
+      "mode": "mpi",
+      "run_dir": "results/mpi-final_macbook_air_2d-N412-P4",
+      "run_id": "mpi-final_macbook_air_2d-N412-P4",
+      "run_kind": "mpi",
+      "size": 4,
+      "total_tasks": 412
+    }
+  ],
+  "strict": true,
+  "validation_reports": []
+}

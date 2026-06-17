@@ -1,0 +1,5 @@
+run_id,rank,processes,hostname,num_tasks,compute_time_s,communication_time_s,total_time_s,idle_time_s,idle_fraction_of_slowest_rank,best_cost,source_rank_timings
+mpi-final_macbook_air_2d-N412-P4,0,4,Phams-MacBook-Air.local,103,4.878560125012882,0.03627866704482585,4.915072249947116,0.0,0.0,0.00520870927721262,results/mpi-final_macbook_air_2d-N412-P4/rank_timings.csv
+mpi-final_macbook_air_2d-N412-P4,1,4,Phams-MacBook-Air.local,103,4.84445345797576,0.035923290182836354,4.880419624969363,0.034652624977752566,0.007050277842431597,0.005304340273141861,results/mpi-final_macbook_air_2d-N412-P4/rank_timings.csv
+mpi-final_macbook_air_2d-N412-P4,2,4,Phams-MacBook-Air.local,103,4.826726041967049,0.05422616493888199,4.880995917017572,0.03407633292954415,0.006933027877649367,0.0052189817652106285,results/mpi-final_macbook_air_2d-N412-P4/rank_timings.csv
+mpi-final_macbook_air_2d-N412-P4,3,4,Phams-MacBook-Air.local,103,4.85176283295732,0.02969958505127579,4.881499957991764,0.03357229195535183,0.006830477813568875,0.005260636564344168,results/mpi-final_macbook_air_2d-N412-P4/rank_timings.csv

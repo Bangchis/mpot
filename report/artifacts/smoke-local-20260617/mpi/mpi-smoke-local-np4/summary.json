@@ -1,0 +1,181 @@
+{
+  "best_collision_fraction": 0.0,
+  "best_cost": 0.008748095482587814,
+  "best_rank": 3,
+  "best_seed": 20260620,
+  "best_task_id": 3,
+  "best_trajectory_path": "results/mpi-smoke-local-np4/best_trajectory.npy",
+  "config": {
+    "base_seed": 20260617,
+    "cost": {
+      "boundary_weight": 20.0,
+      "goal_weight": 8.0,
+      "obstacle_weight": 25.0,
+      "smoothness_weight": 0.03,
+      "velocity_weight": 0.002
+    },
+    "device": "cpu",
+    "dtype": "float32",
+    "experiment_name": "local_smoke",
+    "optimizer": {
+      "ent_epsilon_target": 0.02,
+      "epsilon_target": 0.01,
+      "max_inner_iters": 20,
+      "max_outer_iters": 8,
+      "min_outer_iters": 3,
+      "num_particles": 6,
+      "num_probe": 2,
+      "outer_threshold": 0.0001,
+      "polytope": "orthoplex",
+      "probe_radius": 0.14,
+      "sigma_goal_init": 0.001,
+      "sigma_gp_init": 0.7,
+      "sigma_start_init": 0.001,
+      "sinkhorn_threshold": 1e-05,
+      "step_radius": 0.1
+    },
+    "output_dir": "results",
+    "problem": {
+      "dt": 0.05,
+      "goal": [
+        0.85,
+        0.85,
+        0.0,
+        0.0
+      ],
+      "obstacles": [
+        {
+          "center": [
+            -0.2,
+            -0.05
+          ],
+          "radius": 0.22,
+          "safety_margin": 0.05
+        },
+        {
+          "center": [
+            0.28,
+            0.18
+          ],
+          "radius": 0.2,
+          "safety_margin": 0.05
+        }
+      ],
+      "pos_limits": [
+        -1.0,
+        1.0
+      ],
+      "start": [
+        -0.85,
+        -0.85,
+        0.0,
+        0.0
+      ],
+      "traj_len": 24,
+      "vel_limits": [
+        -3.0,
+        3.0
+      ],
+      "workspace_max": [
+        1.0,
+        1.0
+      ],
+      "workspace_min": [
+        -1.0,
+        -1.0
+      ]
+    },
+    "torch_num_threads": 1,
+    "total_tasks": 4
+  },
+  "device": "cpu",
+  "load_balance": {
+    "balanced_under_25_percent": true,
+    "idle_fraction": 0.00023492721953386123,
+    "max_total_time_s": 1.5439209169708192,
+    "min_total_time_s": 1.543558207922615
+  },
+  "mapping": "cyclic",
+  "mode": "mpi",
+  "num_task_results": 4,
+  "parallel_backend": "mpi4py",
+  "problem": {
+    "dt": 0.05,
+    "goal": [
+      0.85,
+      0.85,
+      0.0,
+      0.0
+    ],
+    "num_obstacles": 2,
+    "obstacles": [
+      {
+        "center": [
+          -0.2,
+          -0.05
+        ],
+        "radius": 0.22,
+        "safety_margin": 0.05
+      },
+      {
+        "center": [
+          0.28,
+          0.18
+        ],
+        "radius": 0.2,
+        "safety_margin": 0.05
+      }
+    ],
+    "start": [
+      -0.85,
+      -0.85,
+      0.0,
+      0.0
+    ],
+    "traj_len": 24,
+    "workspace_max": [
+      1.0,
+      1.0
+    ],
+    "workspace_min": [
+      -1.0,
+      -1.0
+    ]
+  },
+  "run_id": "mpi-smoke-local-np4",
+  "runtime_with_communication_s": 1.5439209169708192,
+  "runtime_without_communication_s": 1.5428845420246944,
+  "size": 4,
+  "task_assignment": [
+    {
+      "num_tasks": 1,
+      "rank": 0,
+      "task_ids": [
+        0
+      ]
+    },
+    {
+      "num_tasks": 1,
+      "rank": 1,
+      "task_ids": [
+        1
+      ]
+    },
+    {
+      "num_tasks": 1,
+      "rank": 2,
+      "task_ids": [
+        2
+      ]
+    },
+    {
+      "num_tasks": 1,
+      "rank": 3,
+      "task_ids": [
+        3
+      ]
+    }
+  ],
+  "total_tasks": 4,
+  "total_time_s": 1.5439209169708192
+}

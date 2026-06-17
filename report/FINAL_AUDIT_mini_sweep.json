@@ -1,0 +1,195 @@
+{
+  "created_at": "2026-06-17 06:48:27 +0700",
+  "discovered_runs": [
+    {
+      "input_size_n": 2,
+      "mode": "mpi",
+      "processes": 1,
+      "run_id": "mpi-mini_sweep-N2-P1",
+      "summary_json": "results/mpi-mini_sweep-N2-P1/summary.json"
+    },
+    {
+      "input_size_n": 2,
+      "mode": "serial",
+      "processes": 1,
+      "run_id": "serial-mini_sweep-N2",
+      "summary_json": "results/serial-mini_sweep-N2/summary.json"
+    },
+    {
+      "input_size_n": 2,
+      "mode": "mpi",
+      "processes": 2,
+      "run_id": "mpi-mini_sweep-N2-P2",
+      "summary_json": "results/mpi-mini_sweep-N2-P2/summary.json"
+    }
+  ],
+  "final_processes": 2,
+  "final_ready": true,
+  "important_artifacts": {
+    "benchmark_plan": "report/BENCHMARK_PLAN.json",
+    "bundle_manifest": "report/artifacts/mini_sweep/manifest.json",
+    "comm_events_csv": "results/mpi-mini_sweep-N2-P2/comm_events.csv",
+    "communication_report": "results/communication-mini_sweep-N2-P2.json",
+    "correctness_report": "results/compare-mini_sweep-N2-P2/correctness_report.json",
+    "defense_guide": "report/MEMBER_DEFENSE_GUIDE.json",
+    "environment_json": "results/environment-mini_sweep.json",
+    "experiment_index": "report/EXPERIMENT_INDEX_mini_sweep.json",
+    "granularity_report": "results/granularity-mini_sweep-N2-P2.json",
+    "ownership_report": "report/TEAM_OWNERSHIP_REPORT.json",
+    "rank_time_breakdown_figure": "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_rank_time_breakdown.png",
+    "results_summary": "report/RESULTS_SUMMARY_mini_sweep.json",
+    "runtime_figure": "report/figures/runtime_vs_input_size_mini_sweep.png",
+    "solution_quality_report": "results/solution-quality-mini_sweep-N2-P2.json",
+    "speedup_figure": "report/figures/speedup_mini_sweep.png",
+    "tables_manifest": "report/tables/tables_manifest_mini_sweep.json",
+    "task_assignment_csv": "results/mpi-mini_sweep-N2-P2/task_assignment.csv",
+    "validation_report": "results/validation-mini_sweep-N2-P2.json"
+  },
+  "input_sizes": [
+    2
+  ],
+  "items": [
+    {
+      "detail": "count=1",
+      "name": "serial summaries exist",
+      "passed": true
+    },
+    {
+      "detail": "count=2",
+      "name": "MPI summaries exist",
+      "passed": true
+    },
+    {
+      "detail": "expected=[2], found_for_P2=[2]",
+      "name": "runtime-vs-N input sizes are present at final process count",
+      "passed": true
+    },
+    {
+      "detail": "expected=[2]",
+      "name": "serial baselines are present for expected input sizes",
+      "passed": true
+    },
+    {
+      "detail": "N=2, expected=[1, 2], found=[1, 2]",
+      "name": "speedup input size has requested process counts",
+      "passed": true
+    },
+    {
+      "detail": "N=2, found=[1, 2]",
+      "name": "speedup has P=1 MPI baseline",
+      "passed": true
+    },
+    {
+      "detail": "N=2",
+      "name": "correctness serial run exists",
+      "passed": true
+    },
+    {
+      "detail": "N=2, P=2",
+      "name": "correctness MPI run exists",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, task_level=True",
+      "name": "serial/MPI correctness passed",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, num_failed=0, goal_error=3.371747884011707e-08, hard_collision_fraction=0.0",
+      "name": "solution quality passed",
+      "passed": true
+    },
+    {
+      "detail": "results/mpi-mini_sweep-N2-P2/comm_events.csv",
+      "name": "MPI communication events CSV exists",
+      "passed": true
+    },
+    {
+      "detail": "has_expected_collectives=True, all_events_blocking=True, observed=['bcast', 'gather', 'scatter']",
+      "name": "communication analysis passed",
+      "passed": true
+    },
+    {
+      "detail": "results/mpi-mini_sweep-N2-P2/task_assignment.csv",
+      "name": "MPI task assignment CSV exists",
+      "passed": true
+    },
+    {
+      "detail": "idle_fraction=7.60542324117304e-05, threshold=0.25",
+      "name": "granularity under 25 percent threshold",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/runtime_vs_input_size_mini_sweep.png",
+      "name": "runtime-vs-N figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/speedup_mini_sweep.png",
+      "name": "speedup figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/figures/mini_sweep_mpi_mpi-mini_sweep-N2-P2_rank_time_breakdown.png",
+      "name": "rank time breakdown figure exists",
+      "passed": true
+    },
+    {
+      "detail": "report/artifacts/mini_sweep/manifest.json",
+      "name": "report artifact bundle manifest exists",
+      "passed": true
+    },
+    {
+      "detail": "{'num_runtime_rows': 3, 'num_speedup_rows': 2, 'num_load_balance_rows': 2}",
+      "name": "result tables have rows",
+      "passed": true
+    },
+    {
+      "detail": "report/RESULTS_SUMMARY_mini_sweep.json",
+      "name": "results summary exists",
+      "passed": true
+    },
+    {
+      "detail": "results/environment-mini_sweep.json",
+      "name": "environment capture exists",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, num_members=4, minimum=250, recommended_max=700, member_lines={'Member A': 513, 'Member B': 519, 'Member C': 496, 'Member D': 665}",
+      "name": "team ownership report passed",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, num_members=4, member_files=[4, 5, 5, 5]",
+      "name": "member defense guide passed",
+      "passed": true
+    },
+    {
+      "detail": "report/EXPERIMENT_INDEX_mini_sweep.json",
+      "name": "experiment index exists",
+      "passed": true
+    },
+    {
+      "detail": "passed=True, num_failed=0",
+      "name": "pipeline validation passed",
+      "passed": true
+    },
+    {
+      "detail": "report/BENCHMARK_PLAN.json",
+      "name": "benchmark plan exists",
+      "passed": true
+    }
+  ],
+  "label": "mini_sweep",
+  "n": 2,
+  "note": "Final-ready means required artifact structure exists and checks pass. It does not invent or modify results.",
+  "num_failed": 0,
+  "num_items": 26,
+  "process_counts": [
+    1,
+    2
+  ],
+  "report_dir": "report",
+  "results_dir": "results",
+  "speedup_n": 2
+}

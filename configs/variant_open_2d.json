@@ -1,0 +1,46 @@
+{
+  "experiment_name": "variant_open_2d",
+  "output_dir": "results",
+  "base_seed": 20260617,
+  "total_tasks": 8,
+  "torch_num_threads": 1,
+  "device": "cpu",
+  "dtype": "float32",
+  "problem": {
+    "workspace_min": [-1.0, -1.0],
+    "workspace_max": [1.0, 1.0],
+    "start": [-0.85, -0.85, 0.0, 0.0],
+    "goal": [0.85, 0.85, 0.0, 0.0],
+    "obstacles": [
+      {"center": [0.00, 0.00], "radius": 0.16, "safety_margin": 0.04}
+    ],
+    "traj_len": 24,
+    "dt": 0.05,
+    "pos_limits": [-1.0, 1.0],
+    "vel_limits": [-3.0, 3.0]
+  },
+  "cost": {
+    "obstacle_weight": 22.0,
+    "smoothness_weight": 0.03,
+    "goal_weight": 8.0,
+    "boundary_weight": 20.0,
+    "velocity_weight": 0.002
+  },
+  "optimizer": {
+    "num_particles": 8,
+    "step_radius": 0.10,
+    "probe_radius": 0.14,
+    "num_probe": 2,
+    "polytope": "orthoplex",
+    "max_outer_iters": 10,
+    "min_outer_iters": 3,
+    "max_inner_iters": 24,
+    "sinkhorn_threshold": 0.00001,
+    "outer_threshold": 0.0001,
+    "epsilon_target": 0.01,
+    "ent_epsilon_target": 0.02,
+    "sigma_start_init": 0.001,
+    "sigma_goal_init": 0.001,
+    "sigma_gp_init": 0.7
+  }
+}

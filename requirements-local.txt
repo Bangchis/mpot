@@ -1,0 +1,10 @@
+# Minimal dependencies for the local-first MPI benchmark.
+#
+# Install with:
+#   python -m pip install -r requirements-local.txt
+#   python -m pip install -e . --no-deps
+torch>=2.0
+numpy>=1.24
+matplotlib>=3.7
+pillow>=10.0
+mpi4py>=4.0

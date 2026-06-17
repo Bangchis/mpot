@@ -1,0 +1,28 @@
+{
+  "cluster_name": "mpot_ubuntu_vm_lan",
+  "default_user": "mpot",
+  "default_repo_dir": "/home/mpot/mpot",
+  "default_venv_python": "/home/mpot/mpot/.venv/bin/python",
+  "hosts": [
+    {
+      "name": "mpot-a",
+      "address": "192.168.1.101",
+      "slots": 4
+    },
+    {
+      "name": "mpot-b",
+      "address": "192.168.1.102",
+      "slots": 4
+    },
+    {
+      "name": "mpot-c",
+      "address": "192.168.1.103",
+      "slots": 4
+    },
+    {
+      "name": "mpot-d",
+      "address": "192.168.1.104",
+      "slots": 4
+    }
+  ]
+}
