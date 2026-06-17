@@ -5,6 +5,7 @@ from __future__ import annotations
 from argparse import ArgumentParser, Namespace
 
 from mpot.benchmarks.config import ExperimentConfig, validate_config
+from mpot.wandb_logger import DEFAULT_WANDB_PROJECT
 
 
 def add_config_override_args(parser: ArgumentParser) -> None:
@@ -19,6 +20,34 @@ def add_config_override_args(parser: ArgumentParser) -> None:
     parser.add_argument("--num-probe", type=int, default=None, help="Override probe count per direction.")
     parser.add_argument("--max-outer-iters", type=int, default=None, help="Override max MPOT outer iterations.")
     parser.add_argument("--max-inner-iters", type=int, default=None, help="Override Sinkhorn inner max iterations.")
+
+
+def add_wandb_args(parser: ArgumentParser) -> None:
+    """Add optional W&B logging flags shared by serial/MPI runners."""
+
+    parser.add_argument("--use-wandb", action="store_true", help="Enable optional W&B logging for this run.")
+    parser.add_argument("--wandb-project", default=DEFAULT_WANDB_PROJECT, help="W&B project name.")
+    parser.add_argument("--wandb-entity", default=None, help="Optional W&B entity/team/user.")
+    parser.add_argument("--wandb-group", default=None, help="Optional W&B group for comparing related runs.")
+    parser.add_argument("--wandb-job-type", default=None, help="Optional W&B job type; defaults to serial/mpi.")
+    parser.add_argument("--wandb-name", default=None, help="Optional W&B run name; defaults to run id.")
+    parser.add_argument(
+        "--wandb-mode",
+        choices=["online", "offline", "disabled"],
+        default=None,
+        help="Optional W&B mode. Use offline on unstable Wi-Fi or VM runs.",
+    )
+    parser.add_argument("--wandb-notes", default=None, help="Optional notes for the W&B run.")
+    parser.add_argument("--wandb-tag", action="append", default=[], help="Extra W&B tag. Can be repeated.")
+    parser.add_argument(
+        "--wandb-max-table-rows",
+        type=int,
+        default=5000,
+        help="Maximum rows per CSV table uploaded to W&B.",
+    )
+    parser.add_argument("--wandb-no-artifact", action="store_true", help="Skip W&B artifact bundle upload.")
+    parser.add_argument("--wandb-no-tables", action="store_true", help="Skip W&B table upload.")
+    parser.add_argument("--wandb-no-media", action="store_true", help="Skip W&B image media upload.")
 
 
 def apply_config_overrides(config: ExperimentConfig, args: Namespace) -> ExperimentConfig:
@@ -66,4 +95,3 @@ def parse_int_list(value: str) -> list[int]:
     if not out:
         raise ValueError("At least one integer is required.")
     return out
-

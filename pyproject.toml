@@ -53,6 +53,9 @@ dev = [
     "pytest>=7.0",
     "ruff>=0.1.0",
 ]
+wandb = [
+    "wandb>=0.17",
+]
 original = [
     "scipy>=1.10",
     "einops>=0.8.0",

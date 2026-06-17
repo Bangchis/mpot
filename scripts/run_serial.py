@@ -13,12 +13,13 @@ if str(ROOT) not in sys.path:
     sys.path.insert(0, str(ROOT))
 
 from mpot.benchmarks.artifacts import make_run_dir, write_run_artifacts
-from mpot.benchmarks.cli import add_config_override_args, apply_config_overrides
+from mpot.benchmarks.cli import add_config_override_args, add_wandb_args, apply_config_overrides
 from mpot.benchmarks.config import load_config
 from mpot.benchmarks.local_runner import run_tasks_serial
 from mpot.benchmarks.mpi_scheduler import build_tasks
 from mpot.benchmarks.plots import plot_best_path, plot_cost_by_task
 from mpot.benchmarks.problem_2d import PlanningProblem2D, summarize_problem
+from mpot.wandb_logger import log_run_directory_to_wandb, wandb_settings_from_namespace
 
 
 def parse_args():
@@ -26,6 +27,7 @@ def parse_args():
     parser.add_argument("--config", required=True, help="Path to JSON experiment config.")
     parser.add_argument("--run-id", default=None, help="Optional run id for output directory.")
     parser.add_argument("--no-plots", action="store_true", help="Skip PNG generation.")
+    add_wandb_args(parser)
     add_config_override_args(parser)
     return parser.parse_args()
 
@@ -56,6 +58,10 @@ def main() -> int:
                 plotter(run_dir)
             except RuntimeError as exc:
                 print(f"plot skipped: {exc}")
+
+    if args.use_wandb:
+        outcome = log_run_directory_to_wandb(run_dir, settings=wandb_settings_from_namespace(args))
+        print(f"wandb status: {outcome['status']}  manifest: {outcome['manifest']}")
 
     print(f"serial run written to {run_dir.resolve()}")
     print(f"best task: {summary['best_task_id']}  best cost: {summary['best_cost']:.6f}")

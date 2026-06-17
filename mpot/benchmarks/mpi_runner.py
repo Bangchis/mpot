@@ -13,6 +13,7 @@ from mpot.benchmarks.mpi_scheduler import build_tasks, cyclic_chunks, describe_c
 from mpot.benchmarks.plots import plot_best_path, plot_cost_by_task, plot_rank_time_breakdown
 from mpot.benchmarks.problem_2d import PlanningProblem2D, summarize_problem
 from mpot.benchmarks.reduction import RankTiming, choose_best, flatten_result_groups
+from mpot.wandb_logger import WandbSettings, log_run_directory_to_wandb
 
 
 def require_mpi4py():
@@ -61,6 +62,7 @@ def run_mpi_benchmark(
     config: ExperimentConfig | None,
     run_id: str | None,
     use_wandb: bool = False,
+    wandb_settings: WandbSettings | None = None,
 ) -> dict | None:
     """Run the MPI benchmark.
 
@@ -224,32 +226,17 @@ def run_mpi_benchmark(
         comm_events=all_comm_events,
     )
 
-    generated_figures = []
     for plotter in (plot_best_path, plot_cost_by_task, plot_rank_time_breakdown):
         try:
-            generated_figures.append(str(plotter(run_dir)))
+            plotter(run_dir)
         except RuntimeError as exc:
             print(f"[rank 0] plotting skipped: {exc}")
 
-    if use_wandb:
-        from mpot.wandb_logger import OptionalWandbLogger
-
-        logger = OptionalWandbLogger(
-            enabled=True,
-            project="distributed-mpot-course",
-            config=summary,
-        )
-        logger.log_metrics(
-            {
-                "best_cost": summary["best_cost"],
-                "total_time_s": summary["total_time_s"],
-                "runtime_with_communication_s": summary["runtime_with_communication_s"],
-                "runtime_without_communication_s": summary["runtime_without_communication_s"],
-            }
-        )
-        for figure in generated_figures:
-            logger.log_artifact(figure)
-        logger.finish()
+    if wandb_settings is None:
+        wandb_settings = WandbSettings(enabled=use_wandb)
+    if wandb_settings.enabled:
+        outcome = log_run_directory_to_wandb(run_dir, settings=wandb_settings)
+        print(f"[rank 0] wandb status: {outcome['status']}  manifest: {outcome['manifest']}")
 
     print(f"[rank 0] MPI run written to {Path(run_dir).resolve()}")
     return summary

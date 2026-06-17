@@ -78,6 +78,57 @@ mpirun -np 2 --bind-to none \
   --total-tasks 4
 ```
 
+## Optional W&B Experiment Logging
+
+Local artifacts remain mandatory and W&B is optional. Use W&B when you want a
+web dashboard with run metrics, images, CSV tables, and downloadable artifact
+bundles.
+
+Install and login:
+
+```bash
+.venv/bin/python -m pip install wandb
+wandb login
+```
+
+Run a new MPI experiment with W&B:
+
+```bash
+mpirun -np 4 --bind-to none \
+  .venv/bin/python scripts/run_mpi.py \
+  --config configs/local_smoke.json \
+  --run-id mpi-wandb-smoke-N4-P4 \
+  --experiment-name wandb_smoke_N4 \
+  --total-tasks 4 \
+  --use-wandb \
+  --wandb-project distributed-mpot-course \
+  --wandb-group local_smoke \
+  --wandb-tag smoke
+```
+
+Upload an existing completed run without rerunning it:
+
+```bash
+.venv/bin/python scripts/log_run_to_wandb.py \
+  --run-dir results/mpi-final_macbook_air_2d-N824-P4 \
+  --use-wandb \
+  --wandb-project distributed-mpot-course \
+  --wandb-group final_macbook_air_2d \
+  --wandb-tag final-local
+```
+
+Each W&B run is organized with:
+
+- run name: the local `run_id`;
+- group: experiment/label such as `final_macbook_air_2d`;
+- tags: mode, input size `N`, process count `P`, backend, mapping, config hash;
+- media: `best_path.png`, `cost_by_task.png`, `rank_time_breakdown.png` when available;
+- tables: `task_results.csv`, `rank_timings.csv`, `comm_events.csv`, `task_assignment.csv`;
+- artifact bundle: standard JSON/CSV/NumPy/PNG/GIF files from the run.
+
+For unstable Wi-Fi or VM runs, use `--wandb-mode offline` and sync later with
+`wandb sync`.
+
 ## Ubuntu VM Quickstart
 
 For teammate machines, use Ubuntu ARM64 VM on Apple Silicon and keep these

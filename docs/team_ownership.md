@@ -89,6 +89,7 @@ scripts/export_submission_package.py
 scripts/generate_defense_guide.py
 scripts/generate_ownership_report.py
 scripts/index_results.py
+scripts/log_run_to_wandb.py
 scripts/plan_benchmark.py
 scripts/run_local_pipeline.py
 scripts/run_sweep.py

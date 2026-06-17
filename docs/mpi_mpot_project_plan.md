@@ -297,7 +297,10 @@ Minimum summary JSON fields:
 
 ## Optional W&B Design
 
-W&B support should be designed in the code, but it must never be required.
+W&B support is implemented, but it must never be required. Local CSV/JSON/PNG
+artifacts remain mandatory and are still the source of truth for the report.
+Use W&B for a readable dashboard, media comparison, tables, and artifact
+bundles.
 
 Normal local run:
 
@@ -308,20 +311,29 @@ python scripts/run_mpi.py --config configs/local_benchmark.json
 Optional W&B run:
 
 ```bash
-python scripts/run_mpi.py --config configs/local_benchmark.json --use-wandb
+.venv/bin/python scripts/run_mpi.py \
+  --config configs/local_benchmark.json \
+  --use-wandb \
+  --wandb-project distributed-mpot-course \
+  --wandb-group final_macbook_air_2d
 ```
 
-Planned logger file:
+Upload an existing run without rerunning:
 
-```text
-src/wandb_logger.py
+```bash
+.venv/bin/python scripts/log_run_to_wandb.py \
+  --run-dir results/mpi-final_macbook_air_2d-N824-P4 \
+  --use-wandb \
+  --wandb-project distributed-mpot-course \
+  --wandb-group final_macbook_air_2d
 ```
 
-If the repository keeps the current package layout instead of adding a `src/`
-layer, use:
+Implemented logger files:
 
 ```text
 mpot/wandb_logger.py
+scripts/log_run_to_wandb.py
+docs/wandb_logging.md
 ```
 
 The logger must follow this behavior:
@@ -336,25 +348,19 @@ The logger must follow this behavior:
 - Only rank 0 should initialize and write W&B run-level logs.
 - Worker ranks should not independently create W&B runs.
 
-Recommended logger interface:
+W&B organization convention:
 
-```python
-class OptionalWandbLogger:
-    def __init__(self, enabled: bool, project: str, config: dict):
-        ...
-
-    def log_metrics(self, metrics: dict, step: int | None = None) -> None:
-        ...
-
-    def log_artifact(self, path: str, name: str | None = None) -> None:
-        ...
-
-    def finish(self) -> None:
-        ...
+```text
+project: distributed-mpot-course
+group:   experiment label, for example final_macbook_air_2d
+name:    run_id, for example mpi-final_macbook_air_2d-N824-P4
+tags:    mode, N, P, backend, mapping, config hash, plus optional custom tags
 ```
 
-The implementation should internally catch W&B import/login/runtime failures and
-switch to a disabled no-op mode.
+Each W&B run logs scalar metrics, media panels for generated images, CSV tables,
+and one artifact bundle containing the standard result directory files. The
+implementation catches W&B import/login/runtime failures and switches to a
+disabled no-op mode.
 
 ## Implemented Local-First Files
 

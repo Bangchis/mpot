@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import json
+import sys
 import tempfile
 import unittest
 import importlib.util
@@ -78,6 +79,14 @@ from mpot.benchmarks.validation import (
     validate_solution_quality_report,
     validate_submission_package_manifest,
     validation_summary,
+)
+from mpot.wandb_logger import (
+    WandbSettings,
+    build_wandb_tags,
+    discover_run_files,
+    log_run_directory_to_wandb,
+    summary_to_wandb_config,
+    summary_to_wandb_metrics,
 )
 
 
@@ -317,6 +326,164 @@ class ConfigTests(unittest.TestCase):
                 self.assertEqual(len(cfg.problem.goal), 4)
                 self.assertEqual(len(cfg.problem.obstacles), expected_obstacles)
                 self.assertGreaterEqual(cfg.total_tasks, expected_obstacles)
+
+
+class WandbLoggerTests(unittest.TestCase):
+    def _write_json(self, path: Path, payload):
+        path.parent.mkdir(parents=True, exist_ok=True)
+        with path.open("w", encoding="utf-8") as f:
+            json.dump(payload, f)
+
+    def _summary(self):
+        return {
+            "run_id": "mpi-unit-N4-P2",
+            "mode": "mpi",
+            "parallel_backend": "mpi4py",
+            "experiment_name": "unit_N4",
+            "config_hash": "abc123",
+            "size": 2,
+            "total_tasks": 4,
+            "mapping": "cyclic",
+            "best_cost": 0.25,
+            "best_collision_fraction": 0.0,
+            "total_time_s": 2.0,
+            "runtime_with_communication_s": 2.0,
+            "runtime_without_communication_s": 1.8,
+            "num_task_results": 4,
+            "communication_events_count": 6,
+            "load_balance": {"idle_fraction": 0.1, "balanced_under_25_percent": True},
+            "problem": {"obstacles": [{"center": [0.0, 0.0], "radius": 0.1}]},
+            "config": {
+                "experiment_name": "unit_N4",
+                "base_seed": 100,
+                "device": "cpu",
+                "problem": {"traj_len": 8, "obstacles": [{"center": [0.0, 0.0], "radius": 0.1}]},
+                "optimizer": {"num_particles": 3, "num_probe": 2, "max_outer_iters": 5, "max_inner_iters": 7},
+            },
+        }
+
+    def test_wandb_tags_config_and_metrics_are_readable(self):
+        summary = self._summary()
+        tags = build_wandb_tags(summary, ["local smoke"])
+        metrics = summary_to_wandb_metrics(summary)
+        config = summary_to_wandb_config(summary)
+
+        self.assertIn("mode:mpi", tags)
+        self.assertIn("N:4", tags)
+        self.assertIn("P:2", tags)
+        self.assertIn("local_smoke", tags)
+        self.assertEqual(metrics["solution/best_cost"], 0.25)
+        self.assertAlmostEqual(metrics["runtime/communication_overhead_s"], 0.2)
+        self.assertTrue(metrics["load_balance/balanced_under_25_percent"])
+        self.assertEqual(config["num_obstacles"], 1)
+        self.assertEqual(config["num_particles"], 3)
+
+    def test_discover_run_files_and_disabled_logging_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp) / "mpi-unit"
+            run.mkdir(parents=True)
+            self._write_json(run / "summary.json", self._summary())
+            (run / "task_results.csv").write_text("task_id,best_cost\n0,0.1\n", encoding="utf-8")
+            (run / "best_path.png").write_bytes(b"png")
+            extra = run / "trace.gif"
+            extra.write_bytes(b"gif")
+
+            files = discover_run_files(run, extra_paths=[extra])
+            self.assertIn(run / "summary.json", files["artifacts"])
+            self.assertIn(run / "task_results.csv", files["artifacts"])
+            self.assertIn(run / "best_path.png", files["images"])
+            self.assertIn(extra, files["animations"])
+
+            outcome = log_run_directory_to_wandb(run, settings=WandbSettings(enabled=False), extra_paths=[extra])
+            self.assertEqual(outcome["status"], "disabled")
+            self.assertTrue((run / "wandb_manifest.json").exists())
+
+    def test_enabled_logging_uses_wandb_api_shape_with_fake_module(self):
+        class FakeTable:
+            def __init__(self, columns):
+                self.columns = columns
+                self.rows = []
+
+            def add_data(self, *row):
+                self.rows.append(row)
+
+        class FakeArtifact:
+            def __init__(self, name, type, metadata=None):
+                self.name = name
+                self.type = type
+                self.metadata = metadata
+                self.files = []
+
+            def add_file(self, path, name=None):
+                self.files.append((path, name))
+
+        class FakeRun:
+            def __init__(self):
+                self.logs = []
+                self.summary = {}
+                self.artifacts = []
+                self.finished = False
+
+            def log(self, data, step=None):
+                self.logs.append((data, step))
+
+            def log_artifact(self, artifact):
+                self.artifacts.append(artifact)
+
+            def finish(self):
+                self.finished = True
+
+        class FakeWandb:
+            def __init__(self):
+                self.run = FakeRun()
+                self.init_kwargs = None
+                self.Table = FakeTable
+                self.Artifact = FakeArtifact
+
+            def init(self, **kwargs):
+                self.init_kwargs = kwargs
+                return self.run
+
+            def Image(self, path, caption=None):
+                return {"path": path, "caption": caption}
+
+        with tempfile.TemporaryDirectory() as tmp:
+            run = Path(tmp) / "mpi-unit"
+            run.mkdir(parents=True)
+            self._write_json(run / "summary.json", self._summary())
+            self._write_json(run / "config.json", {"unit": True})
+            (run / "task_results.csv").write_text("task_id,best_cost\n0,0.1\n", encoding="utf-8")
+            (run / "best_path.png").write_bytes(b"png")
+
+            fake = FakeWandb()
+            previous = sys.modules.get("wandb")
+            sys.modules["wandb"] = fake
+            try:
+                outcome = log_run_directory_to_wandb(
+                    run,
+                    settings=WandbSettings(
+                        enabled=True,
+                        project="unit-project",
+                        group="unit-group",
+                        tags=["fake"],
+                    ),
+                )
+            finally:
+                if previous is None:
+                    sys.modules.pop("wandb", None)
+                else:
+                    sys.modules["wandb"] = previous
+
+            self.assertEqual(outcome["status"], "logged")
+            self.assertEqual(fake.init_kwargs["project"], "unit-project")
+            self.assertEqual(fake.init_kwargs["group"], "unit-group")
+            self.assertIn("fake", fake.init_kwargs["tags"])
+            logged_keys = set().union(*(data.keys() for data, _ in fake.run.logs))
+            self.assertIn("solution/best_cost", logged_keys)
+            self.assertIn("figures/best_path", logged_keys)
+            self.assertIn("tables/task_results", logged_keys)
+            self.assertEqual(len(fake.run.artifacts), 1)
+            self.assertTrue(fake.run.finished)
 
 
 class ValidationTests(unittest.TestCase):
