@@ -447,6 +447,9 @@ class WandbLoggerTests(unittest.TestCase):
             def Image(self, path, caption=None):
                 return {"path": path, "caption": caption}
 
+            def Video(self, path, caption=None, format=None):
+                return {"video": path, "caption": caption, "format": format}
+
         with tempfile.TemporaryDirectory() as tmp:
             run = Path(tmp) / "mpi-unit"
             run.mkdir(parents=True)
@@ -454,6 +457,7 @@ class WandbLoggerTests(unittest.TestCase):
             self._write_json(run / "config.json", {"unit": True})
             (run / "task_results.csv").write_text("task_id,best_cost\n0,0.1\n", encoding="utf-8")
             (run / "best_path.png").write_bytes(b"png")
+            (run / "trace.gif").write_bytes(b"gif")
 
             fake = FakeWandb()
             previous = sys.modules.get("wandb")
@@ -481,6 +485,7 @@ class WandbLoggerTests(unittest.TestCase):
             logged_keys = set().union(*(data.keys() for data, _ in fake.run.logs))
             self.assertIn("solution/best_cost", logged_keys)
             self.assertIn("figures/best_path", logged_keys)
+            self.assertIn("animations/trace", logged_keys)
             self.assertIn("tables/task_results", logged_keys)
             self.assertEqual(len(fake.run.artifacts), 1)
             self.assertTrue(fake.run.finished)

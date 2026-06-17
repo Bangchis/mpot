@@ -287,6 +287,23 @@ class OptionalWandbLogger:
         if payload:
             self.log_metrics(payload)
 
+    def log_animations(self, animations: list[Path]) -> None:
+        if not self.enabled or self._wandb is None:
+            return
+        payload = {}
+        for path in animations:
+            try:
+                file_format = path.suffix.lower().lstrip(".") or None
+                payload[f"animations/{path.stem}"] = self._wandb.Video(
+                    str(path),
+                    caption=path.name,
+                    format=file_format,
+                )
+            except Exception as exc:
+                print(f"[wandb] animation media skipped {path}: {exc}")
+        if payload:
+            self.log_metrics(payload)
+
     def log_tables(self, csv_paths: list[Path]) -> None:
         if not self.enabled or self._wandb is None:
             return
@@ -390,6 +407,7 @@ def log_run_directory_to_wandb(
         logger.log_metrics(summary_to_wandb_metrics(summary))
         if settings.log_media:
             logger.log_images(files["images"])
+            logger.log_animations(files["animations"])
         if settings.log_tables:
             table_paths = [path for path in files["artifacts"] if path.suffix.lower() == ".csv"]
             logger.log_tables(table_paths)
