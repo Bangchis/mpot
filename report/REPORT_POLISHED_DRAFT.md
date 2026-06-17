@@ -38,12 +38,13 @@ The current local experiment verifies correctness, communication, load balance, 
 3. Problem Definition and Input Parameters
 4. Serial Baseline
 5. Parallel Algorithm Design
-6. Implementation Overview
-7. Experimental Methodology
-8. Results
-9. Discussion
-10. Conclusion
-11. References
+6. Complexity Analysis
+7. Implementation Overview
+8. Experimental Methodology
+9. Results
+10. Discussion
+11. Conclusion
+12. References
 Appendix A. Requirement Coverage
 Appendix B. Remaining TODO Items
 Appendix C. Demo Artifacts
@@ -173,6 +174,60 @@ The parallel algorithm input is:
 | Measurement parameters | compute time, communication time, idle time, total runtime, task assignment | Define report evidence |
 
 For the professor's runtime and speedup requirements, `N` is the main input size. Increasing `N` increases the number of independent planning attempts.
+
+---
+
+### 3.4 Mathematical Formulation
+
+Let the 2D workspace be a bounded set:
+
+```text
+Omega = [x_min, x_max] x [y_min, y_max].
+```
+
+The start and goal states are:
+
+```text
+x_start, x_goal in R^4.
+```
+
+Each circular obstacle is represented as:
+
+```text
+O_m = (c_m, rho_m, delta_m)
+```
+
+where `c_m in R^2` is the center, `rho_m` is the hard radius, and `delta_m` is the safety margin. A waypoint position `p_t` is inside the soft unsafe region of obstacle `m` when:
+
+```text
+||p_t - c_m||_2 < rho_m + delta_m.
+```
+
+For one trajectory `X = [x_0, ..., x_T]`, with `x_t = [p_t, v_t]`, the implemented objective can be written as:
+
+```text
+minimize_X J(X)
+subject to x_0 = x_start, x_T close to x_goal, p_t in Omega.
+```
+
+The full trajectory cost is:
+
+```text
+J(X) =
+  w_obs    * (1/T) sum_t sum_m max(0, rho_m + delta_m - ||p_t - c_m||_2)^2
++ w_bound  * (1/T) sum_t violation_Omega(p_t)^2
++ w_smooth * (1/T) sum_t (||p_t - p_{t-1}||_2^2 + ||p_{t+1} - 2p_t + p_{t-1}||_2^2)
++ w_goal   * ||x_T - x_goal||_2^2
++ w_vel    * (1/T) sum_t ||v_t||_2^2.
+```
+
+The global project objective over `N` independent seeds is:
+
+```text
+Y* = argmin_{i in {0, ..., N-1}} J(X_i*)
+```
+
+where `X_i*` is the best trajectory returned by local MPOT task `i`. This formulation is important for correctness: the MPI program does not solve a different mathematical problem; it evaluates the same set of `N` tasks in parallel and applies the same final minimum-cost reduction.
 
 ---
 
@@ -318,11 +373,168 @@ If the idle fraction exceeds 25%, the planned correction is to adjust task granu
 
 ---
 
-## 6. Implementation Overview
+## 6. Complexity Analysis
+
+This section gives an asymptotic view of the algorithm. The exact measured time is still obtained from CSV/JSON artifacts because PyTorch kernels, CPU scheduling, and MPI runtime overhead are machine-dependent.
+
+### 6.1 Symbols
+
+**Table 5. Complexity symbols.**
+
+| Symbol | Meaning |
+|---|---|
+| `N` | number of independent planning tasks / seeds |
+| `P` | number of MPI processes |
+| `T` | number of trajectory waypoints |
+| `K` | number of particles in one local MPOT task |
+| `L` | maximum outer MPOT iterations |
+| `H` | maximum Sinkhorn inner iterations |
+| `Q` | number of probe candidates per waypoint after polytope/probe expansion |
+| `M` | number of circular obstacles |
+| `C_task` | average runtime of one local MPOT task |
+
+### 6.2 Local MPOT Task Complexity
+
+In one local task, the dominant cost comes from repeatedly evaluating local probes and running Sinkhorn updates. A simple upper-level model is:
+
+```text
+C_task = O(L * (K * T * Q * M + H * K * T * Q)).
+```
+
+The first term approximates obstacle and cost evaluation over particles, waypoints, probes, and obstacles. The second term approximates repeated Sinkhorn-style updates over the local candidate costs. Constants are omitted because the implementation uses vectorized PyTorch operations, so the practical cost is measured empirically.
+
+Memory per task is mainly the particle batch and local probe/cost tensors:
+
+```text
+M_task = O(K * T * Q)
+```
+
+plus the saved final trajectory and small metadata.
+
+### 6.3 Serial Complexity
+
+The serial baseline runs all tasks sequentially:
+
+```text
+T_serial = sum_{i=0}^{N-1} C_task(i).
+```
+
+If task runtimes are approximately similar:
+
+```text
+T_serial = O(N * C_task).
+```
+
+The final reduction over `N` task results is:
+
+```text
+O(N)
+```
+
+which is small compared with local optimization.
+
+### 6.4 Parallel Computation Complexity
+
+Under 1D cyclic mapping, rank `r` receives:
+
+```text
+D_r = { i | i mod P = r }.
+```
+
+The compute time on rank `r` is:
+
+```text
+T_compute(r) = sum_{i in D_r} C_task(i).
+```
+
+The parallel runtime without communication is modeled as:
+
+```text
+T_P_no_comm = max_r T_compute(r).
+```
+
+If tasks are balanced and have similar cost:
+
+```text
+T_P_no_comm ~= O((N / P) * C_task).
+```
+
+This is why increasing `P` can reduce runtime: each process handles fewer independent MPOT tasks.
+
+### 6.5 Communication Complexity
+
+The MPI program communicates only at coarse boundaries. The approximate communication volume is:
+
+```text
+V_comm = O(P * |config| + N * |task_result| + P * |rank_timing|).
+```
+
+The number of collective communication phases is constant:
+
+```text
+bcast(config), bcast(run_id), bcast(assignment), scatter(tasks), gather(results), gather(timings), gather(comm_events).
+```
+
+There is no communication inside the local MPOT/Sinkhorn loop. Therefore the parallel design is coarse-grained and suitable for a LAN/Ubuntu VM cluster.
+
+### 6.6 Parallel Runtime, Speedup, and Efficiency
+
+The measured runtime with communication is:
+
+```text
+T_P_with_comm = max_r (T_compute(r) + T_comm(r) + T_wait(r)).
+```
+
+The ideal speedup model is:
+
+```text
+S_P = T_1 / T_P
+E_P = S_P / P.
+```
+
+In an ideal embarrassingly parallel system:
+
+```text
+S_P ~= P, E_P ~= 1.
+```
+
+In practice:
+
+```text
+S_P < P
+```
+
+because of communication, process launch overhead, serial reduction on rank 0, OS scheduling, and load imbalance. The report therefore plots both runtime with communication and runtime without communication.
+
+### 6.7 Load Balance Model
+
+The idle time of a rank is measured against the slowest rank:
+
+```text
+idle_r = max_j T_total(j) - T_total(r).
+```
+
+The imbalance indicator used in this project is:
+
+```text
+idle_fraction = max_r idle_r / max_j T_total(j).
+```
+
+The course threshold is:
+
+```text
+idle_fraction <= 0.25.
+```
+
+For the measured `N=412, P=4` local run, `idle_fraction ~= 0.00705`, so the task granularity is acceptable for the current setting.
+
+---
+
+## 7. Implementation Overview
 
 The implementation is organized so that the serial and MPI runners share the same local planning task. This keeps correctness checks meaningful.
 
-**Table 5. Main implementation files.**
+**Table 6. Main implementation files.**
 
 | File | Responsibility |
 |---|---|
@@ -341,9 +553,9 @@ The original MPOT support modules remain in the repository and are credited. Cor
 
 ---
 
-## 7. Experimental Methodology
+## 8. Experimental Methodology
 
-### 7.1 Measured Local Experiment
+### 8.1 Measured Local Experiment
 
 The measured local experiment is labeled `final_macbook_air_2d`. It uses:
 
@@ -356,7 +568,7 @@ The measured local experiment is labeled `final_macbook_air_2d`. It uses:
 
 The experiment produces runtime tables, speedup tables, rank timing tables, correctness reports, communication logs, and visualization figures.
 
-### 7.2 Correctness Check
+### 8.2 Correctness Check
 
 Correctness is checked by comparing the serial and MPI outputs for the same task list:
 
@@ -373,13 +585,13 @@ The final best trajectory is selected by the same deterministic rule:
 argmin_i (best_cost, task_id, seed)
 ```
 
-### 7.3 Runtime Versus Input Size
+### 8.3 Runtime Versus Input Size
 
 The runtime-vs-input-size experiment fixes the process count and varies `N`. It records runtime with communication and runtime without communication.
 
 > TODO (strict runtime target): The current local run is shorter than 2-3 minutes. If strict compliance is required, rerun with larger `N` or with the LAN cluster and replace this section with the new real CSV/PNG artifacts.
 
-### 7.4 Granularity and Load Balance
+### 8.4 Granularity and Load Balance
 
 The granularity experiment fixes `N` and `P`, then plots per-rank compute and communication time in one stacked bar chart per rank. The decision rule is:
 
@@ -387,7 +599,7 @@ The granularity experiment fixes `N` and `P`, then plots per-rank compute and co
 balanced if idle_fraction <= 0.25
 ```
 
-### 7.5 Speedup
+### 8.5 Speedup
 
 The speedup experiment fixes the input size at `2N` and varies process count:
 
@@ -399,7 +611,7 @@ The course requirement allows extending this to `P = 8, 16, ...` when enough phy
 
 > TODO (process-count extension): Run `P=8` or higher only after a larger local machine or multi-machine Ubuntu LAN setup is available. Do not invent higher-P speedup.
 
-### 7.6 Ubuntu VM and LAN Plan
+### 8.6 Ubuntu VM and LAN Plan
 
 The owner Ubuntu ARM64 VM has passed smoke tests. The multi-machine LAN stage is not measured yet. The required stage gates are:
 
@@ -413,7 +625,7 @@ The owner Ubuntu ARM64 VM has passed smoke tests. The multi-machine LAN stage is
 
 > TODO (LAN benchmark): Replace this TODO only after teammate VMs produce real `summary.json`, hostfile output, rank timing CSVs, and figures.
 
-### 7.7 Additional Experiments and Ablation Policy
+### 8.7 Additional Experiments and Ablation Policy
 
 The main report should not become a large robotics hyperparameter study. The course grading focuses on how the problem is parallelized, whether the demo runs, whether the report is clear, and whether members understand the code. Therefore, extra experiments are selected by this rule:
 
@@ -440,15 +652,15 @@ The detailed plan is maintained in `docs/extra_experiments_plan.md`.
 
 ---
 
-## 8. Results
+## 9. Results
 
 All numbers in this section are generated from real artifacts under the label `final_macbook_air_2d`. They should not be edited manually.
 
-### 8.1 Correctness
+### 9.1 Correctness
 
 For `N=824` and `P=4`, the serial and MPI results match exactly at task level.
 
-**Table 6. Correctness result.**
+**Table 7. Correctness result.**
 
 | Metric | Value |
 |---|---:|
@@ -460,7 +672,7 @@ For `N=824` and `P=4`, the serial and MPI results match exactly at task level.
 
 The best MPI trajectory also passes solution-quality checks.
 
-**Table 7. Best trajectory quality.**
+**Table 8. Best trajectory quality.**
 
 | Metric | Value |
 |---|---:|
@@ -475,11 +687,11 @@ The best MPI trajectory also passes solution-quality checks.
 
 ![Best trajectory](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png)
 
-### 8.2 Runtime Versus Input Size
+### 9.2 Runtime Versus Input Size
 
 At `P=4`, runtime increases with `N`, and the gap between runtime with and without communication remains small.
 
-**Table 8. Runtime vs input size at `P=4`.**
+**Table 9. Runtime vs input size at `P=4`.**
 
 | N | Runtime with communication (s) | Runtime without communication (s) | Communication overhead (s) |
 |---:|---:|---:|---:|
@@ -491,11 +703,11 @@ At `P=4`, runtime increases with `N`, and the gap between runtime with and witho
 
 ![Runtime versus input size](report/figures/runtime_vs_input_size_final_macbook_air_2d.png)
 
-### 8.3 Granularity and Load Balance
+### 9.3 Granularity and Load Balance
 
 The load-balance experiment uses `N=412`, `P=4`. Each rank receives 103 tasks. The maximum observed idle fraction is approximately `0.00705`, which is far below the 25% threshold.
 
-**Table 9. Load-balance summary.**
+**Table 10. Load-balance summary.**
 
 | Metric | Value |
 |---|---:|
@@ -509,11 +721,11 @@ The load-balance experiment uses `N=412`, `P=4`. Each rank receives 103 tasks. T
 
 ![Rank timing breakdown](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png)
 
-### 8.4 Speedup
+### 9.4 Speedup
 
 For `N=824`, the measured speedup is:
 
-**Table 10. Speedup at `N=824`.**
+**Table 11. Speedup at `N=824`.**
 
 | Processes | Runtime with communication (s) | Speedup | Efficiency |
 |---:|---:|---:|---:|
@@ -525,7 +737,7 @@ For `N=824`, the measured speedup is:
 
 ![Speedup](report/figures/speedup_final_macbook_air_2d.png)
 
-### 8.5 Algorithm Trace and 2D Variants
+### 9.5 Algorithm Trace and 2D Variants
 
 The report includes a static key frame from the algorithm-trace GIF because PDF export cannot play GIFs. The GIF shows trajectory particles and candidate paths evolving across optimization iterations, which is more informative than showing only the final path.
 
@@ -535,7 +747,7 @@ The report includes a static key frame from the algorithm-trace GIF because PDF 
 
 Additional 2D variants were generated for presentation:
 
-**Table 11. Qualitative 2D variants.**
+**Table 12. Qualitative 2D variants.**
 
 | Variant | Obstacles | Purpose |
 |---|---:|---|
@@ -550,13 +762,13 @@ These qualitative variants are not used as the main speedup evidence because the
 
 ![Dense variant trace key frame](report/figures/algorithm_trace_variant_dense_keyframe.png)
 
-### 8.6 Auxiliary Particle-Count Ablation
+### 9.6 Auxiliary Particle-Count Ablation
 
 This ablation is intentionally small. It varies only `optimizer.num_particles` on the dense 2D variant with `N=12` and `P=4`. The purpose is to explain the local MPOT exploration/runtime trade-off, not to replace the main parallel-computing experiments.
 
 The detailed generated table is stored in `report/PARAMETER_ABLATION_particles_dense_N12.md`, with copied source summaries under `report/artifacts/particle_ablation_dense_N12/`.
 
-**Table 12. Particle-count ablation on dense 2D variant.**
+**Table 13. Particle-count ablation on dense 2D variant.**
 
 | Particles | Runtime with communication (s) | Best cost | Best task | Best seed |
 |---:|---:|---:|---:|---:|
@@ -572,7 +784,7 @@ The result suggests that more particles can improve the best discovered cost, bu
 
 ---
 
-## 9. Discussion
+## 10. Discussion
 
 The local results support the chosen parallel design. The correctness result shows that MPI distribution does not change the mathematical answer for the measured task set: all `824` tasks match the serial baseline, and the best-cost difference is `0.0`. This is important because the parallel implementation should only change execution order and process assignment, not the objective function or local optimizer.
 
@@ -591,7 +803,7 @@ The main limitation is experiment scale. The local benchmark currently runs in s
 
 ---
 
-## 10. Conclusion
+## 11. Conclusion
 
 This project turns MPOT-inspired motion planning into a clear parallel-computing benchmark. The system uses task-level exploratory parallelism, cyclic process assignment, SPMD execution, rank 0 coordination, blocking `bcast/scatter/gather`, and measured load-balance analysis. The local experiment demonstrates correct MPI behavior, low communication overhead, and meaningful speedup up to four processes.
 
@@ -599,7 +811,7 @@ The project is currently ready for local demonstration and Ubuntu single-VM smok
 
 ---
 
-## 11. References
+## 12. References
 
 1. An T. Le, Georgia Chalvatzaki, Armin Biess, and Jan Peters. "Accelerating Motion Planning via Optimal Transport." Advances in Neural Information Processing Systems 36, NeurIPS 2023. https://proceedings.neurips.cc/paper_files/paper/2023/hash/f7a94134f1c726796c6f81fb946e489d-Abstract-Conference.html
 2. An T. Le, Georgia Chalvatzaki, Armin Biess, and Jan Peters. "Accelerating Motion Planning via Optimal Transport." arXiv:2309.15970. https://arxiv.org/abs/2309.15970
@@ -611,7 +823,7 @@ The project is currently ready for local demonstration and Ubuntu single-VM smok
 
 ## Appendix A. Requirement Coverage
 
-**Table 13. Course-rubric mapping.**
+**Table 14. Course-rubric mapping.**
 
 | Requirement | Project answer | Evidence |
 |---|---|---|
@@ -619,13 +831,14 @@ The project is currently ready for local demonstration and Ubuntu single-VM smok
 | Decomposition | Exploratory decomposition | Section 5.2 |
 | Mapping | 1D cyclic, `task i -> rank i mod P` | Section 5.3 |
 | Communication | SPMD, rank 0 coordinator, logical star, blocking `bcast/scatter/gather` | Section 5.4 |
-| Load balancing | Per-rank compute/communication/idle timing, 25% threshold | Sections 5.7 and 8.3 |
+| Complexity analysis | Local task, serial, parallel, communication, speedup, efficiency, and load-balance model | Section 6 |
+| Load balancing | Per-rank compute/communication/idle timing, 25% threshold | Sections 5.7, 6.7, and 9.3 |
 | Parallel pseudocode | Distributed MPOT with OpenMPI | Section 5.6 |
-| Correctness | Serial/MPI task-level comparison | Section 8.1 |
-| Runtime vs input size | `N = 208, 412, 824` at `P=4` | Section 8.2 |
-| Granularity | Stacked rank timing at `N=412, P=4` | Section 8.3 |
-| Speedup | `P = 1, 2, 4` at `N=824` | Section 8.4 |
-| Auxiliary ablation | Particle-count trade-off on dense 2D variant | Section 8.6 |
+| Correctness | Serial/MPI task-level comparison | Section 9.1 |
+| Runtime vs input size | `N = 208, 412, 824` at `P=4` | Section 9.2 |
+| Granularity | Stacked rank timing at `N=412, P=4` | Section 9.3 |
+| Speedup | `P = 1, 2, 4` at `N=824` | Section 9.4 |
+| Auxiliary ablation | Particle-count trade-off on dense 2D variant | Section 9.6 |
 | Final real figures | Runtime, speedup, rank timing, best path, algorithm trace, dense trace, particle ablation | Figures 1-7 |
 
 ---
