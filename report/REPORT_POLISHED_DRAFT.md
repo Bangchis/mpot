@@ -48,6 +48,7 @@ The current local experiment verifies correctness, communication, load balance, 
 Appendix A. Requirement Coverage
 Appendix B. Remaining TODO Items
 Appendix C. Demo Artifacts
+Appendix D. Figure and Plot Checklist
 
 ---
 
@@ -763,6 +764,10 @@ The best MPI trajectory also passes solution-quality checks.
 
 ![Best trajectory](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png)
 
+**Figure 2. Cost distribution over MPI tasks.**
+
+![Cost by task](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_cost_by_task.png)
+
 This correctness result is stronger than comparing only the final best cost. The task-level comparison checks that the same deterministic task set is evaluated and that the MPI program does not silently skip, duplicate, or reorder work in a way that changes the selected solution.
 
 ### 9.2 Runtime Versus Input Size
@@ -777,7 +782,7 @@ At `P=4`, runtime increases with `N`, and the gap between runtime with and witho
 | 412 | 4.91507 | 4.87856 | 0.03651 |
 | 824 | 9.31508 | 9.27704 | 0.03804 |
 
-**Figure 2. Runtime versus input size.**
+**Figure 3. Runtime versus input size.**
 
 ![Runtime versus input size](report/figures/runtime_vs_input_size_final_macbook_air_2d.png)
 
@@ -797,7 +802,7 @@ The load-balance experiment uses `N=412`, `P=4`. Each rank receives 103 tasks. T
 | Balanced under threshold | yes |
 | Observed communication collectives | `bcast`, `scatter`, `gather` |
 
-**Figure 3. Per-rank compute and communication time.**
+**Figure 4. Per-rank compute and communication time.**
 
 ![Rank timing breakdown](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png)
 
@@ -813,7 +818,7 @@ For `N=824`, the measured speedup is:
 | 2 | 14.7543 | 1.89117 | 0.945584 |
 | 4 | 9.31508 | 2.99545 | 0.748862 |
 
-**Figure 4. Speedup.**
+**Figure 5. Speedup.**
 
 ![Speedup](report/figures/speedup_final_macbook_air_2d.png)
 
@@ -823,7 +828,7 @@ The speedup is meaningful but not ideal. Moving from one to two processes gives 
 
 The report includes a static key frame from the algorithm-trace GIF because PDF export cannot play GIFs. The GIF shows trajectory particles and candidate paths evolving across optimization iterations, which is more informative than showing only the final path.
 
-**Figure 5. Algorithm trace key frame.**
+**Figure 6. Algorithm trace key frame.**
 
 ![Algorithm trace key frame](report/figures/algorithm_trace_final_macbook_air_2d_keyframe.png)
 
@@ -840,7 +845,7 @@ Additional 2D variants were generated for presentation:
 
 These qualitative variants are not used as the main speedup evidence because the report should compare runtime using a consistent benchmark configuration.
 
-**Figure 6. Dense 2D variant trace key frame.**
+**Figure 7. Dense 2D variant trace key frame.**
 
 ![Dense variant trace key frame](report/figures/algorithm_trace_variant_dense_keyframe.png)
 
@@ -858,7 +863,7 @@ The detailed generated table is stored in `report/PARAMETER_ABLATION_particles_d
 | 16 | 1.069814 | 0.00383398 | 8 | 20260625 |
 | 24 | 1.185440 | 0.00370045 | 10 | 20260627 |
 
-**Figure 7. Particle-count ablation.**
+**Figure 8. Particle-count ablation.**
 
 ![Particle-count ablation](report/figures/particle_ablation_dense_N12_P4.png)
 
@@ -872,6 +877,15 @@ The result suggests that more particles can improve the best discovered cost, bu
 | `P=8` or higher | Speedup CSV/PNG from a capable local or LAN setup |
 | Multi-machine Ubuntu LAN | Hostfile, rank distribution log, summaries, timing CSVs, figures |
 | Replacing local-only claims | Updated tables copied from generated artifacts, not hand-written values |
+
+The final report should keep placeholders for missing figures instead of inserting fake graphs. The expected missing placeholders are:
+
+```text
+Placeholder Figure A: Larger-N runtime vs input size near 2-3 minutes.
+Placeholder Figure B: P=1,2,4,8,... speedup after LAN or larger local run.
+Placeholder Figure C: Multi-machine rank distribution from mpirun --hostfile.
+Placeholder Figure D: Multi-machine per-rank compute/communication stacked bar.
+```
 
 ---
 
@@ -934,7 +948,8 @@ The project is currently ready for local demonstration and Ubuntu single-VM smok
 | Granularity | Stacked rank timing at `N=412, P=4` | Section 9.3 |
 | Speedup | `P = 1, 2, 4` at `N=824` | Section 9.4 |
 | Auxiliary ablation | Particle-count trade-off on dense 2D variant | Section 9.6 |
-| Final real figures | Runtime, speedup, rank timing, best path, algorithm trace, dense trace, particle ablation | Figures 1-7 |
+| Final real figures | Best path, cost distribution, runtime, speedup, rank timing, algorithm trace, dense trace, particle ablation | Figures 1-8 |
+| Missing final figures | Larger-N runtime, higher-P speedup, LAN rank distribution, LAN rank timing | Appendix D placeholders |
 
 ---
 
@@ -973,3 +988,26 @@ Static PNG figures are used in the main report because exported PDF files cannot
 | Particle-count ablation figure | `report/figures/particle_ablation_dense_N12_P4.png` |
 
 Detailed teammate ownership and defense preparation are maintained in `docs/team_ownership.md` and `report/MEMBER_DEFENSE_GUIDE.md`.
+
+---
+
+## Appendix D. Figure and Plot Checklist
+
+This appendix is used to keep the report honest during the living-report workflow. A figure marked `Real artifact` already exists in `report/figures/` and can be included in the PDF. A figure marked `Placeholder/TODO` must remain textual until the corresponding CSV/JSON/PNG is generated by a real run.
+
+| Figure or plot | Status | Report use |
+|---|---|---|
+| Best distributed trajectory | Real artifact | Shows the final path selected by MPI |
+| Cost by task | Real artifact | Shows solution-quality variation across exploratory tasks |
+| Runtime vs input size, local `P=4` | Real artifact | Supports the runtime-vs-`N` requirement |
+| Per-rank compute/communication stacked bar, local `N=412, P=4` | Real artifact | Supports granularity and load-balance analysis |
+| Speedup, local `P=1,2,4` | Real artifact | Supports preliminary speedup analysis |
+| Algorithm trace key frame | Real artifact | Visualizes optimization progress in a PDF-compatible form |
+| Dense 2D variant key frame | Real artifact | Shows a harder obstacle setting for presentation |
+| Particle-count ablation | Real artifact | Auxiliary optimizer trade-off, not the main parallel evidence |
+| Larger-N runtime near 2-3 minutes | Placeholder/TODO | Add only after a real larger run exists |
+| Higher-P speedup, especially `P>=8` | Placeholder/TODO | Add only after capable local or LAN artifacts exist |
+| Multi-machine hostfile rank distribution | Placeholder/TODO | Add only after teammate VMs join the same LAN |
+| Multi-machine per-rank timing stacked bar | Placeholder/TODO | Add only after LAN timing CSVs exist |
+
+The placeholder rule is simple: do not create a chart manually for an experiment that has not been run. If a missing figure is needed for final submission, run the experiment first, copy the generated PNG into `report/figures/`, then replace the placeholder text with the real figure and update Appendix D.
