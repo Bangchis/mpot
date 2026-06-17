@@ -5,14 +5,24 @@ build-backend = "setuptools.build_meta"
 [project]
 name = "mpot"
 version = "0.1.0"
-description = "Motion Planning via Optimal Transport in PyTorch"
+description = "CPU/OpenMPI course benchmark inspired by Motion Planning via Optimal Transport"
 readme = "README.md"
 license = {text = "MIT"}
 requires-python = ">=3.9"
 authors = [
-    {name = "An T. Le", email = "an@robot-learning.de"},
+    {name = "An T. Le et al. (original MPOT authors)"},
+    {name = "Bangchis course project team"},
 ]
-keywords = ["motion-planning", "optimal-transport", "sinkhorn", "trajectory-optimization", "robotics"]
+keywords = [
+    "motion-planning",
+    "optimal-transport",
+    "sinkhorn",
+    "trajectory-optimization",
+    "robotics",
+    "mpi",
+    "openmpi",
+    "parallel-computing",
+]
 classifiers = [
     "Development Status :: 4 - Beta",
     "Intended Audience :: Science/Research",
@@ -27,21 +37,26 @@ classifiers = [
 dependencies = [
     "torch>=2.0",
     "numpy>=1.24",
-    "scipy>=1.10",
     "matplotlib>=3.7",
-    "einops>=0.8.0",
-    "torch_robotics @ git+https://github.com/anindex/torch_robotics.git@6db69138af9d40aab5d4b1beafc0314ec0ac0093",
+    "pillow>=10.0",
+    "mpi4py>=4.0",
 ]
 
 [project.urls]
-Homepage = "https://github.com/anindex/mpot"
+Homepage = "https://github.com/Bangchis/mpot"
 Paper = "https://arxiv.org/abs/2309.15970"
-Issues = "https://github.com/anindex/mpot/issues"
+OriginalMPOT = "https://github.com/anindex/mpot"
+Issues = "https://github.com/Bangchis/mpot/issues"
 
 [project.optional-dependencies]
 dev = [
     "pytest>=7.0",
     "ruff>=0.1.0",
+]
+original = [
+    "scipy>=1.10",
+    "einops>=0.8.0",
+    "torch_robotics @ git+https://github.com/anindex/torch_robotics.git@6db69138af9d40aab5d4b1beafc0314ec0ac0093",
 ]
 
 [tool.setuptools.packages.find]

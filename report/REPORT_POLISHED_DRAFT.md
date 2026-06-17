@@ -1,114 +1,138 @@
+# HANOI UNIVERSITY OF SCIENCE AND TECHNOLOGY
+
+**Project Report**
+
 # Distributed MPOT Motion Planning with OpenMPI
 
-**Parallel Computing / Parallel Programming Course Project**
+| Field | Value |
+|---|---|
+| School / Faculty | TODO: fill official school or faculty name |
+| Course | Parallel Computing and Parallel Programming |
+| Group | TODO: fill group number |
+| Group members | TODO: fill full names and student IDs |
+| Instructor | TODO: fill instructor name |
+| Submission deadline | 24 June 2026 |
+| Draft date | 17 June 2026 |
+| Report status | Local-first report draft. Local macOS MPI results and owner Ubuntu single-VM smoke results are measured. Multi-machine LAN results are TODO until teammate VMs are ready. |
 
-**Draft date:** 2026-06-17  
-**Status:** Academic report draft based on real local artifacts and owner
-Ubuntu single-VM smoke artifacts. Multi-machine Ubuntu/LAN experiments are not
-measured yet.
+---
 
 ## Abstract
 
-This project studies how Motion Planning via Optimal Transport (MPOT) can be
-adapted into a course-level parallel computing project. The original MPOT
-approach optimizes many trajectory particles with an optimal-transport-inspired
-Sinkhorn update in order to search for good motion plans around obstacles. Our
-project keeps the local MPOT optimizer as the planning kernel and adds an MPI
-parallel layer outside the inner Sinkhorn loop.
+Motion planning searches for a collision-free and smooth trajectory from a start state to a goal state. It is difficult because obstacle constraints and nonlinear costs can create local minima. Motion Planning via Optimal Transport (MPOT) addresses this issue by optimizing a batch of trajectory particles using a gradient-free, optimal-transport-inspired update. The original MPOT work is highly parallelizable and was demonstrated mainly as a batch optimization method.
 
-The benchmark uses a two-dimensional point robot moving from a start state to a
-goal state while avoiding circular obstacles. The parallel program uses
-task-level parallelism: each MPI rank solves a subset of independent MPOT
-planning tasks generated from deterministic random seeds. Tasks are assigned by
-1D cyclic mapping, `task i -> rank i mod P`. Rank 0 coordinates setup, gathers
-results and timing data, and reduces all task results to the best trajectory.
+This project adapts the MPOT idea into a course-level CPU/OpenMPI system for a 2D point robot. Instead of splitting the inner Sinkhorn optimization across machines, the project parallelizes independent MPOT planning attempts generated from different deterministic seeds. Each MPI process solves a subset of complete planning tasks, then rank 0 gathers the compact results and selects the lowest-cost trajectory. This design uses task-level parallelism, exploratory decomposition, 1D cyclic mapping, SPMD execution, a logical star communication topology, and blocking `bcast/scatter/gather` collectives.
 
-Local experiments on one machine show that the MPI version matches the serial
-baseline exactly at the task level for `N=824`, achieves about `2.995x` speedup
-with `P=4`, and satisfies the 25% load-balance threshold with idle fraction
-about `0.00705`. The same code has also passed an Ubuntu ARM64 single-VM smoke
-test with OpenMPI. The current local run is shorter than the professor's
-suggested 2-3 minute target, so a larger-N or multi-machine Ubuntu/LAN run
-should be executed later if strict timing compliance is required.
+The current local experiment verifies correctness, communication, load balance, runtime scaling, speedup, and visualization. For `N=824` tasks and `P=4` MPI processes, serial and MPI outputs match on `824/824` tasks, the best-cost difference is `0.0`, and the measured speedup is approximately `2.995x` with communication included. The load-balance idle fraction at `N=412, P=4` is approximately `0.00705`, below the professor's 25% threshold. The current run is shorter than the 2-3 minute target, so larger-N and multi-machine LAN experiments remain TODO until real artifacts are produced.
 
-**Keywords:** motion planning, optimal transport, MPOT, MPI, OpenMPI, task-level
-parallelism, exploratory decomposition, load balancing.
+**Keywords:** motion planning, MPOT, optimal transport, Sinkhorn Step, OpenMPI, task-level parallelism, exploratory decomposition, cyclic mapping, load balancing.
+
+---
+
+## Table of Contents
+
+> TODO: Generate the final table of contents automatically after exporting this Markdown report to PDF or LaTeX/Overleaf.
+
+1. Introduction
+2. Related Work and MPOT Background
+3. Problem Definition and Input Parameters
+4. Serial Baseline
+5. Parallel Algorithm Design
+6. Implementation Overview
+7. Experimental Methodology
+8. Results
+9. Discussion
+10. Conclusion
+11. References
+Appendix A. Requirement Coverage
+Appendix B. Remaining TODO Items
+Appendix C. Demo Artifacts
+
+---
 
 ## 1. Introduction
 
-Motion planning is the problem of finding a trajectory from a start state to a
-goal state while avoiding obstacles and keeping the path smooth. It is a
-challenging optimization problem because obstacles can create local minima. A
-single optimizer run may find a poor route, collide with an obstacle, or fail to
-discover an alternative path.
+Motion planning is a fundamental problem in robotics and autonomous systems. Given an initial state, a goal state, and obstacle constraints, the planner must produce a feasible trajectory that is collision-free, smooth, and close to the target. The problem is often non-convex because obstacles divide the free space into different route modes. A single optimization run can become trapped in a poor local minimum.
 
-MPOT, short for Motion Planning via Optimal Transport, addresses this by
-optimizing many trajectory particles. The method uses local candidate probes and
-an entropic optimal transport step to move particles toward lower-cost states.
-In the original repository, this batch nature is suitable for GPU acceleration.
+MPOT, short for Motion Planning via Optimal Transport, is attractive for this project because it naturally uses many trajectory particles and local cost probes. Different particles or seeds can explore different candidate paths around obstacles. This exploration property gives a clear parallel-computing opportunity: many independent planning attempts can run concurrently, and only the final compact results need to be reduced.
 
-The goal of this course project is different from the original MPOT paper. We do
-not attempt to reproduce GPU performance. Instead, we build a CPU-only MPI
-benchmark that demonstrates a clear parallel programming design. The key idea is
-to run many independent MPOT planning attempts with different random seeds in
-parallel. Each MPI process solves complete local MPOT tasks, and rank 0 selects
-the best result.
+The objective of this project is not to reproduce the original GPU MPOT performance. The objective is to build an understandable OpenMPI program that demonstrates the concepts required by the course:
 
-The project contributions are:
+- what level of parallelism is used;
+- which decomposition technique is used;
+- how tasks are mapped to MPI processes;
+- how processes communicate;
+- how load balance is measured;
+- how correctness and speedup are evaluated with real artifacts.
 
-- a simple 2D point-robot MPOT benchmark that can run on CPU;
-- a serial baseline for correctness checking;
-- an OpenMPI implementation using task-level exploratory parallelism;
-- runtime, communication, load-balance, correctness, and speedup artifacts;
-- qualitative trajectory and algorithm-trace GIFs for demonstration.
+The project uses only 2D planning settings in the report. This makes the algorithm easier to explain and makes the figures readable for defense. More complicated 2D obstacle variants are included for qualitative visualization, but the main measured benchmark uses one fixed configuration so runtime and speedup comparisons remain fair.
 
-## 2. Background and Problem Definition
+---
 
-### 2.1 MPOT Background
+## 2. Related Work and MPOT Background
 
-The MPOT optimizer represents a candidate motion plan as a trajectory particle.
-Instead of optimizing one path only, it initializes a batch of particles. Each
-outer iteration evaluates local candidate probes around current trajectory
-states, solves an entropic optimal transport problem with Sinkhorn iterations,
-and updates particles through barycentric projection.
+### 2.1 Original MPOT
 
-Conceptually, one MPOT run can be summarized as:
+The original MPOT paper, *Accelerating Motion Planning via Optimal Transport*, presents a gradient-free method for optimizing a batch of smooth trajectories over nonlinear motion-planning costs. The method uses a Gaussian Process dynamics prior for smoothness and introduces the Sinkhorn Step as a zero-order, highly parallelizable update rule. Around each trajectory waypoint, a regular polytope defines local search directions. Costs are evaluated at local probe points, then an entropic optimal transport computation moves trajectory parameters toward lower-cost regions.
+
+In simplified terms, one MPOT optimization run performs the following loop:
 
 ```text
-initialize K trajectory particles
-repeat:
-    generate local probes around current particles
-    evaluate obstacle, boundary, smoothness, and goal costs
-    solve the entropic optimal transport problem
-    update particles by barycentric projection
-select the particle with the lowest full trajectory cost
+Algorithm 1: Local MPOT Optimization Kernel
+
+Input:
+    problem configuration, optimizer configuration, deterministic seed
+Output:
+    best trajectory and best cost for this seed
+
+1. Initialize a batch of K trajectory particles.
+2. For iteration l = 1 to L:
+       2.1 Generate local probe points around current waypoints.
+       2.2 Evaluate obstacle, boundary, smoothness, velocity, and goal costs.
+       2.3 Build an entropic optimal transport problem from the local costs.
+       2.4 Run Sinkhorn iterations to estimate a transport plan.
+       2.5 Update trajectory particles by barycentric projection.
+       2.6 Decay probe or step radius if configured.
+3. Evaluate the final trajectories.
+4. Return the lowest-cost trajectory for this seed.
 ```
 
-The important property for this project is that MPOT benefits from exploration.
-Different initial particles or random seeds can discover different route modes
-around obstacles. This makes MPOT a natural fit for exploratory task-level
-parallelism.
+This local kernel is still sequential from the MPI point of view in our implementation. Its internal tensor operations may be vectorized by PyTorch, but MPI ranks do not communicate inside the Sinkhorn loop.
 
-### 2.2 2D Planning Problem
+### 2.2 Original MPOT vs. This Course Project
 
-The benchmark uses a point robot in a bounded 2D workspace. A state is
+**Table 1. Original MPOT and OpenMPI adaptation.**
+
+| Aspect | Original MPOT | This course project |
+|---|---|---|
+| Main goal | Fast batch motion planning via optimal transport | Parallel-programming demonstration with measurable MPI behavior |
+| Main hardware assumption | GPU-friendly batch computation | CPU-only macOS/Ubuntu VM and OpenMPI |
+| Planning scope in report | The paper covers low- and high-dimensional tasks | 2D point robot only |
+| Parallelism focus | Batch particles/probes inside MPOT | Independent seed-level MPOT tasks across MPI ranks |
+| Communication model | Mostly local tensor computation | SPMD MPI with rank 0 coordinator |
+| Output emphasis | Planning performance and solution quality | Correctness, runtime, communication, load balance, speedup |
+
+The adaptation is intentional. Splitting the fine-grained Sinkhorn or waypoint updates across virtual machines would introduce frequent synchronization and make the code harder to defend. Parallelizing complete independent tasks gives coarse-grained work units, simple communication, and clear experimental metrics.
+
+---
+
+## 3. Problem Definition and Input Parameters
+
+### 3.1 2D Planning Problem
+
+The robot is a point mass moving in a bounded 2D workspace. A state is:
 
 ```text
-x = [px, py, vx, vy]
+x_t = [p_x, p_y, v_x, v_y]
 ```
 
-where `(px, py)` is position and `(vx, vy)` is velocity. A trajectory is a
-sequence of states:
+where `(p_x, p_y)` is position and `(v_x, v_y)` is velocity. A trajectory is a sequence:
 
 ```text
 X = [x_0, x_1, ..., x_T].
 ```
 
-The start and goal states are fixed by the experiment configuration. Obstacles
-are circles. A trajectory is considered good when it reaches the goal, avoids
-hard collisions, stays inside the workspace, and remains smooth.
-
-The trajectory cost is:
+The planner receives a fixed start state, a fixed goal state, circular obstacles, workspace bounds, and cost weights. The optimization objective is:
 
 ```text
 J(X) =
@@ -119,300 +143,289 @@ J(X) =
 + w_vel    * velocity_penalty(X)
 ```
 
-Lower cost means a better trajectory.
+A good solution has low cost, zero hard collision fraction, small goal error, no boundary violation, and a smooth path.
 
-### 2.3 One Planning Task
+### 3.2 Planning Task
 
-One planning task is one complete MPOT optimization run with one deterministic
-seed. The task receives the shared configuration and seed, initializes MPOT
-particles, runs the local optimizer, evaluates all final particles, and returns
-the best trajectory for that seed.
-
-Mathematically:
+One task is one complete MPOT-inspired local optimization run:
 
 ```text
-Y_i = F(config, seed_i)
+Y_i = F(problem_config, optimizer_config, seed_i)
 ```
 
-where `Y_i` contains the best cost, best trajectory, task id, seed, rank, and
-timing for task `i`.
+where `Y_i` stores the task id, seed, best cost, best trajectory, rank id, and timing information. Two tasks are independent because task `i` does not read intermediate state from task `j`.
 
-### 2.4 Input Parameters of the Parallel Algorithm
+### 3.3 Input Parameters of the Parallel Algorithm
 
-The parallel algorithm has four groups of input parameters. Separating them is
-important because only some parameters belong to MPI; the rest define the
-motion-planning problem and the local MPOT optimizer executed by each task.
-
-**Problem parameters.** These describe the 2D planning instance: workspace
-bounds, start state, goal state, circular obstacles, trajectory length `T`, time
-step `dt`, and cost weights for obstacle avoidance, boundary violation,
-smoothness, goal error, and velocity. These values define the objective
-function `J(X)` and are shared by every MPI rank.
-
-**Local MPOT optimizer parameters.** These control how one planning task is
-solved: number of particles `K`, maximum outer iterations `L`, maximum Sinkhorn
-iterations `H`, local probe radius, polytope/candidate count, convergence
-tolerance, and deterministic seed `seed_i`. The seed is different for each task
-so that the tasks explore different trajectory modes around obstacles.
-
-**Parallel execution parameters.** These define how the independent tasks are
-distributed: total task count `N`, MPI process count `P`, rank id `r`, mapping
-rule `owner(i) = i mod P`, and the local task subset `D_r` assigned to each
-rank. In the experiments, `N` is the main input size used for runtime and
-speedup plots.
-
-**Measurement and reduction parameters.** These do not change the planner
-itself, but they are needed for the report: per-rank compute time,
-communication time, idle time, total runtime, and communication events. Each
-task returns:
-
-```text
-Y_i = (task_id, seed_i, best_cost, best_trajectory, runtime, rank)
-```
-
-Rank 0 gathers all `Y_i` values and selects the distributed answer:
-
-```text
-Y* = argmin_i (Y_i.best_cost, Y_i.task_id, Y_i.seed_i)
-```
-
-Therefore, the mathematical input of the parallel experiment is not just
-`N` and `P`. It is the tuple:
+The parallel algorithm input is:
 
 ```text
 (problem_config, optimizer_config, N, P, mapping_rule)
 ```
 
-where `problem_config` and `optimizer_config` are broadcast to all ranks, while
-the task subsets `D_r` are scattered according to the mapping rule.
+**Table 2. Main parameter groups.**
 
-## 3. Serial Algorithm
+| Group | Parameters | Role |
+|---|---|---|
+| Problem parameters | workspace bounds, start, goal, circular obstacles, trajectory length `T`, step `dt`, cost weights | Define the motion-planning objective |
+| Local MPOT parameters | particles `K`, iterations `L`, Sinkhorn iterations `H`, probe radius, step radius, seed | Define one planning task |
+| Parallel parameters | total task count `N`, process count `P`, rank id `r`, mapping `owner(i)=i mod P` | Define MPI workload distribution |
+| Measurement parameters | compute time, communication time, idle time, total runtime, task assignment | Define report evidence |
 
-The serial baseline evaluates all tasks sequentially. It is the correctness
-reference for the parallel implementation.
+For the professor's runtime and speedup requirements, `N` is the main input size. Increasing `N` increases the number of independent planning attempts.
+
+---
+
+## 4. Serial Baseline
+
+The serial baseline evaluates all `N` tasks one after another using the same local task runner as the MPI version. It is the reference for correctness.
 
 ```text
-Algorithm 1: Serial MPOT Baseline
+Algorithm 2: Serial MPOT Baseline
 
 Input:
-    config, N
+    problem_config, optimizer_config, total tasks N
 Output:
     global best result Y*
 
-1. Create deterministic task list D = [(0, seed_0), ..., (N-1, seed_{N-1})].
-2. Initialize results = empty list.
+1. Build deterministic task list:
+       D = [(0, seed_0), (1, seed_1), ..., (N-1, seed_{N-1})]
+2. Create empty result list R.
 3. For each task (i, seed_i) in D:
-       Y_i = LocalMPOTTask(config, i, seed_i)
-       Append Y_i to results.
+       3.1 Run Local MPOT Optimization Kernel.
+       3.2 Append result Y_i to R.
 4. Select:
-       Y* = argmin_i (Y_i.best_cost, Y_i.task_id, Y_i.seed)
-5. Return Y* and all task results.
+       Y* = argmin_i (Y_i.best_cost, Y_i.task_id, Y_i.seed_i)
+5. Write summary, task results, and best trajectory.
+6. Return Y*.
 ```
 
 The serial runtime is approximately:
 
 ```text
-T_1 = sum_i T_task(i)
+T_serial = sum_i T_task(i)
 ```
 
-## 4. Parallel Algorithm Design
+Because serial and MPI call the same local task kernel, any result difference should come only from task distribution or result reduction, not from a different optimization algorithm.
 
-### 4.1 Parallel Level
+---
 
-The project uses **task-level parallelism**. Each task is one complete MPOT run
-with one deterministic seed. Two different tasks do not share intermediate
-optimizer state:
+## 5. Parallel Algorithm Design
 
-```text
-Y_i does not read Y_j, for i != j.
-```
+### 5.1 Parallel Level
 
-Therefore, evaluating all tasks is an embarrassingly parallel stage followed by
-a deterministic reduction.
+The program uses **task-level parallelism**. Each MPI process solves complete MPOT tasks. A task is coarse-grained enough to run for meaningful compute time before communicating, and it returns only compact results.
 
-### 4.2 Decomposition Technique
+This choice is appropriate because:
 
-The decomposition technique is **exploratory decomposition**. Each process
-explores a different subset of random seeds. This matches the MPOT idea because
-different seeds may generate different particle initializations and discover
-different motion modes around obstacles.
+- different seeds are independent;
+- MPOT benefits from exploring multiple route modes;
+- task results can be deterministically reduced by minimum cost;
+- communication cost is small compared with local computation.
 
-This is not data decomposition over a matrix or image. The input size `N` is the
-number of independent planning attempts. The computational work is divided by
-planning tasks.
+### 5.2 Decomposition Technique
 
-### 4.3 Mapping Technique
+The decomposition technique is **exploratory decomposition**. Each task explores the planning problem with a different deterministic seed. In obstacle-rich spaces, different seeds can lead particles around different sides of obstacles. The algorithm therefore parallelizes exploration rather than dividing a single matrix or image.
 
-Tasks are assigned to ranks by **1D cyclic mapping**:
+This is not 2D block decomposition because the work unit is not a spatial grid block. It is also not recursive decomposition because tasks do not recursively create subtasks. It is not speculative execution in the strict sense because every task result is useful for finding the global best candidate.
+
+### 5.3 Mapping Technique
+
+Tasks are assigned by **1D cyclic mapping**:
 
 ```text
 owner(i) = i mod P
 D_r = { task i | owner(i) = r }
 ```
 
-where `P` is the number of MPI processes and `D_r` is the task subset assigned
-to rank `r`.
+where `P` is the number of MPI processes and `D_r` is the task subset assigned to rank `r`.
 
-Cyclic mapping is selected because task runtimes can vary by seed. A contiguous
-block assignment may accidentally place several expensive seeds on one rank.
-Cyclic mapping spreads tasks more evenly while remaining deterministic and easy
-to explain in the report.
+Cyclic mapping is chosen over block mapping because seed runtimes may vary. With block mapping, a rank could receive a contiguous region of expensive seeds. Cyclic mapping spreads task ids across ranks and is simple enough for every member to explain during defense.
 
-### 4.4 Communication Strategy and Topology
+### 5.4 Communication Strategy and Topology
 
-The MPI program uses the SPMD model: every rank starts the same program, and the
-rank id determines the role. Rank 0 is the coordinator. The logical topology is
-a star centered at rank 0.
+The program follows the **SPMD** model: all ranks execute the same script, but each rank behaves according to its MPI rank id. Rank 0 acts as the coordinator. The logical communication topology is a **star** centered at rank 0.
 
-The program uses blocking collectives:
+**Table 3. Communication phases.**
 
-| Phase | Collective | Purpose |
-|---|---|---|
-| Setup | `bcast` | Rank 0 sends config, run id, and assignment metadata. |
-| Distribution | `scatter` | Rank 0 sends task subset `D_r` to each rank. |
-| Collection | `gather` | Ranks return task results, timing data, and communication logs. |
+| Phase | MPI collective | Blocking? | Purpose |
+|---|---|---:|---|
+| Setup | `bcast` | yes | Share configuration and run metadata |
+| Distribution | `scatter` | yes | Send each rank its cyclic task subset |
+| Collection | `gather` | yes | Collect task results, rank timings, and communication logs |
+| Reduction | local on rank 0 | not MPI | Select global best result |
 
-Blocking communication is chosen because communication occurs only at coarse
-boundaries. During local MPOT optimization, ranks do not communicate. This keeps
-the communication-to-computation ratio favorable and makes the implementation
-easy to measure.
+Blocking collectives are chosen because communication happens at coarse boundaries only. During local MPOT optimization there is no inter-rank communication. Non-blocking communication would add code complexity but little benefit for the current coarse-grained workload.
 
-### 4.5 Why Not Split The Sinkhorn Loop?
+### 5.5 Why Parallelization Is Added Outside the Sinkhorn Loop
 
-MPOT contains several possible parallelization levels, but not all are suitable
-for multi-process OpenMPI over LAN or virtual machines.
+**Table 4. Candidate parallelization levels.**
 
 | Candidate level | Decision | Reason |
 |---|---|---|
-| Independent MPOT seed/task | Use MPI | Tasks are independent and coarse-grained. |
-| Particle batch inside one task | Keep local | Particles interact through batch objective and Sinkhorn state. |
-| Waypoints inside one trajectory | Keep local | Smoothness couples neighboring waypoints. |
-| Probe evaluation | Keep local | Vectorized PyTorch work is small compared with LAN communication. |
-| Sinkhorn inner iterations | Keep local | Iterations depend on current dual variables and require repeated synchronization. |
-| Final best-result reduction | Use MPI gather/reduction | Results are compact and cheap to collect. |
+| Independent seed/task | Use MPI | Coarse-grained, independent, easy to distribute |
+| Particle batch inside one task | Keep local | Particles share batch state and cost context |
+| Waypoints inside one trajectory | Keep local | Smoothness couples neighboring waypoints |
+| Probe evaluation | Keep local | Fine-grained tensor work; LAN communication would dominate |
+| Sinkhorn inner iterations | Keep local | Iterative dual updates would require repeated synchronization |
+| Final best-result selection | Use rank 0 reduction | Compact result objects are cheap to gather |
 
-Thus, the MPI layer is added outside the inner MPOT optimizer. This design keeps
-the original local MPOT algorithm intact and parallelizes the independent
-exploration attempts around it.
+The central design argument is that MPI should be used where communication is rare and computation is independent. In this project, that point is the outer task layer.
 
-### 4.6 Parallel Pseudocode
+### 5.6 Parallel Pseudocode
 
 ```text
-Algorithm 2: Distributed MPOT with OpenMPI
+Algorithm 3: Distributed MPOT with OpenMPI
 
 Input:
-    config on rank 0, number of tasks N, number of ranks P
+    problem_config on rank 0
+    optimizer_config on rank 0
+    total tasks N
+    process count P
 Output:
     global best result Y* on rank 0
 
-1. MPI starts ranks r = 0, 1, ..., P-1.
+1. Start MPI ranks r = 0, 1, ..., P-1.
 2. If r == 0:
-       create task list D = [(0, seed_0), ..., (N-1, seed_{N-1})]
-       create cyclic chunks D_r = {i | i mod P = r}
-3. Broadcast config and assignment metadata from rank 0.
-4. Scatter task chunks so each rank receives D_r.
-5. Each rank runs LocalMPOTTask for every task in D_r.
-6. Each rank records compute time, communication time, and local results.
-7. Gather local task results and rank timing records to rank 0.
-8. Rank 0 computes:
-       Y* = argmin_i (Y_i.best_cost, Y_i.task_id, Y_i.seed)
-9. Rank 0 writes summaries, plots, timing tables, and validation artifacts.
+       2.1 Build deterministic task list D.
+       2.2 Partition tasks by cyclic mapping:
+             D_r = { task i | i mod P = r }
+3. Rank 0 broadcasts problem_config and optimizer_config.
+4. Rank 0 scatters task subsets so rank r receives D_r.
+5. Each rank initializes local timer and result list R_r.
+6. For each task (i, seed_i) in D_r:
+       6.1 Run Local MPOT Optimization Kernel.
+       6.2 Append local result Y_i to R_r.
+7. Each rank records compute_time_r and communication_time_r.
+8. All ranks gather R_r and rank timing records to rank 0.
+9. Rank 0 merges all task results:
+       R = union_r R_r
+10. Rank 0 selects:
+       Y* = argmin_i (Y_i.best_cost, Y_i.task_id, Y_i.seed_i)
+11. Rank 0 writes summaries, CSV tables, plots, and validation artifacts.
+12. Finalize MPI.
 ```
 
-### 4.7 Load Balancing
+### 5.7 Load Balancing Strategy
 
-Load balancing is measured, not assumed. Each MPI run records compute time,
-communication time, total time, task count, and idle time per rank.
-
-For the course threshold:
+Load balance is measured using per-rank compute time, communication time, total time, and idle time. The course threshold is:
 
 ```text
 idle_fraction <= 0.25
 ```
 
-If the idle fraction is larger than 25%, the task granularity should be
-adjusted. For task-level parallelism, the first fix is to increase `N` so every
-rank receives more tasks. The current local-final experiment satisfies the
-threshold.
+If the idle fraction exceeds 25%, the planned correction is to adjust task granularity. For task-level parallelism, the simplest correction is to increase `N` so each rank receives more tasks and cyclic mapping can average out seed-level variability.
 
-## 5. Implementation Overview
+---
 
-The implementation is organized around one shared local task runner. The serial
-and MPI programs both call the same local MPOT task function. This is important
-for correctness: the parallel version is not a different optimizer. It only
-changes where tasks are executed.
+## 6. Implementation Overview
 
-The main implementation responsibilities are:
+The implementation is organized so that the serial and MPI runners share the same local planning task. This keeps correctness checks meaningful.
 
-- define the 2D problem and trajectory cost;
-- run one local MPOT task from a deterministic seed;
-- build the serial baseline;
-- distribute tasks and gather results with MPI;
-- write timing, assignment, correctness, and result artifacts;
-- generate plots and GIFs from real output files.
+**Table 5. Main implementation files.**
 
-The project also includes qualitative 2D variants with more obstacles. These
-variants are useful for demonstration, but the main runtime and speedup tables
-use one consistent benchmark configuration. The dense qualitative variant uses
-ten obstacles, more trajectory particles, and more probe samples per direction
-so the MPOT iteration trace is easier to see in a GIF demo.
+| File | Responsibility |
+|---|---|
+| `mpot/benchmarks/problem_2d.py` | 2D workspace, obstacles, trajectory cost, solution-quality checks |
+| `mpot/benchmarks/local_runner.py` | One deterministic MPOT-inspired planning task and serial execution loop |
+| `mpot/benchmarks/mpi_runner.py` | MPI setup, cyclic mapping, collectives, result gathering |
+| `mpot/benchmarks/reduction.py` | Deterministic best-result selection shared by serial and MPI workflows |
+| `mpot/benchmarks/metrics.py` | Correctness, speedup, load-balance, timing metrics |
+| `mpot/benchmarks/plots.py` | Runtime, speedup, load-balance, path figures |
+| `scripts/run_serial.py` | Command-line serial runner |
+| `scripts/run_mpi.py` | Command-line MPI runner |
+| `scripts/compare_serial_mpi.py` | Serial-vs-MPI correctness comparison |
+| `scripts/check_report_sync.py` | Living-report path consistency check |
 
-## 6. Experimental Setup
+The original MPOT support modules remain in the repository and are credited. Core algorithm/support files such as `mpot/planner.py`, `mpot/ot`, `mpot/gp`, `mpot/utils`, and `mpot/envs` are not rewritten in this cleanup because changing them would be risky for a late-stage course submission.
 
-The current measured results are from one local macOS machine using multiple MPI
-processes. This is the local-first stage of the project. The same MPI design can
-later be deployed on multiple Ubuntu virtual machines connected through LAN.
+---
 
-The main benchmark configuration uses:
+## 7. Experimental Methodology
+
+### 7.1 Measured Local Experiment
+
+The measured local experiment is labeled `final_macbook_air_2d`. It uses:
 
 - 2D point robot;
 - circular obstacles;
 - CPU-only execution;
-- process counts `P = 1, 2, 4`;
-- input sizes `N = 208, 412, 824`.
+- OpenMPI on one macOS machine;
+- input sizes `N = 208, 412, 824`;
+- MPI process counts `P = 1, 2, 4`.
 
-The local experiment is sufficient to verify correctness, artifact generation,
-MPI communication, load balance, and speedup behavior. However, it is shorter
-than the professor's suggested 2-3 minute runtime target. A larger `N` or
-Ubuntu/LAN run should be used later if strict timing compliance is required.
+The experiment produces runtime tables, speedup tables, rank timing tables, correctness reports, communication logs, and visualization figures.
 
-The first Ubuntu deployment smoke was run on the owner's ARM64 VM `mpot-a`.
-This is not the final multi-machine LAN benchmark. Its purpose is to prove that
-the repo, Python environment, OpenMPI launcher, serial baseline, MPI runner, and
-comparison script work inside Ubuntu before teammates connect their machines.
-The evidence copied back into the repo is:
+### 7.2 Correctness Check
+
+Correctness is checked by comparing the serial and MPI outputs for the same task list:
 
 ```text
-results/ubuntu_vm_single/setup_doctor_ubuntu_vm_single.json
-report/ubuntu_vm_single/SETUP_DOCTOR_ubuntu_vm_single.md
-results/ubuntu_vm_single/compare-ubuntu-single-N4-P2/correctness_report.json
-results/ubuntu_vm_single/compare-ubuntu-single-N8-P4/correctness_report.json
+For every task i:
+    serial_result_i.best_cost == mpi_result_i.best_cost
+    serial_result_i.seed == mpi_result_i.seed
+    serial_result_i.task_id == mpi_result_i.task_id
 ```
 
-The smoke results were:
+The final best trajectory is selected by the same deterministic rule:
 
-| Check | Result |
-|---|---:|
-| Setup doctor | ready: True |
-| N=4, P=2 serial/MPI comparison | pass |
-| N=4, P=2 best cost difference | 0.0 |
-| N=8, P=4 serial/MPI comparison | pass |
-| N=8, P=4 best cost difference | 0.0 |
+```text
+argmin_i (best_cost, task_id, seed)
+```
 
-## 7. Results
+### 7.3 Runtime Versus Input Size
 
-All numbers in this section are generated from real local artifacts under the
-label `final_macbook_air_2d`.
+The runtime-vs-input-size experiment fixes the process count and varies `N`. It records runtime with communication and runtime without communication.
 
-The Ubuntu single-VM artifacts are used as deployment-readiness evidence only.
-They are not claimed as the final multi-machine LAN speedup experiment.
+> TODO (strict runtime target): The current local run is shorter than 2-3 minutes. If strict compliance is required, rerun with larger `N` or with the LAN cluster and replace this section with the new real CSV/PNG artifacts.
 
-### 7.1 Correctness
+### 7.4 Granularity and Load Balance
 
-For `N=824` and `P=4`, the serial and MPI results matched exactly at the
-task-comparison level:
+The granularity experiment fixes `N` and `P`, then plots per-rank compute and communication time in one stacked bar chart per rank. The decision rule is:
 
-| Metric | Result |
+```text
+balanced if idle_fraction <= 0.25
+```
+
+### 7.5 Speedup
+
+The speedup experiment fixes the input size at `2N` and varies process count:
+
+```text
+P = 1, 2, 4
+```
+
+The course requirement allows extending this to `P = 8, 16, ...` when enough physical cores or teammate VMs are available.
+
+> TODO (process-count extension): Run `P=8` or higher only after a larger local machine or multi-machine Ubuntu LAN setup is available. Do not invent higher-P speedup.
+
+### 7.6 Ubuntu VM and LAN Plan
+
+The owner Ubuntu ARM64 VM has passed smoke tests. The multi-machine LAN stage is not measured yet. The required stage gates are:
+
+1. Owner VM verified.
+2. Each teammate VM verified locally.
+3. UTM network switched from Shared Network to Bridged.
+4. `ping` and `ssh` from master to workers verified.
+5. Hostfile MPI rank distribution verified.
+6. Project cluster smoke verified.
+7. Larger benchmark measured and copied into `report/`.
+
+> TODO (LAN benchmark): Replace this TODO only after teammate VMs produce real `summary.json`, hostfile output, rank timing CSVs, and figures.
+
+---
+
+## 8. Results
+
+All numbers in this section are generated from real artifacts under the label `final_macbook_air_2d`. They should not be edited manually.
+
+### 8.1 Correctness
+
+For `N=824` and `P=4`, the serial and MPI results match exactly at task level.
+
+**Table 6. Correctness result.**
+
+| Metric | Value |
 |---|---:|
 | Compared tasks | 824 |
 | Same best task | yes |
@@ -420,44 +433,62 @@ task-comparison level:
 | Best cost difference | 0.0 |
 | Task-level comparison | pass |
 
-The saved best MPI trajectory also passed the solution-quality check:
+The best MPI trajectory also passes solution-quality checks.
 
-| Metric | Result |
+**Table 7. Best trajectory quality.**
+
+| Metric | Value |
 |---|---:|
 | Best task id | 184 |
 | Best seed | 20260801 |
 | Best cost | 0.00520871 |
-| Goal error | 3.37e-08 |
+| Goal error | 3.37175e-08 |
 | Hard collision fraction | 0.0 |
+| Max bounds violation | 0.0 |
 
-### 7.2 Runtime Versus Input Size
+**Figure 1. Best distributed trajectory.**
 
-At `P=4`, runtime increased with `N` as expected:
+![Best trajectory](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png)
 
-| N | Runtime with communication (s) | Runtime without communication (s) |
-|---:|---:|---:|
-| 208 | 2.86270 | 2.85861 |
-| 412 | 4.91507 | 4.87856 |
-| 824 | 9.31508 | 9.27704 |
+### 8.2 Runtime Versus Input Size
 
-The corresponding figure is `runtime_vs_input_size_final_macbook_air_2d.png`.
+At `P=4`, runtime increases with `N`, and the gap between runtime with and without communication remains small.
 
-### 7.3 Granularity and Load Balance
+**Table 8. Runtime vs input size at `P=4`.**
 
-The load-balance experiment used `N=412`, `P=4`. Each rank received 103 tasks.
+| N | Runtime with communication (s) | Runtime without communication (s) | Communication overhead (s) |
+|---:|---:|---:|---:|
+| 208 | 2.86270 | 2.85861 | 0.00409 |
+| 412 | 4.91507 | 4.87856 | 0.03651 |
+| 824 | 9.31508 | 9.27704 | 0.03804 |
 
-| Metric | Result |
+**Figure 2. Runtime versus input size.**
+
+![Runtime versus input size](report/figures/runtime_vs_input_size_final_macbook_air_2d.png)
+
+### 8.3 Granularity and Load Balance
+
+The load-balance experiment uses `N=412`, `P=4`. Each rank receives 103 tasks. The maximum observed idle fraction is approximately `0.00705`, which is far below the 25% threshold.
+
+**Table 9. Load-balance summary.**
+
+| Metric | Value |
 |---|---:|
-| Idle fraction | 0.00705028 |
+| Tasks per rank | 103 |
+| Max idle fraction | 0.00705028 |
 | Threshold | 0.25 |
 | Balanced under threshold | yes |
-| Communication fraction of slowest rank | 0.0110326 |
+| Observed communication collectives | `bcast`, `scatter`, `gather` |
 
-This indicates that the current granularity is acceptable for the local run.
+**Figure 3. Per-rank compute and communication time.**
 
-### 7.4 Speedup
+![Rank timing breakdown](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png)
 
-For `N=824`, the measured speedup was:
+### 8.4 Speedup
+
+For `N=824`, the measured speedup is:
+
+**Table 10. Speedup at `N=824`.**
 
 | Processes | Runtime with communication (s) | Speedup | Efficiency |
 |---:|---:|---:|---:|
@@ -465,62 +496,115 @@ For `N=824`, the measured speedup was:
 | 2 | 14.7543 | 1.89117 | 0.945584 |
 | 4 | 9.31508 | 2.99545 | 0.748862 |
 
-The `P=4` run achieved about `2.995x` speedup with communication included.
+**Figure 4. Speedup.**
 
-### 7.5 Qualitative Visualizations
+![Speedup](report/figures/speedup_final_macbook_air_2d.png)
 
-The project generated trajectory replay GIFs and MPOT algorithm-trace GIFs.
-The algorithm trace is useful because it shows the trajectory particles changing
-over optimization iterations, not only the final path.
+### 8.5 Algorithm Trace and 2D Variants
 
-Additional 2D variants were run for visualization:
+The report includes a static key frame from the algorithm-trace GIF because PDF export cannot play GIFs. The GIF shows trajectory particles and candidate paths evolving across optimization iterations, which is more informative than showing only the final path.
+
+**Figure 5. Algorithm trace key frame.**
+
+![Algorithm trace key frame](report/figures/algorithm_trace_final_macbook_air_2d_keyframe.png)
+
+Additional 2D variants were generated for presentation:
+
+**Table 11. Qualitative 2D variants.**
 
 | Variant | Obstacles | Purpose |
 |---|---:|---|
-| narrow passage | 4 | show planning through a tighter passage |
-| cluttered | 6 | show planning behavior with many obstacles |
-| dense sampling | 10 | show a clearer MPOT trace with more particles and probe samples |
+| Open | 2 | Simple sanity-check layout |
+| Narrow passage | 4 | Demonstrates route selection through a tighter gap |
+| Cluttered | 6 | Demonstrates behavior with more obstacles |
+| Dense sampling | 10 | Uses more particles/probes to make the trace clearer |
 
-These visual artifacts are for explanation and presentation. They are not used
-as the main speedup data.
+These qualitative variants are not used as the main speedup evidence because the report should compare runtime using a consistent benchmark configuration.
 
-## 8. Discussion
+---
 
-The results support the task-level MPI design. The `P=4` run is faster than the
-`P=1` run, and the correctness check confirms that distributing tasks does not
-change the selected best trajectory. The communication overhead is small because
-the program communicates only at setup and collection boundaries.
+## 9. Discussion
 
-The load-balance result also supports the choice of cyclic mapping. Since each
-rank received the same number of tasks and the idle fraction was far below 25%,
-the workload was balanced enough for the measured local run. If future larger
-experiments show imbalance, the natural adjustment is to increase the number of
-tasks or tune the task granularity.
+The local results support the chosen parallel design. The correctness result shows that MPI distribution does not change the mathematical answer for the measured task set: all `824` tasks match the serial baseline, and the best-cost difference is `0.0`. This is important because the parallel implementation should only change execution order and process assignment, not the objective function or local optimizer.
 
-The largest limitation is that the current local run is shorter than the
-suggested 2-3 minute runtime target. The local result is still valuable because
-it proves the correctness, timing, communication, plotting, and validation
-pipeline. It should be presented honestly as the local-first result. A stricter
-final experiment should use larger `N` or the Ubuntu/LAN setup.
+The runtime and speedup results show useful parallel benefit on one machine. At `P=4`, speedup is approximately `2.995x` with communication included. Efficiency drops from about `0.946` at `P=2` to about `0.749` at `P=4`, which is expected because process-management overhead and shared local resources become more visible as `P` increases.
 
-## 9. Conclusion
+Communication overhead is small in the measured runs. This agrees with the design: ranks communicate through blocking collectives only during setup, distribution, and collection. The expensive local MPOT optimization is performed without inter-rank synchronization.
 
-This project adapts MPOT into a clear MPI parallel-programming benchmark. The
-local MPOT optimizer remains unchanged as the planning kernel, while OpenMPI
-parallelizes independent seed-level planning attempts. The chosen design is
-task-level, exploratory, cyclically mapped, and coordinated by rank 0 using
-blocking collectives.
+Load balance is acceptable for the current granularity. At `N=412, P=4`, each rank receives the same number of tasks and the maximum idle fraction is about `0.00705`, well below the 25% threshold. This supports the use of 1D cyclic mapping for seed-level exploratory tasks.
 
-The local-final experiment demonstrates correctness against the serial baseline,
-useful speedup up to `P=4`, low communication overhead, and good load balance.
-The remaining work is to run a larger-N or multi-machine Ubuntu/LAN experiment
-if strict 2-3 minute runtime compliance is required, then convert this Markdown
-draft into the final LaTeX/Overleaf report.
+The main limitation is experiment scale. The local benchmark currently runs in seconds, not 2-3 minutes. Therefore, the report should not claim full compliance with the strict runtime-size requirement yet. The correct interpretation is:
 
-## References
+- local MPI algorithm, correctness, artifact pipeline, plotting, and Ubuntu single-VM deployment are ready;
+- larger `N` or multi-machine LAN experiments are still required for strict final timing and higher process counts.
 
-1. An T. Le, Georgia Chalvatzaki, Armin Biess, and Jan Peters. "Accelerating
-   Motion Planning via Optimal Transport." NeurIPS 2023.
-2. MPOT repository README and source code in this project.
-3. HUST official thesis/project template notice and course report templates
-   were used only as formatting guidance for the academic report structure.
+---
+
+## 10. Conclusion
+
+This project turns MPOT-inspired motion planning into a clear parallel-computing benchmark. The system uses task-level exploratory parallelism, cyclic process assignment, SPMD execution, rank 0 coordination, blocking `bcast/scatter/gather`, and measured load-balance analysis. The local experiment demonstrates correct MPI behavior, low communication overhead, and meaningful speedup up to four processes.
+
+The project is currently ready for local demonstration and Ubuntu single-VM smoke testing. Before final submission, the group should either run a larger local `N` or execute the planned multi-machine Ubuntu/LAN benchmark after teammate VMs pass local smoke tests. Any new results must be copied from real CSV/JSON/PNG artifacts into the report; no runtime or speedup values should be invented.
+
+---
+
+## 11. References
+
+1. An T. Le, Georgia Chalvatzaki, Armin Biess, and Jan Peters. "Accelerating Motion Planning via Optimal Transport." Advances in Neural Information Processing Systems 36, NeurIPS 2023. https://proceedings.neurips.cc/paper_files/paper/2023/hash/f7a94134f1c726796c6f81fb946e489d-Abstract-Conference.html
+2. An T. Le, Georgia Chalvatzaki, Armin Biess, and Jan Peters. "Accelerating Motion Planning via Optimal Transport." arXiv:2309.15970. https://arxiv.org/abs/2309.15970
+3. Original MPOT source repository. https://github.com/anindex/mpot
+4. Hanoi University of Science and Technology thesis/project template references were used as formatting guidance for cover-page style, numbered sections, figures, tables, and concise academic presentation. https://ctt.hust.edu.vn/DisplayWeb/DisplayBaiViet?baiviet=35523
+5. HUST thesis template on Overleaf, used only as structure guidance for Markdown-to-PDF polishing. https://www.overleaf.com/latex/templates/thesis-template-for-hanoi-university-of-science-and-technology/nfpspdwmgjmz
+
+---
+
+## Appendix A. Requirement Coverage
+
+**Table 12. Course-rubric mapping.**
+
+| Requirement | Project answer | Evidence |
+|---|---|---|
+| Parallel level | Task-level parallelism | Section 5.1 |
+| Decomposition | Exploratory decomposition | Section 5.2 |
+| Mapping | 1D cyclic, `task i -> rank i mod P` | Section 5.3 |
+| Communication | SPMD, rank 0 coordinator, logical star, blocking `bcast/scatter/gather` | Section 5.4 |
+| Load balancing | Per-rank compute/communication/idle timing, 25% threshold | Sections 5.7 and 8.3 |
+| Parallel pseudocode | Distributed MPOT with OpenMPI | Section 5.6 |
+| Correctness | Serial/MPI task-level comparison | Section 8.1 |
+| Runtime vs input size | `N = 208, 412, 824` at `P=4` | Section 8.2 |
+| Granularity | Stacked rank timing at `N=412, P=4` | Section 8.3 |
+| Speedup | `P = 1, 2, 4` at `N=824` | Section 8.4 |
+| Final real figures | Runtime, speedup, rank timing, best path, algorithm trace | Figures 1-5 |
+
+---
+
+## Appendix B. Remaining TODO Items
+
+> TODO: Fill official cover-page metadata: school/faculty, group number, member names, student IDs, and instructor name.
+
+> TODO: Export this Markdown report to PDF and manually verify the final length is between 10 and 20 pages, figures are readable, and tables do not overflow.
+
+> TODO: If strict 2-3 minute runtime compliance is required, run a larger `N` and regenerate `report/tables/` and `report/figures/` from real artifacts.
+
+> TODO: After teammate VMs pass local smoke tests, switch UTM networking to Bridged, verify LAN `ping`/`ssh`, generate a hostfile, and run the OpenMPI multi-machine benchmark.
+
+> TODO: If LAN artifacts are produced, replace local-only runtime/speedup discussion with the new measured LAN tables and figures while keeping local results as preliminary validation.
+
+---
+
+## Appendix C. Demo Artifacts
+
+Static PNG figures are used in the main report because exported PDF files cannot play GIF animations. The GIFs below are useful for oral presentation:
+
+| Artifact | Path |
+|---|---|
+| Main trajectory GIF | `report/figures/trajectory_final_macbook_air_2d.gif` |
+| Main algorithm trace GIF | `report/figures/algorithm_trace_final_macbook_air_2d.gif` |
+| Narrow-passage trajectory GIF | `report/figures/trajectory_variant_narrow.gif` |
+| Cluttered trajectory GIF | `report/figures/trajectory_variant_cluttered.gif` |
+| Dense-sampling trajectory GIF | `report/figures/trajectory_variant_dense.gif` |
+| Narrow-passage algorithm trace GIF | `report/figures/algorithm_trace_variant_narrow.gif` |
+| Cluttered algorithm trace GIF | `report/figures/algorithm_trace_variant_cluttered.gif` |
+| Dense-sampling algorithm trace GIF | `report/figures/algorithm_trace_variant_dense.gif` |
+
+Detailed teammate ownership and defense preparation are maintained in `docs/team_ownership.md` and `report/MEMBER_DEFENSE_GUIDE.md`.

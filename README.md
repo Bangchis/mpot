@@ -1,113 +1,167 @@
-# Accelerating Motion Planning via Optimal Transport
+# Distributed MPOT Motion Planning with OpenMPI
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg)](LICENSE)
-[![Python 3.9+](https://img.shields.io/badge/Python-3.9%2B-blue.svg)](https://www.python.org/)
-[![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0%2B-ee4c2c.svg)](https://pytorch.org/)
-[![arXiv](https://img.shields.io/badge/arXiv-2309.15970-B31B1B.svg)](https://arxiv.org/abs/2309.15970)
-[![NeurIPS 2023](https://img.shields.io/badge/NeurIPS-2023-blue.svg)](https://neurips.cc/virtual/2023/poster/71792)
+Course project repository for **Parallel Computing and Parallel Programming**.
+The project adapts the idea of Motion Planning via Optimal Transport (MPOT) into
+a CPU-only, OpenMPI-based benchmark for 2D motion planning.
 
-This repository implements Motion Planning via Optimal Transport (`mpot`) in PyTorch.
-The philosophy of `mpot` follows the Monte Carlo methods' argument: more samples discover more and better modes with high enough initialization variances.
-Within the multi-modal motion planning scope, `mpot` performs **brute-force** parallel planning on GPU, mitigating local minima traps common in optimization-based motion planning.
+This is not a GPU reproduction of the original MPOT system. The original MPOT
+paper uses highly parallel batch trajectory optimization and motivates the
+algorithmic kernel. This course project keeps the local MPOT-inspired planner
+as the task kernel and studies how independent seed-level planning attempts can
+be distributed across MPI processes and, later, Ubuntu VMs on the same LAN.
 
-<p float="middle">
-  <img src="demos/occupancy.gif" width="32%" />
-  <img src="demos/sdf_grid.gif" width="32%" />
-  <img src="demos/panda.gif" width="32%" />
-</p>
+## Current Status
 
-For those interested in standalone Sinkhorn Step as a general-purpose batch gradient-free solver for non-convex optimization problems, please check out [ssax](https://github.com/anindex/ssax).
-
-## Paper
-
-This work has been accepted to **NeurIPS 2023**. Please find the paper on [arXiv](https://arxiv.org/abs/2309.15970).
-
-## Requirements
-
-- Python >= 3.9
-- PyTorch >= 2.0 (with CUDA for GPU acceleration)
-- See `pyproject.toml` for the full dependency list
-
-## Installation
-
-Activate your conda/virtual environment, navigate to the `mpot` root directory, and run:
-
-```bash
-pip install -e .
-```
-
-`mpot` requires GPU for practical performance. Please verify PyTorch CUDA support:
-
-```bash
-python -c "import torch; print(torch.cuda.is_available())"
-```
-
-## Examples
-
-### Planar Occupancy Map
-
-```bash
-python examples/mpot_occupancy.py
-```
-
-### Planar Signed Distance Field (SDF)
-
-```bash
-python examples/mpot_sdf.py
-```
-
-### Panda Robot Arm (7-DOF, dense obstacles)
-
-```bash
-python examples/mpot_panda.py
-```
-
-Every run uses a **different random seed**. The resulting optimization visualizations are stored in the current directory.
-Refer to the example scripts for playing around with options and different goal points.
-
-> **Note:** For all cases, we normalize the joint space to the joint and velocity limits, then perform Sinkhorn Step on the normalized state-space. Changing any hyperparameters may require tuning again.
-
-## Tuning Tips
-
-The most sensitive parameters are:
-
-| Parameter | Description | Guidance |
+| Stage | Status | Evidence |
 |---|---|---|
-| `polytope` | Polytope geometry for directional probing | `cube` for dim < 10; `orthoplex` or `simplex` for higher dimensions |
-| `step_radius` | Step size per iteration | Start small (0.03-0.15), increase if convergence is slow |
-| `probe_radius` | Probing radius (must be >= `step_radius`) | Controls exploration range around current waypoints |
-| `num_probe` | Probe points per polytope vertex | 3-5 is usually sufficient |
-| `epsilon` | Decay rate of step/probe size | 0.01-0.05 typical |
-| `ent_epsilon` | Sinkhorn entropy regularization | 1e-2 to 5e-2 balances coupling sharpness vs. speed |
-| Cost weights | `w_coll`, `w_smooth` | Application-dependent; tune for your environment |
+| macOS local serial/MPI benchmark | Done | `report/FINAL_AUDIT_final_macbook_air_2d.md` |
+| Ubuntu single-VM smoke | Done | `report/ubuntu_vm_single/SETUP_DOCTOR_ubuntu_vm_single.md` |
+| Teammate VM smoke | TODO | Run each teammate VM before LAN |
+| Multi-machine LAN benchmark | TODO | Requires Bridged networking and hostfile |
+| Final PDF report | TODO | Export `report/REPORT_POLISHED_DRAFT.md` |
 
-## Troubleshooting
+The measured local run is valid for correctness, MPI communication, plotting,
+load balance, and speedup evidence. It is shorter than the professor's suggested
+2-3 minute runtime target, so the final report marks larger-N and LAN runs as
+TODO until real artifacts exist.
 
-**CUDA Memory Issues:**
+## Repository Map
+
+| Path | Purpose |
+|---|---|
+| `mpot/benchmarks/` | Course benchmark implementation: 2D problem, task runner, metrics, plots, report helpers |
+| `scripts/run_serial.py` | Serial baseline runner |
+| `scripts/run_mpi.py` | OpenMPI runner |
+| `scripts/check_local_env.py` | Local environment check |
+| `scripts/doctor_local_setup.py` | Smoke-test doctor for local or Ubuntu VM setup |
+| `configs/local_smoke.json` | Small smoke-test configuration |
+| `configs/local_benchmark.json` | Main local benchmark configuration |
+| `configs/variant_*.json` | 2D visualization variants with harder obstacle layouts |
+| `docs/` | Algorithm notes, teammate VM guide, LAN cluster runbook, ownership plan |
+| `report/REPORT_POLISHED_DRAFT.md` | Main English report draft for submission |
+| `report/REPORT_CHECKLIST.md` | Rubric-to-code/artifact checklist |
+| `report/figures/` | Real plots and GIFs generated from experiment artifacts |
+| `report/tables/` | Generated CSV/Markdown result tables |
+
+## Local Quickstart
+
+Use this on macOS or Ubuntu after cloning the repo. The default workflow is
+CPU-only and does not require CUDA.
+
 ```bash
-export PYTORCH_CUDA_ALLOC_CONF=max_split_size_mb:512
+python3 -m venv .venv
+.venv/bin/python -m pip install -U pip wheel setuptools
+.venv/bin/python -m pip install -r requirements-local.txt
+.venv/bin/python -m pip install -e . --no-deps
 ```
 
-**Common Issues:**
-- If optimization diverges, reduce `step_radius` and `probe_radius`
-- For high-dimensional problems (e.g., 7-DOF robot), use `orthoplex` polytope to reduce vertex count
-- Reduce `num_particles_per_goal` if running out of GPU memory
+Check the environment:
 
-## Acknowledgement
-
-The Gaussian Process prior implementation is adapted from Sasha Lambert's [`mpc_trajopt`](https://github.com/sashalambert/mpc_trajopt/blob/main/mpc_trajopt/factors/gp_factor.py).
-
-## Citation
-
-If you found this repository useful, please consider citing:
-
-```bibtex
-@article{le2023accelerating,
-  title={Accelerating motion planning via optimal transport},
-  author={Le, An T and Chalvatzaki, Georgia and Biess, Armin and Peters, Jan R},
-  journal={Advances in Neural Information Processing Systems},
-  volume={36},
-  pages={78453--78482},
-  year={2023}
-}
+```bash
+.venv/bin/python scripts/check_local_env.py
+.venv/bin/python scripts/doctor_local_setup.py \
+  --label local_single \
+  --run-mpi-probe \
+  --mpi-processes 2
 ```
+
+Run a tiny serial/MPI smoke test:
+
+```bash
+.venv/bin/python scripts/run_serial.py \
+  --config configs/local_smoke.json \
+  --total-tasks 4
+
+mpirun -np 2 --bind-to none \
+  .venv/bin/python scripts/run_mpi.py \
+  --config configs/local_smoke.json \
+  --total-tasks 4
+```
+
+## Ubuntu VM Quickstart
+
+For teammate machines, use Ubuntu ARM64 VM on Apple Silicon and keep these
+conventions:
+
+- username: `mpot`
+- repo path: `/home/mpot/mpot`
+- Python: `/home/mpot/mpot/.venv/bin/python`
+- network: Shared Network for single-VM smoke; Bridged only when testing LAN
+
+Detailed setup is in:
+
+- `docs/teammate_vm_quickstart.md`
+- `docs/ubuntu_vm_cluster_setup.md`
+- `docs/local_to_ubuntu_phase_plan.md`
+
+Each teammate should pass local smoke first:
+
+```bash
+cd /home/mpot/mpot
+.venv/bin/python scripts/check_local_env.py
+.venv/bin/python scripts/doctor_local_setup.py \
+  --label ubuntu_vm_single \
+  --run-mpi-probe \
+  --mpi-processes 2
+.venv/bin/python scripts/run_serial.py \
+  --config configs/local_smoke.json \
+  --total-tasks 4
+mpirun -np 2 --bind-to none \
+  .venv/bin/python scripts/run_mpi.py \
+  --config configs/local_smoke.json \
+  --total-tasks 4
+```
+
+Only after every VM passes local smoke should the group switch UTM networking to
+Bridged, verify `ping`/`ssh`, generate a hostfile, and run multi-machine MPI.
+
+## Reports and Results
+
+Main report:
+
+- `report/REPORT_POLISHED_DRAFT.md`
+
+Supporting report files:
+
+- `report/REPORT_DRAFT.md`
+- `report/REPORT_CHECKLIST.md`
+- `docs/mpot_algorithm_overview.md`
+- `docs/mpot_parallel_algorithm_spec.md`
+- `docs/team_ownership.md`
+
+Generated evidence:
+
+- `report/FINAL_AUDIT_final_macbook_air_2d.md`
+- `report/RESULTS_SUMMARY_final_macbook_air_2d.md`
+- `report/tables/RESULTS_TABLES_final_macbook_air_2d.md`
+- `report/figures/runtime_vs_input_size_final_macbook_air_2d.png`
+- `report/figures/speedup_final_macbook_air_2d.png`
+- `report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png`
+- `report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png`
+
+## Project Design in One Paragraph
+
+The program uses task-level exploratory parallelism. Each task is one complete
+2D MPOT-inspired planning attempt with one deterministic seed. MPI rank 0
+creates the task list, broadcasts shared configuration, scatters task subsets
+by 1D cyclic mapping `task i -> rank i mod P`, gathers compact results and
+timing records, then selects the best trajectory by minimum cost. The local
+MPOT optimizer is not split across ranks because its inner trajectory,
+waypoint, probe, and Sinkhorn updates are tightly coupled and too fine-grained
+for LAN-level MPI communication.
+
+## Original MPOT Credit
+
+This course project is based on and acknowledges:
+
+An T. Le, Georgia Chalvatzaki, Armin Biess, and Jan Peters. "Accelerating Motion
+Planning via Optimal Transport." NeurIPS 2023.
+
+Original project page and source:
+
+- Paper: https://arxiv.org/abs/2309.15970
+- Original repository: https://github.com/anindex/mpot
+
+The original MPOT code remains credited under the repository license. Course
+benchmark files were added around the original implementation to support the
+parallel-programming assignment.
