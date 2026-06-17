@@ -117,6 +117,21 @@ Upload an existing completed run without rerunning it:
   --wandb-tag final-local
 ```
 
+Upload a whole experiment label as one comparable W&B group:
+
+```bash
+.venv/bin/python scripts/log_experiment_to_wandb.py \
+  --label final_macbook_air_2d \
+  --results-dir results \
+  --report-path report/figures/runtime_vs_input_size_final_macbook_air_2d.png \
+  --report-path report/figures/speedup_final_macbook_air_2d.png \
+  --report-path report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png \
+  --use-wandb \
+  --wandb-project distributed-mpot-course \
+  --wandb-group final_macbook_air_2d \
+  --wandb-tag final-local
+```
+
 Each W&B run is organized with:
 
 - run name: the local `run_id`;
@@ -125,6 +140,9 @@ Each W&B run is organized with:
 - media: `best_path.png`, `cost_by_task.png`, `rank_time_breakdown.png` when available;
 - tables: `task_results.csv`, `rank_timings.csv`, `comm_events.csv`, `task_assignment.csv`;
 - artifact bundle: standard JSON/CSV/NumPy/PNG/GIF files from the run.
+
+Batch uploads also write `report/WANDB_EXPERIMENT_<label>.json` and `.md`,
+which list exactly which local runs were matched and logged.
 
 For unstable Wi-Fi or VM runs, use `--wandb-mode offline` and sync later with
 `wandb sync`.

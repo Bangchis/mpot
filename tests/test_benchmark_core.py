@@ -82,9 +82,13 @@ from mpot.benchmarks.validation import (
 )
 from mpot.wandb_logger import (
     WandbSettings,
+    build_experiment_manifest,
     build_wandb_tags,
+    discover_experiment_run_dirs,
     discover_run_files,
+    experiment_manifest_markdown,
     log_run_directory_to_wandb,
+    summary_matches_label,
     summary_to_wandb_config,
     summary_to_wandb_metrics,
 )
@@ -397,6 +401,41 @@ class WandbLoggerTests(unittest.TestCase):
             outcome = log_run_directory_to_wandb(run, settings=WandbSettings(enabled=False), extra_paths=[extra])
             self.assertEqual(outcome["status"], "disabled")
             self.assertTrue((run / "wandb_manifest.json").exists())
+
+    def test_experiment_label_discovery_and_manifest_are_readable(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            root = Path(tmp)
+            summaries = [
+                ("mpi-final_macbook_air_2d-N4-P2", {"run_id": "mpi-final_macbook_air_2d-N4-P2", "mode": "mpi"}),
+                ("serial-final_macbook_air_2d-N4", {"run_id": "serial-final_macbook_air_2d-N4", "mode": "serial"}),
+                ("mpi-other-N4-P2", {"run_id": "mpi-other-N4-P2", "mode": "mpi", "experiment_name": "other"}),
+            ]
+            for directory, extra in summaries:
+                payload = self._summary()
+                payload.update(extra)
+                payload["config"]["experiment_name"] = payload.get("experiment_name", payload["run_id"])
+                self._write_json(root / directory / "summary.json", payload)
+
+            matched = discover_experiment_run_dirs(root, label="final_macbook_air_2d")
+            self.assertEqual([path.name for path in matched], ["mpi-final_macbook_air_2d-N4-P2", "serial-final_macbook_air_2d-N4"])
+            mpi_only = discover_experiment_run_dirs(root, label="final_macbook_air_2d", modes={"mpi"})
+            self.assertEqual([path.name for path in mpi_only], ["mpi-final_macbook_air_2d-N4-P2"])
+            self.assertTrue(summary_matches_label(self._summary(), Path("results/mpi-unit-N4-P2"), "unit"))
+
+            payload = build_experiment_manifest(
+                label="final_macbook_air_2d",
+                settings=WandbSettings(enabled=True, group="final_macbook_air_2d"),
+                run_outcomes=[{"run_id": "mpi-final_macbook_air_2d-N4-P2", "status": "logged"}],
+                matched_run_dirs=matched,
+                report_paths=["report/figures/speedup_final_macbook_air_2d.png"],
+                dry_run=False,
+                index_status="logged",
+            )
+            markdown = experiment_manifest_markdown(payload)
+            self.assertEqual(payload["num_matched_runs"], 2)
+            self.assertEqual(payload["num_logged_runs"], 1)
+            self.assertIn("final_macbook_air_2d", markdown)
+            self.assertIn("mpi-final_macbook_air_2d-N4-P2", markdown)
 
     def test_enabled_logging_uses_wandb_api_shape_with_fake_module(self):
         class FakeTable:

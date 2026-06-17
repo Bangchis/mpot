@@ -624,6 +624,7 @@ The implementation is organized so that the serial and MPI runners share the sam
 | `scripts/run_serial.py` | Command-line serial runner |
 | `scripts/run_mpi.py` | Command-line MPI runner |
 | `scripts/log_run_to_wandb.py` | Upload an existing completed run directory to W&B without rerunning |
+| `scripts/log_experiment_to_wandb.py` | Upload every run matching an experiment label as a grouped W&B dashboard |
 | `scripts/compare_serial_mpi.py` | Serial-vs-MPI correctness comparison |
 | `scripts/check_report_sync.py` | Living-report path consistency check |
 
@@ -738,11 +739,30 @@ All numbers in this section are generated from real artifacts under the label `f
 
 The current results should be read as local-first evidence. They demonstrate that the serial runner, MPI runner, task assignment, timing collection, plotting pipeline, and Ubuntu single-VM deployment are working. They do not yet claim a final multi-machine LAN benchmark.
 
+### 9.0 Figure and Visualization Policy
+
+The report uses two kinds of visual material. First, measured figures are inserted directly when the corresponding PNG or GIF key frame already exists in `report/figures/`. Second, missing experiments are represented only by explicit TODO placeholders. This prevents the report from accidentally presenting an expected chart as if it were a measured result.
+
+**Table 8. Visual evidence plan.**
+
+| Evidence type | Included in this draft | Status |
+|---|---|---|
+| Best trajectory and cost distribution | Figures 1-2 | Real local MPI artifacts |
+| Runtime versus input size | Figure 3 | Real local MPI artifact |
+| Per-rank compute/communication timing | Figure 4 | Real local MPI artifact |
+| Speedup for `P=1,2,4` | Figure 5 | Real local MPI artifact |
+| Algorithm-trace visualization | Figures 6-7 and Appendix C GIF paths | Real local visualization artifacts |
+| Particle-count ablation | Figure 8 | Real auxiliary artifact |
+| Larger `N` near 2-3 minutes | Figure TODO A | Placeholder until a real larger run exists |
+| Speedup for `P>=8` | Figure TODO B | Placeholder until a capable local/LAN run exists |
+| Multi-machine LAN rank distribution | Figure TODO C | Placeholder until teammate VMs are connected |
+| Multi-machine LAN timing breakdown | Figure TODO D | Placeholder until LAN timing CSVs exist |
+
 ### 9.1 Correctness
 
 For `N=824` and `P=4`, the serial and MPI results match exactly at task level.
 
-**Table 8. Correctness result.**
+**Table 9. Correctness result.**
 
 | Metric | Value |
 |---|---:|
@@ -754,7 +774,7 @@ For `N=824` and `P=4`, the serial and MPI results match exactly at task level.
 
 The best MPI trajectory also passes solution-quality checks.
 
-**Table 9. Best trajectory quality.**
+**Table 10. Best trajectory quality.**
 
 | Metric | Value |
 |---|---:|
@@ -767,11 +787,11 @@ The best MPI trajectory also passes solution-quality checks.
 
 **Figure 1. Best distributed trajectory.**
 
-![Best trajectory](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png)
+![Best trajectory](figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png)
 
 **Figure 2. Cost distribution over MPI tasks.**
 
-![Cost by task](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_cost_by_task.png)
+![Cost by task](figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_cost_by_task.png)
 
 This correctness result is stronger than comparing only the final best cost. The task-level comparison checks that the same deterministic task set is evaluated and that the MPI program does not silently skip, duplicate, or reorder work in a way that changes the selected solution.
 
@@ -779,7 +799,7 @@ This correctness result is stronger than comparing only the final best cost. The
 
 At `P=4`, runtime increases with `N`, and the gap between runtime with and without communication remains small.
 
-**Table 10. Runtime vs input size at `P=4`.**
+**Table 11. Runtime vs input size at `P=4`.**
 
 | N | Runtime with communication (s) | Runtime without communication (s) | Communication overhead (s) |
 |---:|---:|---:|---:|
@@ -789,7 +809,7 @@ At `P=4`, runtime increases with `N`, and the gap between runtime with and witho
 
 **Figure 3. Runtime versus input size.**
 
-![Runtime versus input size](report/figures/runtime_vs_input_size_final_macbook_air_2d.png)
+![Runtime versus input size](figures/runtime_vs_input_size_final_macbook_air_2d.png)
 
 The trend is consistent with the complexity model: increasing `N` increases the number of complete MPOT tasks, so runtime grows with input size. The measured communication overhead is small in these local runs because each rank communicates only compact task lists, results, and timing records. However, the absolute runtime is still much shorter than the professor's 2-3 minute target, so these values should be treated as a verified pipeline result, not the final strict runtime-size experiment.
 
@@ -797,7 +817,7 @@ The trend is consistent with the complexity model: increasing `N` increases the 
 
 The load-balance experiment uses `N=412`, `P=4`. Each rank receives 103 tasks. The maximum observed idle fraction is approximately `0.00705`, which is far below the 25% threshold.
 
-**Table 11. Load-balance summary.**
+**Table 12. Load-balance summary.**
 
 | Metric | Value |
 |---|---:|
@@ -809,13 +829,13 @@ The load-balance experiment uses `N=412`, `P=4`. Each rank receives 103 tasks. T
 
 **Figure 4. Per-rank compute and communication time.**
 
-![Rank timing breakdown](report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png)
+![Rank timing breakdown](figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png)
 
 ### 9.4 Speedup
 
 For `N=824`, the measured speedup is:
 
-**Table 12. Speedup at `N=824`.**
+**Table 13. Speedup at `N=824`.**
 
 | Processes | Runtime with communication (s) | Speedup | Efficiency |
 |---:|---:|---:|---:|
@@ -825,7 +845,7 @@ For `N=824`, the measured speedup is:
 
 **Figure 5. Speedup.**
 
-![Speedup](report/figures/speedup_final_macbook_air_2d.png)
+![Speedup](figures/speedup_final_macbook_air_2d.png)
 
 The speedup is meaningful but not ideal. Moving from one to two processes gives most of the expected improvement. Moving to four processes still improves runtime, but efficiency decreases because the local machine shares CPU and memory resources among all ranks. This is normal for a one-machine MPI experiment and is one reason the LAN experiment remains useful.
 
@@ -835,11 +855,11 @@ The report includes a static key frame from the algorithm-trace GIF because PDF 
 
 **Figure 6. Algorithm trace key frame.**
 
-![Algorithm trace key frame](report/figures/algorithm_trace_final_macbook_air_2d_keyframe.png)
+![Algorithm trace key frame](figures/algorithm_trace_final_macbook_air_2d_keyframe.png)
 
 Additional 2D variants were generated for presentation:
 
-**Table 13. Qualitative 2D variants.**
+**Table 14. Qualitative 2D variants.**
 
 | Variant | Obstacles | Purpose |
 |---|---:|---|
@@ -852,7 +872,7 @@ These qualitative variants are not used as the main speedup evidence because the
 
 **Figure 7. Dense 2D variant trace key frame.**
 
-![Dense variant trace key frame](report/figures/algorithm_trace_variant_dense_keyframe.png)
+![Dense variant trace key frame](figures/algorithm_trace_variant_dense_keyframe.png)
 
 ### 9.6 Auxiliary Particle-Count Ablation
 
@@ -860,7 +880,7 @@ This ablation is intentionally small. It varies only `optimizer.num_particles` o
 
 The detailed generated table is stored in `report/PARAMETER_ABLATION_particles_dense_N12.md`, with copied source summaries under `report/artifacts/particle_ablation_dense_N12/`.
 
-**Table 14. Particle-count ablation on dense 2D variant.**
+**Table 15. Particle-count ablation on dense 2D variant.**
 
 | Particles | Runtime with communication (s) | Best cost | Best task | Best seed |
 |---:|---:|---:|---:|---:|
@@ -870,7 +890,7 @@ The detailed generated table is stored in `report/PARAMETER_ABLATION_particles_d
 
 **Figure 8. Particle-count ablation.**
 
-![Particle-count ablation](report/figures/particle_ablation_dense_N12_P4.png)
+![Particle-count ablation](figures/particle_ablation_dense_N12_P4.png)
 
 The result suggests that more particles can improve the best discovered cost, but runtime does not change perfectly monotonically in such a small run because task-level seed variability and local machine scheduling are still visible. For this reason, the ablation is treated as qualitative support only.
 
@@ -883,14 +903,23 @@ The result suggests that more particles can improve the best discovered cost, bu
 | Multi-machine Ubuntu LAN | Hostfile, rank distribution log, summaries, timing CSVs, figures |
 | Replacing local-only claims | Updated tables copied from generated artifacts, not hand-written values |
 
-The final report should keep placeholders for missing figures instead of inserting fake graphs. The expected missing placeholders are:
+The final report should keep placeholders for missing figures instead of inserting fake graphs.
 
-```text
-Placeholder Figure A: Larger-N runtime vs input size near 2-3 minutes.
-Placeholder Figure B: P=1,2,4,8,... speedup after LAN or larger local run.
-Placeholder Figure C: Multi-machine rank distribution from mpirun --hostfile.
-Placeholder Figure D: Multi-machine per-rank compute/communication stacked bar.
-```
+**Figure TODO A. Larger-N runtime versus input size near the 2-3 minute target.**
+
+Placeholder only. Replace with a real plot generated from a larger run when a chosen `N` makes total runtime approximately 2-3 minutes. Required source artifacts: runtime CSV, summary JSON, generated PNG.
+
+**Figure TODO B. Speedup for `P=1,2,4,8,...`.**
+
+Placeholder only. Replace with a real plot after a capable local or LAN setup can run `P>=8`. Required source artifacts: speedup CSV, runtime CSV, generated PNG.
+
+**Figure TODO C. Multi-machine MPI rank distribution.**
+
+Placeholder only. Replace with a captured rank-distribution plot or table after `mpirun --hostfile` runs across teammate Ubuntu VMs on the same LAN.
+
+**Figure TODO D. Multi-machine per-rank compute/communication stacked bar.**
+
+Placeholder only. Replace with a real stacked bar chart after LAN timing CSVs are generated.
 
 ---
 
@@ -937,7 +966,7 @@ The project is currently ready for local demonstration and Ubuntu single-VM smok
 
 ## Appendix A. Requirement Coverage
 
-**Table 15. Course-rubric mapping.**
+**Table A1. Course-rubric mapping.**
 
 | Requirement | Project answer | Evidence |
 |---|---|---|
@@ -1033,4 +1062,4 @@ name    = local run id, for example mpi-final_macbook_air_2d-N824-P4
 tags    = mode, N, P, backend, mapping, config hash, and optional machine tags
 ```
 
-New runs can be logged by adding `--use-wandb` to `scripts/run_serial.py` or `scripts/run_mpi.py`. Existing completed runs can be uploaded with `scripts/log_run_to_wandb.py`. The detailed workflow is maintained in `docs/wandb_logging.md`.
+New runs can be logged by adding `--use-wandb` to `scripts/run_serial.py` or `scripts/run_mpi.py`. Existing completed runs can be uploaded one by one with `scripts/log_run_to_wandb.py`, or as a whole grouped experiment with `scripts/log_experiment_to_wandb.py`. The batch uploader filters runs by label, uses one W&B group for comparison, and writes `report/WANDB_EXPERIMENT_<label>.json` plus `.md` as a local upload manifest. The detailed workflow is maintained in `docs/wandb_logging.md`.

@@ -328,11 +328,25 @@ Upload an existing run without rerunning:
   --wandb-group final_macbook_air_2d
 ```
 
+Upload all runs from one experiment label as a grouped dashboard:
+
+```bash
+.venv/bin/python scripts/log_experiment_to_wandb.py \
+  --label final_macbook_air_2d \
+  --results-dir results \
+  --report-path report/figures/runtime_vs_input_size_final_macbook_air_2d.png \
+  --report-path report/figures/speedup_final_macbook_air_2d.png \
+  --use-wandb \
+  --wandb-project distributed-mpot-course \
+  --wandb-group final_macbook_air_2d
+```
+
 Implemented logger files:
 
 ```text
 mpot/wandb_logger.py
 scripts/log_run_to_wandb.py
+scripts/log_experiment_to_wandb.py
 docs/wandb_logging.md
 ```
 
@@ -360,7 +374,9 @@ tags:    mode, N, P, backend, mapping, config hash, plus optional custom tags
 Each W&B run logs scalar metrics, media panels for generated images, CSV tables,
 and one artifact bundle containing the standard result directory files. The
 implementation catches W&B import/login/runtime failures and switches to a
-disabled no-op mode.
+disabled no-op mode. Batch experiment uploads also write
+`report/WANDB_EXPERIMENT_<label>.json` and `.md`, which document exactly which
+local run directories were selected.
 
 ## Implemented Local-First Files
 

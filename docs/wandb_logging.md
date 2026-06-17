@@ -112,6 +112,64 @@ Extra report figures or GIFs can be attached:
   --wandb-group final_macbook_air_2d
 ```
 
+## Upload A Whole Experiment Label
+
+Use this when a label already has many run directories, for example serial and
+MPI runs for `N=208,412,824` and `P=1,2,4`. This is the recommended workflow
+for final-result dashboards because it keeps every run comparable under one
+W&B group.
+
+First inspect the matches:
+
+```bash
+.venv/bin/python scripts/log_experiment_to_wandb.py \
+  --label final_macbook_air_2d \
+  --results-dir results \
+  --dry-run
+```
+
+Then upload the matched runs and create one report-level index run containing
+summary figures:
+
+```bash
+.venv/bin/python scripts/log_experiment_to_wandb.py \
+  --label final_macbook_air_2d \
+  --results-dir results \
+  --report-path report/figures/runtime_vs_input_size_final_macbook_air_2d.png \
+  --report-path report/figures/speedup_final_macbook_air_2d.png \
+  --report-path report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png \
+  --report-path report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png \
+  --use-wandb \
+  --wandb-project distributed-mpot-course \
+  --wandb-group final_macbook_air_2d \
+  --wandb-tag final-local
+```
+
+The batch uploader writes:
+
+| File | Meaning |
+|---|---|
+| `results/<run_id>/wandb_manifest.json` | Per-run W&B logging manifest |
+| `report/WANDB_EXPERIMENT_<label>.json` | Machine-readable batch upload manifest |
+| `report/WANDB_EXPERIMENT_<label>.md` | Human-readable list of matched/logged runs |
+
+Useful filters:
+
+```bash
+# Only upload MPI runs from the label.
+.venv/bin/python scripts/log_experiment_to_wandb.py \
+  --label final_macbook_air_2d \
+  --include-mode mpi \
+  --dry-run
+
+# Upload one run only for a W&B smoke test.
+.venv/bin/python scripts/log_experiment_to_wandb.py \
+  --label final_macbook_air_2d \
+  --limit 1 \
+  --use-wandb \
+  --wandb-mode offline
+```
+
 ## Offline Mode
 
 For Ubuntu VM or weak Wi-Fi, log offline first:

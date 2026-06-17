@@ -12,6 +12,7 @@ from pathlib import Path
 from typing import Any
 import csv
 import json
+import time
 
 
 DEFAULT_WANDB_PROJECT = "distributed-mpot-course"
@@ -226,6 +227,152 @@ def read_csv_rows(path: str | Path, max_rows: int) -> tuple[list[str], list[list
                 break
             rows.append(row)
     return columns, rows, truncated
+
+
+def _normalized_label(value: Any) -> str:
+    """Normalize a run label for forgiving command-line filtering."""
+
+    return _clean_tag(value).lower()
+
+
+def summary_label_values(summary: dict[str, Any], run_dir: str | Path) -> list[str]:
+    """Return human-facing labels that can identify a completed run."""
+
+    config = summary.get("config") if isinstance(summary.get("config"), dict) else {}
+    values = [
+        Path(run_dir).name,
+        summary.get("run_id"),
+        summary.get("experiment_name"),
+        config.get("experiment_name"),
+        default_group(summary),
+    ]
+    return [str(value) for value in values if value]
+
+
+def summary_matches_label(summary: dict[str, Any], run_dir: str | Path, label: str | None) -> bool:
+    """Return True when a run belongs to an experiment label.
+
+    The match is substring-based on run id, experiment name, directory name, and
+    default group. This keeps the uploader convenient for labels such as
+    ``final_macbook_air_2d`` that appear in several generated run ids.
+    """
+
+    if not label:
+        return True
+    needle = _normalized_label(label)
+    return any(needle in _normalized_label(value) for value in summary_label_values(summary, run_dir))
+
+
+def discover_experiment_run_dirs(
+    results_dir: str | Path,
+    *,
+    label: str | None = None,
+    modes: set[str] | None = None,
+) -> list[Path]:
+    """Find completed run directories that should be logged as one experiment."""
+
+    root = Path(results_dir)
+    matches: list[tuple[str, Path]] = []
+    if not root.exists():
+        return []
+    for summary_path in sorted(root.glob("*/summary.json")):
+        run_dir = summary_path.parent
+        try:
+            summary = load_json(summary_path)
+        except Exception:
+            continue
+        mode = str(summary.get("mode", "")).strip()
+        if modes and mode not in modes:
+            continue
+        if summary_matches_label(summary, run_dir, label):
+            run_id = str(summary.get("run_id") or run_dir.name)
+            matches.append((run_id, run_dir))
+    return [run_dir for _, run_dir in sorted(matches)]
+
+
+def build_experiment_manifest(
+    *,
+    label: str,
+    settings: WandbSettings,
+    run_outcomes: list[dict[str, Any]],
+    matched_run_dirs: list[str | Path],
+    report_paths: list[str | Path] | None = None,
+    dry_run: bool = False,
+    index_status: str = "skipped",
+) -> dict[str, Any]:
+    """Build a local manifest for a W&B experiment upload attempt."""
+
+    return {
+        "label": label,
+        "created_at": time.strftime("%Y-%m-%d %H:%M:%S %z"),
+        "dry_run": bool(dry_run),
+        "project": settings.project,
+        "entity": settings.entity,
+        "group": settings.group or _clean_tag(label),
+        "mode": settings.mode,
+        "index_status": index_status,
+        "num_matched_runs": len(matched_run_dirs),
+        "num_logged_runs": sum(1 for outcome in run_outcomes if outcome.get("status") == "logged"),
+        "matched_run_dirs": [str(Path(path)) for path in matched_run_dirs],
+        "report_paths": [str(Path(path)) for path in (report_paths or [])],
+        "run_outcomes": run_outcomes,
+        "note": "Local CSV/JSON/PNG artifacts remain the source of truth; W&B is an optional dashboard layer.",
+    }
+
+
+def experiment_manifest_markdown(payload: dict[str, Any]) -> str:
+    """Render a W&B experiment manifest as Markdown for quick inspection."""
+
+    lines = [
+        "# W&B Experiment Upload Manifest",
+        "",
+        f"- label: `{payload.get('label', '')}`",
+        f"- project: `{payload.get('project', '')}`",
+        f"- group: `{payload.get('group', '')}`",
+        f"- mode: `{payload.get('mode') or 'default'}`",
+        f"- dry run: `{payload.get('dry_run')}`",
+        f"- matched runs: `{payload.get('num_matched_runs')}`",
+        f"- logged runs: `{payload.get('num_logged_runs')}`",
+        f"- index status: `{payload.get('index_status')}`",
+        "",
+    ]
+    report_paths = payload.get("report_paths") or []
+    if report_paths:
+        lines.extend(["## Report-level Artifacts", "", "| path |", "|---|"])
+        for path in report_paths:
+            lines.append(f"| `{path}` |")
+        lines.append("")
+    lines.extend(["## Matched Runs", "", "| run id | status | manifest |", "|---|---|---|"])
+    for outcome in payload.get("run_outcomes") or []:
+        lines.append(
+            f"| `{outcome.get('run_id', '')}` | `{outcome.get('status', '')}` | `{outcome.get('manifest', '')}` |"
+        )
+    if not payload.get("run_outcomes"):
+        for run_dir in payload.get("matched_run_dirs") or []:
+            lines.append(f"| `{Path(run_dir).name}` | `matched` |  |")
+    lines.append("")
+    return "\n".join(lines)
+
+
+def write_experiment_manifest(
+    payload: dict[str, Any],
+    *,
+    json_path: str | Path,
+    markdown_path: str | Path | None = None,
+) -> tuple[Path, Path | None]:
+    """Write a W&B batch-upload manifest as JSON and optional Markdown."""
+
+    json_out = Path(json_path)
+    json_out.parent.mkdir(parents=True, exist_ok=True)
+    with json_out.open("w", encoding="utf-8") as f:
+        json.dump(payload, f, indent=2, sort_keys=True)
+        f.write("\n")
+    markdown_out = None
+    if markdown_path is not None:
+        markdown_out = Path(markdown_path)
+        markdown_out.parent.mkdir(parents=True, exist_ok=True)
+        markdown_out.write_text(experiment_manifest_markdown(payload), encoding="utf-8")
+    return json_out, markdown_out
 
 
 class OptionalWandbLogger:
