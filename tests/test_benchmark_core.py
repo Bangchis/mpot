@@ -1767,6 +1767,41 @@ class SweepScriptTests(unittest.TestCase):
         )
 
 
+class WandbSyncScriptTests(unittest.TestCase):
+    def _load_sync_script(self):
+        repo_root = Path(__file__).resolve().parents[1]
+        path = repo_root / "scripts" / "sync_wandb_offline_runs.py"
+        spec = importlib.util.spec_from_file_location("sync_wandb_offline_runs_script", path)
+        module = importlib.util.module_from_spec(spec)
+        assert spec and spec.loader
+        spec.loader.exec_module(module)
+        return module
+
+    def test_discover_offline_runs_and_markdown_manifest(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            module = self._load_sync_script()
+            root = Path(tmp) / "wandb"
+            (root / "offline-run-002").mkdir(parents=True)
+            (root / "offline-run-001").mkdir(parents=True)
+            (root / "online-run-ignored").mkdir(parents=True)
+
+            runs = module.discover_offline_runs(root)
+            self.assertEqual([path.name for path in runs], ["offline-run-001", "offline-run-002"])
+
+            payload = {
+                "created_at": "unit",
+                "wandb_bin": "wandb",
+                "dry_run": True,
+                "logged_in": False,
+                "num_runs": 2,
+                "num_synced": 0,
+                "runs": [{"run_dir": str(path), "status": "pending", "returncode": None} for path in runs],
+            }
+            text = module.manifest_markdown(payload)
+            self.assertIn("W&B Offline Sync Manifest", text)
+            self.assertIn("offline-run-001", text)
+
+
 class PipelineTests(unittest.TestCase):
     def test_select_final_value_defaults_to_largest(self):
         self.assertEqual(select_final_value([1, 4, 2], None, "processes"), 4)

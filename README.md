@@ -145,7 +145,12 @@ Batch uploads also write `report/WANDB_EXPERIMENT_<label>.json` and `.md`,
 which list exactly which local runs were matched and logged.
 
 For unstable Wi-Fi or VM runs, use `--wandb-mode offline` and sync later with
-`wandb sync`.
+the helper below after `wandb login`:
+
+```bash
+.venv/bin/python scripts/sync_wandb_offline_runs.py --dry-run
+.venv/bin/python scripts/sync_wandb_offline_runs.py
+```
 
 ## Ubuntu VM Quickstart
 

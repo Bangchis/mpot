@@ -1,0 +1,31 @@
+{
+  "created_at": "2026-06-18 03:53:04 +0700",
+  "dry_run": true,
+  "logged_in": false,
+  "num_runs": 4,
+  "num_synced": 0,
+  "runs": [
+    {
+      "returncode": null,
+      "run_dir": "wandb/offline-run-20260618_032458-qwxop0w5",
+      "status": "pending"
+    },
+    {
+      "returncode": null,
+      "run_dir": "wandb/offline-run-20260618_032617-z21m33ln",
+      "status": "pending"
+    },
+    {
+      "returncode": null,
+      "run_dir": "wandb/offline-run-20260618_034218-z9djiy5b",
+      "status": "pending"
+    },
+    {
+      "returncode": null,
+      "run_dir": "wandb/offline-run-20260618_034219-1us5jrx7",
+      "status": "pending"
+    }
+  ],
+  "status_api_key_present": false,
+  "wandb_bin": "/Users/bangbang/Desktop/code python/mpot/.venv/bin/wandb"
+}

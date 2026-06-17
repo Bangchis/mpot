@@ -186,8 +186,19 @@ WANDB_MODE=offline mpirun -np 4 --bind-to none \
 After the network is stable:
 
 ```bash
-wandb sync wandb/offline-run-*
+.venv/bin/python scripts/sync_wandb_offline_runs.py --dry-run
+.venv/bin/wandb login
+.venv/bin/python scripts/sync_wandb_offline_runs.py
 ```
+
+The sync helper writes:
+
+| File | Meaning |
+|---|---|
+| `report/WANDB_SYNC_offline_runs.json` | Machine-readable sync result |
+| `report/WANDB_SYNC_offline_runs.md` | Human-readable list of offline runs and sync status |
+
+If the helper reports `logged_in: False`, run `.venv/bin/wandb login` first.
 
 ## Rule For The Report
 

@@ -625,6 +625,7 @@ The implementation is organized so that the serial and MPI runners share the sam
 | `scripts/run_mpi.py` | Command-line MPI runner |
 | `scripts/log_run_to_wandb.py` | Upload an existing completed run directory to W&B without rerunning |
 | `scripts/log_experiment_to_wandb.py` | Upload every run matching an experiment label as a grouped W&B dashboard |
+| `scripts/sync_wandb_offline_runs.py` | Sync W&B offline-run directories after account login |
 | `scripts/compare_serial_mpi.py` | Serial-vs-MPI correctness comparison |
 | `scripts/check_report_sync.py` | Living-report path consistency check |
 
@@ -1062,4 +1063,4 @@ name    = local run id, for example mpi-final_macbook_air_2d-N824-P4
 tags    = mode, N, P, backend, mapping, config hash, and optional machine tags
 ```
 
-New runs can be logged by adding `--use-wandb` to `scripts/run_serial.py` or `scripts/run_mpi.py`. Existing completed runs can be uploaded one by one with `scripts/log_run_to_wandb.py`, or as a whole grouped experiment with `scripts/log_experiment_to_wandb.py`. The batch uploader filters runs by label, uses one W&B group for comparison, and writes `report/WANDB_EXPERIMENT_<label>.json` plus `.md` as a local upload manifest. The detailed workflow is maintained in `docs/wandb_logging.md`.
+New runs can be logged by adding `--use-wandb` to `scripts/run_serial.py` or `scripts/run_mpi.py`. Existing completed runs can be uploaded one by one with `scripts/log_run_to_wandb.py`, or as a whole grouped experiment with `scripts/log_experiment_to_wandb.py`. The batch uploader filters runs by label, uses one W&B group for comparison, and writes `report/WANDB_EXPERIMENT_<label>.json` plus `.md` as a local upload manifest. Offline W&B runs can be synced later with `scripts/sync_wandb_offline_runs.py` after `wandb login`. The detailed workflow is maintained in `docs/wandb_logging.md`.

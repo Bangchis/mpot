@@ -347,6 +347,7 @@ Implemented logger files:
 mpot/wandb_logger.py
 scripts/log_run_to_wandb.py
 scripts/log_experiment_to_wandb.py
+scripts/sync_wandb_offline_runs.py
 docs/wandb_logging.md
 ```
 
@@ -376,7 +377,8 @@ and one artifact bundle containing the standard result directory files. The
 implementation catches W&B import/login/runtime failures and switches to a
 disabled no-op mode. Batch experiment uploads also write
 `report/WANDB_EXPERIMENT_<label>.json` and `.md`, which document exactly which
-local run directories were selected.
+local run directories were selected. Offline W&B runs can be synchronized later
+with `scripts/sync_wandb_offline_runs.py` after the user logs in.
 
 ## Implemented Local-First Files
 
