@@ -20,9 +20,11 @@ DEFAULT_SYNC_DOCS = [
     "report/REPORT_DRAFT.md",
     "report/REPORT_POLISHED_DRAFT.md",
     "report/REPORT_CHECKLIST.md",
+    "report/PARAMETER_ABLATION_particles_dense_N12.md",
     "report/BENCHMARK_PLAN.md",
     "docs/mpot_algorithm_overview.md",
     "docs/mpot_parallel_algorithm_spec.md",
+    "docs/extra_experiments_plan.md",
     "docs/mpi_mpot_project_plan.md",
     "docs/team_ownership.md",
 ]

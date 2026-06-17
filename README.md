@@ -127,6 +127,7 @@ Supporting report files:
 - `report/REPORT_CHECKLIST.md`
 - `docs/mpot_algorithm_overview.md`
 - `docs/mpot_parallel_algorithm_spec.md`
+- `docs/extra_experiments_plan.md`
 - `docs/team_ownership.md`
 
 Generated evidence:

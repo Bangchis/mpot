@@ -413,6 +413,31 @@ The owner Ubuntu ARM64 VM has passed smoke tests. The multi-machine LAN stage is
 
 > TODO (LAN benchmark): Replace this TODO only after teammate VMs produce real `summary.json`, hostfile output, rank timing CSVs, and figures.
 
+### 7.7 Additional Experiments and Ablation Policy
+
+The main report should not become a large robotics hyperparameter study. The course grading focuses on how the problem is parallelized, whether the demo runs, whether the report is clear, and whether members understand the code. Therefore, extra experiments are selected by this rule:
+
+```text
+Add an experiment only if it improves one of:
+    parallel explanation,
+    demo clarity,
+    solution-quality interpretation,
+    or teammate defense readiness.
+```
+
+The selected additions are:
+
+| Candidate | Decision | Reason |
+|---|---|---|
+| Communication overhead analysis | Keep | Directly supports the MPI communication discussion |
+| 2D problem-variant visualization | Keep | Makes the demo more interesting without changing the algorithm |
+| Particle-count ablation | Keep as auxiliary | Shows local MPOT quality/runtime trade-off in one small controlled run |
+| Mapping comparison: cyclic vs block | TODO only | Useful but not required; would add implementation complexity |
+| Large MPOT hyperparameter sweep | Do not include now | Too broad and weakly connected to parallel computing |
+| 3D/Panda/CUDA benchmark | Do not include now | Distracts from CPU/OpenMPI and teammate VM setup |
+
+The detailed plan is maintained in `docs/extra_experiments_plan.md`.
+
 ---
 
 ## 8. Results
@@ -521,6 +546,30 @@ Additional 2D variants were generated for presentation:
 
 These qualitative variants are not used as the main speedup evidence because the report should compare runtime using a consistent benchmark configuration.
 
+**Figure 6. Dense 2D variant trace key frame.**
+
+![Dense variant trace key frame](report/figures/algorithm_trace_variant_dense_keyframe.png)
+
+### 8.6 Auxiliary Particle-Count Ablation
+
+This ablation is intentionally small. It varies only `optimizer.num_particles` on the dense 2D variant with `N=12` and `P=4`. The purpose is to explain the local MPOT exploration/runtime trade-off, not to replace the main parallel-computing experiments.
+
+The detailed generated table is stored in `report/PARAMETER_ABLATION_particles_dense_N12.md`, with copied source summaries under `report/artifacts/particle_ablation_dense_N12/`.
+
+**Table 12. Particle-count ablation on dense 2D variant.**
+
+| Particles | Runtime with communication (s) | Best cost | Best task | Best seed |
+|---:|---:|---:|---:|---:|
+| 8 | 1.502928 | 0.00395729 | 0 | 20260617 |
+| 16 | 1.069814 | 0.00383398 | 8 | 20260625 |
+| 24 | 1.185440 | 0.00370045 | 10 | 20260627 |
+
+**Figure 7. Particle-count ablation.**
+
+![Particle-count ablation](report/figures/particle_ablation_dense_N12_P4.png)
+
+The result suggests that more particles can improve the best discovered cost, but runtime does not change perfectly monotonically in such a small run because task-level seed variability and local machine scheduling are still visible. For this reason, the ablation is treated as qualitative support only.
+
 ---
 
 ## 9. Discussion
@@ -532,6 +581,8 @@ The runtime and speedup results show useful parallel benefit on one machine. At 
 Communication overhead is small in the measured runs. This agrees with the design: ranks communicate through blocking collectives only during setup, distribution, and collection. The expensive local MPOT optimization is performed without inter-rank synchronization.
 
 Load balance is acceptable for the current granularity. At `N=412, P=4`, each rank receives the same number of tasks and the maximum idle fraction is about `0.00705`, well below the 25% threshold. This supports the use of 1D cyclic mapping for seed-level exploratory tasks.
+
+The auxiliary particle-count ablation adds one useful local-optimizer insight: increasing the number of particles can improve the discovered trajectory cost, but it is not the main evaluation criterion for this course. The project should still be judged primarily by its parallelization design, correctness, communication behavior, load balance, and speedup.
 
 The main limitation is experiment scale. The local benchmark currently runs in seconds, not 2-3 minutes. Therefore, the report should not claim full compliance with the strict runtime-size requirement yet. The correct interpretation is:
 
@@ -560,7 +611,7 @@ The project is currently ready for local demonstration and Ubuntu single-VM smok
 
 ## Appendix A. Requirement Coverage
 
-**Table 12. Course-rubric mapping.**
+**Table 13. Course-rubric mapping.**
 
 | Requirement | Project answer | Evidence |
 |---|---|---|
@@ -574,7 +625,8 @@ The project is currently ready for local demonstration and Ubuntu single-VM smok
 | Runtime vs input size | `N = 208, 412, 824` at `P=4` | Section 8.2 |
 | Granularity | Stacked rank timing at `N=412, P=4` | Section 8.3 |
 | Speedup | `P = 1, 2, 4` at `N=824` | Section 8.4 |
-| Final real figures | Runtime, speedup, rank timing, best path, algorithm trace | Figures 1-5 |
+| Auxiliary ablation | Particle-count trade-off on dense 2D variant | Section 8.6 |
+| Final real figures | Runtime, speedup, rank timing, best path, algorithm trace, dense trace, particle ablation | Figures 1-7 |
 
 ---
 
@@ -606,5 +658,10 @@ Static PNG figures are used in the main report because exported PDF files cannot
 | Narrow-passage algorithm trace GIF | `report/figures/algorithm_trace_variant_narrow.gif` |
 | Cluttered algorithm trace GIF | `report/figures/algorithm_trace_variant_cluttered.gif` |
 | Dense-sampling algorithm trace GIF | `report/figures/algorithm_trace_variant_dense.gif` |
+| Narrow-passage algorithm trace key frame | `report/figures/algorithm_trace_variant_narrow_keyframe.png` |
+| Cluttered algorithm trace key frame | `report/figures/algorithm_trace_variant_cluttered_keyframe.png` |
+| Dense-sampling algorithm trace key frame | `report/figures/algorithm_trace_variant_dense_keyframe.png` |
+| Particle-count ablation table | `report/PARAMETER_ABLATION_particles_dense_N12.md` |
+| Particle-count ablation figure | `report/figures/particle_ablation_dense_N12_P4.png` |
 
 Detailed teammate ownership and defense preparation are maintained in `docs/team_ownership.md` and `report/MEMBER_DEFENSE_GUIDE.md`.

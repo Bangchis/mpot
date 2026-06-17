@@ -1,0 +1,47 @@
+{
+  "label": "particles_dense_N12_P4",
+  "rows": [
+    {
+      "run_id": "mpi-ablation_particles8_dense-N12-P4",
+      "num_particles": 8,
+      "num_probe": 5,
+      "processes": 4,
+      "N": 12,
+      "runtime_with_communication_s": 1.5029280410381034,
+      "runtime_without_communication_s": 1.5015914160758257,
+      "communication_overhead_s": 0.0013366249622777104,
+      "best_cost": 0.003957285545766354,
+      "best_task_id": 0,
+      "best_seed": 20260617,
+      "source_summary": "report/artifacts/particle_ablation_dense_N12/mpi-ablation_particles8_dense-N12-P4/summary.json"
+    },
+    {
+      "run_id": "mpi-ablation_particles16_dense-N12-P4",
+      "num_particles": 16,
+      "num_probe": 5,
+      "processes": 4,
+      "N": 12,
+      "runtime_with_communication_s": 1.0698137920117006,
+      "runtime_without_communication_s": 1.0690111250150949,
+      "communication_overhead_s": 0.0008026669966056943,
+      "best_cost": 0.0038339816965162754,
+      "best_task_id": 8,
+      "best_seed": 20260625,
+      "source_summary": "report/artifacts/particle_ablation_dense_N12/mpi-ablation_particles16_dense-N12-P4/summary.json"
+    },
+    {
+      "run_id": "mpi-ablation_particles24_dense-N12-P4",
+      "num_particles": 24,
+      "num_probe": 5,
+      "processes": 4,
+      "N": 12,
+      "runtime_with_communication_s": 1.1854396669659764,
+      "runtime_without_communication_s": 1.1849598330445588,
+      "communication_overhead_s": 0.00047983392141759396,
+      "best_cost": 0.0037004509940743446,
+      "best_task_id": 10,
+      "best_seed": 20260627,
+      "source_summary": "report/artifacts/particle_ablation_dense_N12/mpi-ablation_particles24_dense-N12-P4/summary.json"
+    }
+  ]
+}
