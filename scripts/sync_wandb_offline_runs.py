@@ -13,6 +13,8 @@ from argparse import ArgumentParser
 from pathlib import Path
 from shutil import which
 import json
+import netrc
+import os
 import subprocess
 import sys
 import time
@@ -92,6 +94,20 @@ def wandb_status(wandb_bin: str) -> dict[str, object]:
     return payload
 
 
+def has_wandb_credentials(status: dict[str, object]) -> bool:
+    """Return True if W&B can likely authenticate without exposing the key."""
+
+    if status.get("api_key"):
+        return True
+    if os.environ.get("WANDB_API_KEY"):
+        return True
+    try:
+        auth = netrc.netrc().authenticators("api.wandb.ai")
+    except (FileNotFoundError, netrc.NetrcParseError, OSError):
+        auth = None
+    return bool(auth and auth[2])
+
+
 def sync_one_run(wandb_bin: str, run_dir: Path) -> dict[str, object]:
     """Sync one offline run and return a manifest row."""
 
@@ -162,7 +178,7 @@ def main() -> int:
     if args.limit is not None:
         offline_runs = offline_runs[: args.limit]
     status = wandb_status(wandb_bin)
-    logged_in = bool(status.get("api_key"))
+    logged_in = has_wandb_credentials(status)
 
     rows: list[dict[str, object]] = []
     if args.dry_run:

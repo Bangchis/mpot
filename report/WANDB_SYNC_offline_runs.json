@@ -1,31 +1,39 @@
 {
-  "created_at": "2026-06-18 03:53:04 +0700",
-  "dry_run": true,
-  "logged_in": false,
+  "created_at": "2026-06-18 09:38:08 +0700",
+  "dry_run": false,
+  "logged_in": true,
   "num_runs": 4,
-  "num_synced": 0,
+  "num_synced": 4,
   "runs": [
     {
-      "returncode": null,
+      "returncode": 0,
       "run_dir": "wandb/offline-run-20260618_032458-qwxop0w5",
-      "status": "pending"
+      "status": "synced",
+      "stderr_tail": "",
+      "stdout_tail": "Find logs at: /Users/bangbang/Desktop/code python/mpot/wandb/debug-cli.bangbang.log\nSyncing: https://wandb.ai/Fingerprint_Recognition/distributed-mpot-course/runs/qwxop0w5 ... done.\n"
     },
     {
-      "returncode": null,
+      "returncode": 0,
       "run_dir": "wandb/offline-run-20260618_032617-z21m33ln",
-      "status": "pending"
+      "status": "synced",
+      "stderr_tail": "",
+      "stdout_tail": "Find logs at: /Users/bangbang/Desktop/code python/mpot/wandb/debug-cli.bangbang.log\nSyncing: https://wandb.ai/Fingerprint_Recognition/distributed-mpot-course/runs/z21m33ln ... done.\n"
     },
     {
-      "returncode": null,
+      "returncode": 0,
       "run_dir": "wandb/offline-run-20260618_034218-z9djiy5b",
-      "status": "pending"
+      "status": "synced",
+      "stderr_tail": "",
+      "stdout_tail": "Find logs at: /Users/bangbang/Desktop/code python/mpot/wandb/debug-cli.bangbang.log\nSyncing: https://wandb.ai/Fingerprint_Recognition/distributed-mpot-course/runs/z9djiy5b ... done.\n"
     },
     {
-      "returncode": null,
+      "returncode": 0,
       "run_dir": "wandb/offline-run-20260618_034219-1us5jrx7",
-      "status": "pending"
+      "status": "synced",
+      "stderr_tail": "",
+      "stdout_tail": "Find logs at: /Users/bangbang/Desktop/code python/mpot/wandb/debug-cli.bangbang.log\nSyncing: https://wandb.ai/Fingerprint_Recognition/distributed-mpot-course/runs/1us5jrx7 ... done.\n"
     }
   ],
-  "status_api_key_present": false,
+  "status_api_key_present": true,
   "wandb_bin": "/Users/bangbang/Desktop/code python/mpot/.venv/bin/wandb"
 }

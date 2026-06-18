@@ -74,7 +74,36 @@ The project uses only 2D planning settings in the report. This makes the algorit
 
 ## 2. Related Work and MPOT Background
 
-### 2.1 Original MPOT
+### 2.1 Robot Motion Planning Context
+
+In robotics, motion planning is more than drawing a geometric line between two points. A robot must move through a **configuration space**, avoid obstacles, respect workspace limits, and produce a path that can be followed smoothly. A basic path planner may return only a collision-free sequence of positions. A trajectory optimizer additionally considers timing, smoothness, velocity, and goal accuracy.
+
+For a general robot with configuration `q`, a continuous planning problem can be written compactly as:
+
+```text
+find q(t), t in [0, T]
+such that q(0) = q_start, q(T) ~= q_goal,
+          q(t) is collision-free and satisfies robot constraints.
+```
+
+In this project, the robot is simplified to a 2D point robot so that the parallel-computing part remains easy to demonstrate. The same conceptual structure is preserved: the planner still searches for a trajectory, checks obstacle safety, penalizes rough motion, and selects the best route from start to goal.
+
+Classical graph-search methods such as Dijkstra or A* are powerful when the workspace is discretized into a grid or graph. However, they are less suitable as the main algorithm for this project for three reasons. First, their output is usually a discrete path, so additional smoothing is needed before it becomes a robot trajectory. Second, the result depends strongly on grid resolution: a coarse grid can miss narrow passages, while a fine grid increases memory and runtime. Third, graph search is less naturally aligned with MPOT's batch trajectory optimization and exploratory seed-level parallelism.
+
+Sampling-based methods such as PRM and RRT are also common in robotics. They are useful for difficult spaces because they explore without requiring a dense grid. However, their raw paths can be jagged and often need post-processing or trajectory optimization. Optimization-based planners such as CHOMP, TrajOpt, and MPOT directly optimize a trajectory cost, but they can face local minima around obstacles. MPOT is interesting here because it combines batch exploration with trajectory optimization, which gives a natural outer layer for task-level MPI parallelization.
+
+**Table 1. Planning approaches and relevance to this project.**
+
+| Approach | Typical output | Strength | Limitation for this project |
+|---|---|---|---|
+| Grid/graph search, e.g. Dijkstra or A* | Discrete path on a graph | Simple, deterministic, easy to explain | Requires discretization and later smoothing |
+| Sampling-based planning, e.g. PRM or RRT | Collision-free geometric path | Good exploration in complex spaces | Raw path may be irregular and stochastic |
+| Trajectory optimization, e.g. CHOMP/TrajOpt | Smooth trajectory | Directly optimizes motion quality | Can be sensitive to local minima |
+| MPOT-style batch optimization | Batch of optimized trajectory particles | Gradient-free local probing and batch exploration | More compute-heavy, motivating parallel execution |
+
+Therefore, the project does not use a standard shortest-path algorithm as the main solver. The goal is to study a motion-planning optimizer whose workload is interesting to parallelize: many independent optimization attempts can be distributed across MPI ranks, and the final solution is selected by a deterministic minimum-cost reduction.
+
+### 2.2 Original MPOT
 
 The original MPOT paper, *Accelerating Motion Planning via Optimal Transport*, presents a gradient-free method for optimizing a batch of smooth trajectories over nonlinear motion-planning costs. The method uses a Gaussian Process dynamics prior for smoothness and introduces the Sinkhorn Step as a zero-order, highly parallelizable update rule. Around each trajectory waypoint, a regular polytope defines local search directions. Costs are evaluated at local probe points, then an entropic optimal transport computation moves trajectory parameters toward lower-cost regions.
 
@@ -106,9 +135,9 @@ Output:
 
 This local kernel is still sequential from the MPI point of view in our implementation. Its internal tensor operations may be vectorized by PyTorch, but MPI ranks do not communicate inside the Sinkhorn loop. This boundary is deliberate: MPI is used to distribute complete planning attempts, while PyTorch handles the smaller tensor operations inside one attempt.
 
-### 2.2 Original MPOT vs. This Course Project
+### 2.3 Original MPOT vs. This Course Project
 
-**Table 1. Original MPOT and OpenMPI adaptation.**
+**Table 2. Original MPOT and OpenMPI adaptation.**
 
 | Aspect | Original MPOT | This course project |
 |---|---|---|
@@ -143,32 +172,34 @@ where `X*` is the lowest-cost trajectory found by all tasks. The timing and rank
 
 ### 3.1 2D Planning Problem
 
-The robot is a point mass moving in a bounded 2D workspace. A state is:
+The robot is a point mass moving in a bounded 2D workspace. Its state at time step `t` is:
 
-```text
-x_t = [p_x, p_y, v_x, v_y]
-```
+$$
+x_t = [p_t, v_t] = [p_x, p_y, v_x, v_y],
+$$
 
-where `(p_x, p_y)` is position and `(v_x, v_y)` is velocity. A trajectory is a sequence:
+where `p_t = (p_x, p_y)` is the position and `v_t = (v_x, v_y)` is the velocity. A trajectory is a finite sequence:
 
-```text
-X = [x_0, x_1, ..., x_T].
-```
+$$
+X = [x_0, x_1, \ldots, x_T].
+$$
 
-The planner receives a fixed start state, a fixed goal state, circular obstacles, workspace bounds, and cost weights. The optimization objective is:
+The planner receives a fixed start state, a fixed goal state, circular obstacles, workspace bounds, and cost weights. The optimization objective combines feasibility and motion quality:
 
-```text
-J(X) =
-  w_obs    * obstacle_penalty(X)
-+ w_bound  * boundary_penalty(X)
-+ w_smooth * smoothness_penalty(X)
-+ w_goal   * goal_error(X)
-+ w_vel    * velocity_penalty(X)
-```
+$$
+J(X)
+= w_{obs}J_{obs}(X)
++ w_{bound}J_{bound}(X)
++ w_{smooth}J_{smooth}(X)
++ w_{goal}J_{goal}(X)
++ w_{vel}J_{vel}(X).
+$$
 
 A good solution has low cost, zero hard collision fraction, small goal error, no boundary violation, and a smooth path.
 
 The obstacle term is the safety term: it penalizes waypoint positions that enter the soft margin around a circular obstacle. The boundary term keeps the path inside the workspace. The smoothness term discourages sharp turns and unstable waypoint jumps. The goal term pulls the final state toward the target, and the velocity term discourages unnecessarily aggressive motion. These terms make the objective interpretable for a 2D demo and also give the report measurable correctness indicators.
+
+This objective is the reason the project is not just a shortest-path problem. A shortest graph path may be collision-free but still contain sharp turns, grid artifacts, or poor velocity behavior. Here, the planner must optimize a trajectory that is both feasible and smooth enough to be meaningful as robot motion.
 
 ### 3.2 Planning Task
 
@@ -188,7 +219,7 @@ The parallel algorithm input is:
 (problem_config, optimizer_config, N, P, mapping_rule)
 ```
 
-**Table 2. Main parameter groups.**
+**Table 3. Main parameter groups.**
 
 | Group | Parameters | Role |
 |---|---|---|
@@ -205,51 +236,83 @@ For the professor's runtime and speedup requirements, `N` is the main input size
 
 Let the 2D workspace be a bounded set:
 
-```text
-Omega = [x_min, x_max] x [y_min, y_max].
-```
+$$
+\Omega = [x_{min}, x_{max}] \times [y_{min}, y_{max}],
+$$
 
-The start and goal states are:
+and let the start and goal states be:
 
-```text
-x_start, x_goal in R^4.
-```
+$$
+x_{start}, x_{goal} \in \mathbb{R}^{4}.
+$$
 
 Each circular obstacle is represented as:
 
-```text
-O_m = (c_m, rho_m, delta_m)
-```
+$$
+O_m = (c_m, \rho_m, \delta_m),
+$$
 
 where `c_m in R^2` is the center, `rho_m` is the hard radius, and `delta_m` is the safety margin. A waypoint position `p_t` is inside the soft unsafe region of obstacle `m` when:
 
-```text
-||p_t - c_m||_2 < rho_m + delta_m.
-```
+$$
+\|p_t - c_m\|_2 < \rho_m + \delta_m.
+$$
 
-For one trajectory `X = [x_0, ..., x_T]`, with `x_t = [p_t, v_t]`, the implemented objective can be written as:
+For one trajectory `X = [x_0, ..., x_T]`, with `x_t = [p_t, v_t]`, the implemented optimization problem can be summarized as:
 
-```text
-minimize_X J(X)
-subject to x_0 = x_start, x_T close to x_goal, p_t in Omega.
-```
+$$
+\min_X J(X)
+\quad
+\text{s.t.}
+\quad
+x_0 = x_{start},\; x_T \approx x_{goal},\; p_t \in \Omega.
+$$
 
-The full trajectory cost is:
+The objective terms are:
 
-```text
-J(X) =
-  w_obs    * (1/T) sum_t sum_m max(0, rho_m + delta_m - ||p_t - c_m||_2)^2
-+ w_bound  * (1/T) sum_t violation_Omega(p_t)^2
-+ w_smooth * (1/T) sum_t (||p_t - p_{t-1}||_2^2 + ||p_{t+1} - 2p_t + p_{t-1}||_2^2)
-+ w_goal   * ||x_T - x_goal||_2^2
-+ w_vel    * (1/T) sum_t ||v_t||_2^2.
-```
+$$
+J_{obs}(X)
+= \frac{1}{T+1}
+\sum_{t=0}^{T}
+\sum_{m=1}^{M}
+\max(0, \rho_m + \delta_m - \|p_t - c_m\|_2)^2,
+$$
+
+$$
+J_{bound}(X)
+= \frac{1}{T+1}
+\sum_{t=0}^{T}
+d_{\Omega}(p_t)^2,
+$$
+
+where `d_Omega(p_t)` is zero inside the workspace and positive outside it. The smoothness term is:
+
+$$
+J_{smooth}(X)
+= \frac{1}{T}
+\sum_{t=1}^{T}
+\|p_t - p_{t-1}\|_2^2
++
+\frac{1}{T-1}
+\sum_{t=1}^{T-1}
+\|p_{t+1}-2p_t+p_{t-1}\|_2^2.
+$$
+
+The goal and velocity terms are:
+
+$$
+J_{goal}(X)=\|x_T-x_{goal}\|_2^2,
+\quad
+J_{vel}(X)=\frac{1}{T+1}\sum_{t=0}^{T}\|v_t\|_2^2.
+$$
+
+Combining these terms gives the weighted objective `J(X)` used by the serial and MPI versions.
 
 The global project objective over `N` independent seeds is:
 
-```text
-Y* = argmin_{i in {0, ..., N-1}} J(X_i*)
-```
+$$
+Y^* = \arg\min_{i \in \{0,\ldots,N-1\}} J(X_i^*).
+$$
 
 where `X_i*` is the best trajectory returned by local MPOT task `i`. This formulation is important for correctness: the MPI program does not solve a different mathematical problem; it evaluates the same set of `N` tasks in parallel and applies the same final minimum-cost reduction.
 
@@ -337,7 +400,7 @@ For example, with `N=12` and `P=4`, rank 0 receives tasks `{0,4,8}`, rank 1 rece
 
 The program follows the **SPMD** model: all ranks execute the same script, but each rank behaves according to its MPI rank id. Rank 0 acts as the coordinator. The logical communication topology is a **star** centered at rank 0.
 
-**Table 3. Communication phases.**
+**Table 4. Communication phases.**
 
 | Phase | MPI collective | Blocking? | Purpose |
 |---|---|---:|---|
@@ -352,7 +415,7 @@ The communication design is deliberately conservative. Rank 0 owns run setup, re
 
 ### 5.5 Course-Rubric Decision Summary
 
-**Table 4. Parallel design choices mapped to course terminology.**
+**Table 5. Parallel design choices mapped to course terminology.**
 
 | Rubric item | Project choice | Defense rationale |
 |---|---|---|
@@ -368,7 +431,7 @@ These choices are consistent with the project constraints. The target platform i
 
 ### 5.6 Why Parallelization Is Added Outside the Sinkhorn Loop
 
-**Table 5. Candidate parallelization levels.**
+**Table 6. Candidate parallelization levels.**
 
 | Candidate level | Decision | Reason |
 |---|---|---|
@@ -433,7 +496,7 @@ This section gives an asymptotic view of the algorithm. The exact measured time 
 
 ### 6.1 Symbols
 
-**Table 6. Complexity symbols.**
+**Table 7. Complexity symbols.**
 
 | Symbol | Meaning |
 |---|---|
@@ -610,7 +673,7 @@ For the measured `N=412, P=4` local run, `idle_fraction ~= 0.00705`, so the task
 
 The implementation is organized so that the serial and MPI runners share the same local planning task. This keeps correctness checks meaningful.
 
-**Table 7. Main implementation files.**
+**Table 8. Main implementation files.**
 
 | File | Responsibility |
 |---|---|
@@ -744,7 +807,7 @@ The current results should be read as local-first evidence. They demonstrate tha
 
 The report uses two kinds of visual material. First, measured figures are inserted directly when the corresponding PNG or GIF key frame already exists in `report/figures/`. Second, missing experiments are represented only by explicit TODO placeholders. This prevents the report from accidentally presenting an expected chart as if it were a measured result.
 
-**Table 8. Visual evidence plan.**
+**Table 9. Visual evidence plan.**
 
 | Evidence type | Included in this draft | Status |
 |---|---|---|
@@ -763,7 +826,7 @@ The report uses two kinds of visual material. First, measured figures are insert
 
 For `N=824` and `P=4`, the serial and MPI results match exactly at task level.
 
-**Table 9. Correctness result.**
+**Table 10. Correctness result.**
 
 | Metric | Value |
 |---|---:|
@@ -775,7 +838,7 @@ For `N=824` and `P=4`, the serial and MPI results match exactly at task level.
 
 The best MPI trajectory also passes solution-quality checks.
 
-**Table 10. Best trajectory quality.**
+**Table 11. Best trajectory quality.**
 
 | Metric | Value |
 |---|---:|
@@ -800,7 +863,7 @@ This correctness result is stronger than comparing only the final best cost. The
 
 At `P=4`, runtime increases with `N`, and the gap between runtime with and without communication remains small.
 
-**Table 11. Runtime vs input size at `P=4`.**
+**Table 12. Runtime vs input size at `P=4`.**
 
 | N | Runtime with communication (s) | Runtime without communication (s) | Communication overhead (s) |
 |---:|---:|---:|---:|
@@ -818,7 +881,7 @@ The trend is consistent with the complexity model: increasing `N` increases the 
 
 The load-balance experiment uses `N=412`, `P=4`. Each rank receives 103 tasks. The maximum observed idle fraction is approximately `0.00705`, which is far below the 25% threshold.
 
-**Table 12. Load-balance summary.**
+**Table 13. Load-balance summary.**
 
 | Metric | Value |
 |---|---:|
@@ -836,7 +899,7 @@ The load-balance experiment uses `N=412`, `P=4`. Each rank receives 103 tasks. T
 
 For `N=824`, the measured speedup is:
 
-**Table 13. Speedup at `N=824`.**
+**Table 14. Speedup at `N=824`.**
 
 | Processes | Runtime with communication (s) | Speedup | Efficiency |
 |---:|---:|---:|---:|
@@ -860,7 +923,7 @@ The report includes a static key frame from the algorithm-trace GIF because PDF 
 
 Additional 2D variants were generated for presentation:
 
-**Table 14. Qualitative 2D variants.**
+**Table 15. Qualitative 2D variants.**
 
 | Variant | Obstacles | Purpose |
 |---|---:|---|
@@ -881,7 +944,7 @@ This ablation is intentionally small. It varies only `optimizer.num_particles` o
 
 The detailed generated table is stored in `report/PARAMETER_ABLATION_particles_dense_N12.md`, with copied source summaries under `report/artifacts/particle_ablation_dense_N12/`.
 
-**Table 15. Particle-count ablation on dense 2D variant.**
+**Table 16. Particle-count ablation on dense 2D variant.**
 
 | Particles | Runtime with communication (s) | Best cost | Best task | Best seed |
 |---:|---:|---:|---:|---:|
@@ -962,6 +1025,11 @@ The project is currently ready for local demonstration and Ubuntu single-VM smok
 3. Original MPOT source repository. https://github.com/anindex/mpot
 4. Hanoi University of Science and Technology thesis/project template references were used as formatting guidance for cover-page style, numbered sections, figures, tables, and concise academic presentation. https://ctt.hust.edu.vn/DisplayWeb/DisplayBaiViet?baiviet=35523
 5. HUST thesis template on Overleaf, used only as structure guidance for Markdown-to-PDF polishing. https://www.overleaf.com/latex/templates/thesis-template-for-hanoi-university-of-science-and-technology/nfpspdwmgjmz
+6. Peter E. Hart, Nils J. Nilsson, and Bertram Raphael. "A Formal Basis for the Heuristic Determination of Minimum Cost Paths." IEEE Transactions on Systems Science and Cybernetics, 1968.
+7. Lydia E. Kavraki, Petr Svestka, Jean-Claude Latombe, and Mark H. Overmars. "Probabilistic Roadmaps for Path Planning in High-Dimensional Configuration Spaces." IEEE Transactions on Robotics and Automation, 1996.
+8. Steven M. LaValle. "Rapidly-exploring Random Trees: A New Tool for Path Planning." Technical Report, Iowa State University, 1998.
+9. Nathan Ratliff, Matt Zucker, J. Andrew Bagnell, and Siddhartha Srinivasa. "CHOMP: Gradient Optimization Techniques for Efficient Motion Planning." IEEE International Conference on Robotics and Automation, 2009.
+10. John Schulman, Jonathan Ho, Alex Lee, Ibrahim Awwal, Henry Bradlow, and Pieter Abbeel. "Finding Locally Optimal, Collision-Free Trajectories with Sequential Convex Optimization." Robotics: Science and Systems, 2013.
 
 ---
 

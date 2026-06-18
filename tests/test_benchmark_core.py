@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import math
 import json
+import os
 import sys
 import tempfile
 import unittest
@@ -1800,6 +1801,26 @@ class WandbSyncScriptTests(unittest.TestCase):
             text = module.manifest_markdown(payload)
             self.assertIn("W&B Offline Sync Manifest", text)
             self.assertIn("offline-run-001", text)
+
+    def test_credentials_detection_accepts_status_api_key(self):
+        module = self._load_sync_script()
+        self.assertTrue(module.has_wandb_credentials({"api_key": "present"}))
+
+    def test_credentials_detection_accepts_netrc_key(self):
+        module = self._load_sync_script()
+        old_home = os.environ.get("HOME")
+        with tempfile.TemporaryDirectory() as tmp:
+            netrc_path = Path(tmp) / ".netrc"
+            netrc_path.write_text("machine api.wandb.ai login user password token\n", encoding="utf-8")
+            netrc_path.chmod(0o600)
+            os.environ["HOME"] = tmp
+            try:
+                self.assertTrue(module.has_wandb_credentials({}))
+            finally:
+                if old_home is None:
+                    os.environ.pop("HOME", None)
+                else:
+                    os.environ["HOME"] = old_home
 
 
 class PipelineTests(unittest.TestCase):

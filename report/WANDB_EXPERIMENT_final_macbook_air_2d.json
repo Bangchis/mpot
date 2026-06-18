@@ -1,0 +1,134 @@
+{
+  "created_at": "2026-06-18 09:32:06 +0700",
+  "dry_run": false,
+  "entity": null,
+  "group": "final_macbook_air_2d",
+  "index_status": "logged",
+  "label": "final_macbook_air_2d",
+  "matched_run_dirs": [
+    "results/mpi-final_macbook_air_2d-N208-P1",
+    "results/mpi-final_macbook_air_2d-N208-P2",
+    "results/mpi-final_macbook_air_2d-N208-P4",
+    "results/mpi-final_macbook_air_2d-N412-P1",
+    "results/mpi-final_macbook_air_2d-N412-P2",
+    "results/mpi-final_macbook_air_2d-N412-P4",
+    "results/mpi-final_macbook_air_2d-N824-P1",
+    "results/mpi-final_macbook_air_2d-N824-P2",
+    "results/mpi-final_macbook_air_2d-N824-P4",
+    "results/serial-final_macbook_air_2d-N208",
+    "results/serial-final_macbook_air_2d-N412",
+    "results/serial-final_macbook_air_2d-N824"
+  ],
+  "mode": "online",
+  "note": "Local CSV/JSON/PNG artifacts remain the source of truth; W&B is an optional dashboard layer.",
+  "num_logged_runs": 12,
+  "num_matched_runs": 12,
+  "project": "distributed-mpot-course",
+  "report_paths": [
+    "report/figures/runtime_vs_input_size_final_macbook_air_2d.png",
+    "report/figures/speedup_final_macbook_air_2d.png",
+    "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N412-P4_rank_time_breakdown.png",
+    "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_best_path.png",
+    "report/figures/final_macbook_air_2d_mpi_mpi-final_macbook_air_2d-N824-P4_cost_by_task.png",
+    "report/figures/algorithm_trace_final_macbook_air_2d.gif",
+    "report/figures/trajectory_final_macbook_air_2d.gif"
+  ],
+  "run_outcomes": [
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N208-P1/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N208-P1",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N208-P2/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N208-P2",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N208-P4/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N208-P4",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N412-P1/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N412-P1",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N412-P2/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N412-P2",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N412-P4/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N412-P4",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N824-P1/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N824-P1",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N824-P2/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N824-P2",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/mpi-final_macbook_air_2d-N824-P4/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 8,
+      "num_images": 3,
+      "run_id": "mpi-final_macbook_air_2d-N824-P4",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/serial-final_macbook_air_2d-N208/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 5,
+      "num_images": 2,
+      "run_id": "serial-final_macbook_air_2d-N208",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/serial-final_macbook_air_2d-N412/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 5,
+      "num_images": 2,
+      "run_id": "serial-final_macbook_air_2d-N412",
+      "status": "logged"
+    },
+    {
+      "manifest": "results/serial-final_macbook_air_2d-N824/wandb_manifest.json",
+      "num_animations": 0,
+      "num_artifact_files": 5,
+      "num_images": 2,
+      "run_id": "serial-final_macbook_air_2d-N824",
+      "status": "logged"
+    }
+  ]
+}
