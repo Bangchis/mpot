@@ -54,6 +54,8 @@ Final
 | Generate report-ready Results summary from real artifacts | Sections 7 and 9 | `mpot/benchmarks/results_summary.py`, `scripts/export_results_summary.py`, `mpot/benchmarks/pipeline.py` | `report/RESULTS_SUMMARY_<label>.json`, `report/RESULTS_SUMMARY_<label>.md`; generated from existing artifacts only | Implemented |
 | Optional trajectory replay animation for demo | Sections 7 and 9.5 | `mpot/benchmarks/animation.py`, `scripts/animate_trajectory.py`, `mpot/benchmarks/pipeline.py` | `report/figures/trajectory_<label>.gif`; demo artifact only, not a substitute for required CSV/JSON/PNG | Measured |
 | Optional MPOT algorithm trace animation for demo | Sections 7 and 9.5 | `mpot/benchmarks/animation.py`, `scripts/animate_algorithm_trace.py`, `mpot/benchmarks/local_runner.py`, `mpot/benchmarks/pipeline.py` | `report/figures/algorithm_trace_<label>.gif`, `report/ALGORITHM_TRACE_<label>.json`; shows particles/candidate trajectories over optimizer iterations | Measured |
+| Interactive 2D GUI demo | Section 7 and Appendix demo notes | `scripts/mpot_gui.py`, `mpot/benchmarks/gui_app.py`, `mpot/benchmarks/gui_support.py`, `docs/gui_2d_demo.md` | GUI writes `results/gui_configs/<run_id>.json` and `results/<run_id>/best_path.gif`, `algorithm_trace.gif`, `parallel_schedule.gif`; demo artifact only, not a substitute for benchmark CSV/JSON | Implemented |
+| Optional MPI parallel schedule animation for demo | Section 7 and Appendix demo notes | `mpot/benchmarks/animation.py`, `scripts/animate_parallel_schedule.py`, `mpot/benchmarks/mpi_runner.py` | `results/<mpi_run>/parallel_schedule.gif`; illustrates rank 0 broadcast, cyclic scatter, independent compute, gather, and final reduction | Implemented |
 | Optional W&B experiment dashboard | Appendix E and `docs/wandb_logging.md` | `mpot/wandb_logger.py`, `scripts/run_serial.py`, `scripts/run_mpi.py`, `scripts/log_run_to_wandb.py`, `scripts/log_experiment_to_wandb.py`, `scripts/sync_wandb_offline_runs.py` | Optional W&B runs grouped by experiment label plus local `results/<run_id>/wandb_manifest.json`, `report/WANDB_EXPERIMENT_<label>.json`, and optional `report/WANDB_SYNC_offline_runs.json`; local artifacts remain source of truth | Implemented |
 | One-command local benchmark workflow | Sections 7 and 8 | `mpot/benchmarks/pipeline.py`, `scripts/run_local_pipeline.py` | Dry-run command and final validation report | Implemented |
 | Resume interrupted local sweeps without rerunning completed runs | Sections 7 and 8 | `scripts/run_sweep.py`, `scripts/run_local_pipeline.py`, `mpot/benchmarks/pipeline.py`, `mpot/benchmarks/config.py`, `mpot/benchmarks/run_reuse.py` | `--skip-existing-runs` passes `--skip-existing` to sweep; reusable run must have matching `summary.json` metadata and config hash | Implemented |
@@ -91,6 +93,7 @@ report/figures/speedup.png
 report/figures/trajectory_<label>.gif
 report/figures/algorithm_trace_<label>.gif
 report/ALGORITHM_TRACE_<label>.json
+results/<gui_run>/parallel_schedule.gif
 report/ARTIFACT_MANIFEST.md
 report/artifacts/<bundle_name>/manifest.json
 report/tables/runtime_table_<label>.csv

@@ -38,6 +38,7 @@ TODO until real artifacts exist.
 | `configs/local_benchmark.json` | Main local benchmark configuration |
 | `configs/variant_*.json` | 2D visualization variants with harder obstacle layouts |
 | `docs/` | Algorithm notes, teammate VM guide, LAN cluster runbook, ownership plan |
+| `scripts/mpot_gui.py` | Drag-and-drop 2D GUI for editing a scene, running MPI, and generating GIF demos |
 | `report/REPORT_POLISHED_DRAFT.md` | Main English report draft for submission |
 | `report/REPORT_CHECKLIST.md` | Rubric-to-code/artifact checklist |
 | `report/figures/` | Real plots and GIFs generated from experiment artifacts |
@@ -77,6 +78,28 @@ mpirun -np 2 --bind-to none \
   --config configs/local_smoke.json \
   --total-tasks 4
 ```
+
+## Drag-and-Drop 2D GUI Demo
+
+The GUI is for local demonstration. It lets you drag the start, goal, and
+obstacles, choose MPOT probe type and parameters, run the existing OpenMPI
+algorithm, then generate GIFs for the best path, MPOT iteration trace, and MPI
+parallel schedule.
+
+```bash
+.venv/bin/python scripts/mpot_gui.py --self-check
+.venv/bin/python scripts/mpot_gui.py
+```
+
+Typical output after pressing **Run MPI + GIFs**:
+
+```text
+results/<gui_run_id>/best_path.gif
+results/<gui_run_id>/algorithm_trace.gif
+results/<gui_run_id>/parallel_schedule.gif
+```
+
+Detailed usage is in `docs/gui_2d_demo.md`.
 
 ## Optional W&B Experiment Logging
 

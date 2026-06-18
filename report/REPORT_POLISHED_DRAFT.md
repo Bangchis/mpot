@@ -683,6 +683,7 @@ The implementation is organized so that the serial and MPI runners share the sam
 | `mpot/benchmarks/reduction.py` | Deterministic best-result selection shared by serial and MPI workflows |
 | `mpot/benchmarks/metrics.py` | Correctness, speedup, load-balance, timing metrics |
 | `mpot/benchmarks/plots.py` | Runtime, speedup, load-balance, path figures |
+| `mpot/benchmarks/gui_app.py` and `scripts/mpot_gui.py` | Drag-and-drop 2D demo GUI for editing scenes, launching MPI, and generating explanatory GIFs |
 | `mpot/wandb_logger.py` | Optional W&B logging for metrics, images, CSV tables, and artifact bundles |
 | `scripts/run_serial.py` | Command-line serial runner |
 | `scripts/run_mpi.py` | Command-line MPI runner |
@@ -695,6 +696,8 @@ The implementation is organized so that the serial and MPI runners share the sam
 The original MPOT support modules remain in the repository and are credited. Core algorithm/support files such as `mpot/planner.py`, `mpot/ot`, `mpot/gp`, `mpot/utils`, and `mpot/envs` are not rewritten in this cleanup because changing them would be risky for a late-stage course submission.
 
 Optional W&B logging is implemented only as a visualization and experiment-navigation layer. It logs the same local run directory files that are already written by the benchmark, including summary metrics, generated images, CSV tables, and an artifact bundle. The report must still use local CSV/JSON/PNG artifacts as the source of truth.
+
+An optional Tkinter GUI is also included for live demonstration. The GUI lets the user drag the source, destination, and circular obstacles, choose MPOT/MPI parameters, run the same `scripts/run_mpi.py` backend, and generate GIFs for the best path, MPOT iteration trace, and MPI schedule. This is a teaching and defense aid; it does not replace the measured benchmark pipeline.
 
 ---
 
@@ -1090,6 +1093,8 @@ Static PNG figures are used in the main report because exported PDF files cannot
 | Dense-sampling algorithm trace key frame | `report/figures/algorithm_trace_variant_dense_keyframe.png` |
 | Particle-count ablation table | `report/PARAMETER_ABLATION_particles_dense_N12.md` |
 | Particle-count ablation figure | `report/figures/particle_ablation_dense_N12_P4.png` |
+| Interactive GUI runbook | `docs/gui_2d_demo.md` |
+| GUI-generated MPI schedule GIF | `results/<gui_run_id>/parallel_schedule.gif` |
 
 Detailed teammate ownership and defense preparation are maintained in `docs/team_ownership.md` and `report/MEMBER_DEFENSE_GUIDE.md`.
 

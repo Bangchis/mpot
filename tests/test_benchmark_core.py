@@ -28,7 +28,7 @@ from mpot.benchmarks.benchmark_scenarios import (
     build_benchmark_scenarios,
     write_benchmark_scenarios,
 )
-from mpot.benchmarks.animation import animate_best_path
+from mpot.benchmarks.animation import animate_best_path, animate_parallel_schedule
 from mpot.benchmarks.artifacts import assignment_csv_rows, comm_event_csv_rows
 from mpot.benchmarks.cli import apply_config_overrides, parse_int_list
 from mpot.benchmarks.cluster import build_cluster_plan, cluster_plan_markdown, hostfile_text, parse_hosts, write_cluster_plan
@@ -47,6 +47,14 @@ from mpot.benchmarks.environment import build_environment_markdown, package_stat
 from mpot.benchmarks.experiment_index import build_experiment_index, experiment_index_markdown, write_experiment_index
 from mpot.benchmarks.final_audit import build_final_audit, final_audit_markdown, write_final_audit
 from mpot.benchmarks.granularity import analyze_granularity, granularity_markdown, write_granularity_analysis
+from mpot.benchmarks.gui_support import (
+    GuiObstacle,
+    build_config_from_gui,
+    build_mpi_command,
+    expected_run_dir,
+    options_from_config,
+    scene_from_config,
+)
 from mpot.benchmarks.metrics import compute_efficiency, compute_speedup, summarize_load_balance
 from mpot.benchmarks.mpi_scheduler import build_tasks, cyclic_chunks, cyclic_owner, validate_assignment
 from mpot.benchmarks.ownership import build_ownership_report, ownership_markdown, write_ownership_report
@@ -331,6 +339,30 @@ class ConfigTests(unittest.TestCase):
                 self.assertEqual(len(cfg.problem.goal), 4)
                 self.assertEqual(len(cfg.problem.obstacles), expected_obstacles)
                 self.assertGreaterEqual(cfg.total_tasks, expected_obstacles)
+
+    def test_gui_support_builds_valid_config_and_mpi_command(self):
+        base = config_from_dict({"experiment_name": "gui_unit", "total_tasks": 2})
+        scene = scene_from_config(base)
+        scene.start = [-0.9, -0.7, 0.0, 0.0]
+        scene.goal = [0.7, 0.9, 0.0, 0.0]
+        scene.obstacles.append(GuiObstacle(x=0.1, y=-0.2, radius=0.12, safety_margin=0.03))
+        options = options_from_config(base, mpi_processes=3, run_id="gui-unit")
+        options.total_tasks = 9
+        options.num_particles = 5
+        options.num_probe = 2
+        options.polytope = "cube"
+
+        cfg = build_config_from_gui(base, scene, options)
+        command = build_mpi_command("config.json", options.run_id, options.mpi_processes, python_executable="python")
+
+        self.assertEqual(cfg.total_tasks, 9)
+        self.assertEqual(cfg.problem.start[:2], [-0.9, -0.7])
+        self.assertEqual(cfg.problem.goal[:2], [0.7, 0.9])
+        self.assertEqual(len(cfg.problem.obstacles), 3)
+        self.assertEqual(cfg.optimizer.polytope, "cube")
+        self.assertIn("scripts/run_mpi.py", command)
+        self.assertIn("--run-id", command)
+        self.assertEqual(expected_run_dir(options), Path("results") / "gui-unit")
 
 
 class WandbLoggerTests(unittest.TestCase):
@@ -1487,6 +1519,55 @@ class PlotAnimationTests(unittest.TestCase):
             self._write_json(run_dir / "task_results.json", [{"task_id": 0, "trajectory": trajectory}])
 
             out = animate_best_path(run_dir, output=run_dir / "trajectory.gif", fps=4)
+
+            self.assertTrue(out.exists())
+            self.assertGreater(out.stat().st_size, 0)
+
+    def test_animate_parallel_schedule_writes_gif(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            run_dir = Path(tmp) / "mpi-run"
+            run_dir.mkdir(parents=True)
+            problem = {
+                "workspace_min": [-1.0, -1.0],
+                "workspace_max": [1.0, 1.0],
+                "start": [-0.8, -0.8, 0.0, 0.0],
+                "goal": [0.8, 0.8, 0.0, 0.0],
+                "obstacles": [],
+            }
+            self._write_json(
+                run_dir / "summary.json",
+                {
+                    "run_id": "mpi-unit",
+                    "mode": "mpi",
+                    "size": 2,
+                    "total_tasks": 4,
+                    "best_task_id": 1,
+                    "best_rank": 1,
+                    "best_cost": 0.42,
+                    "problem": problem,
+                    "task_assignment": [
+                        {"rank": 0, "num_tasks": 2, "task_ids": [0, 2]},
+                        {"rank": 1, "num_tasks": 2, "task_ids": [1, 3]},
+                    ],
+                },
+            )
+            self._write_json(
+                run_dir / "task_results.json",
+                [
+                    {"task_id": 0, "rank": 0, "best_cost": 1.0, "trajectory": []},
+                    {"task_id": 1, "rank": 1, "best_cost": 0.42, "trajectory": []},
+                    {"task_id": 2, "rank": 0, "best_cost": 0.8, "trajectory": []},
+                    {"task_id": 3, "rank": 1, "best_cost": 0.9, "trajectory": []},
+                ],
+            )
+            (run_dir / "rank_timings.csv").write_text(
+                "run_id,rank,size,hostname,num_tasks,compute_time_s,communication_time_s,total_time_s,best_cost\n"
+                "mpi-unit,0,2,a,2,0.2,0.01,0.21,0.8\n"
+                "mpi-unit,1,2,b,2,0.22,0.01,0.23,0.42\n",
+                encoding="utf-8",
+            )
+
+            out = animate_parallel_schedule(run_dir, output=run_dir / "parallel_schedule.gif", fps=1)
 
             self.assertTrue(out.exists())
             self.assertGreater(out.stat().st_size, 0)
